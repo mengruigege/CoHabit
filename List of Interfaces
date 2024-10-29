@@ -2,10 +2,12 @@ Interfaces
 
 User 
 - createProfile
-- getProfile
+* name, e-mail, phoneNumber, photo, userDesc
 - deleteProfile
 - passwordChange/passwordSet
+* oldPwd, newPwd
 - setPreferences
+* bedTime, alcohol, smoke, tidy, guests, roomHours
  
 FriendManagement
 - blockUser
