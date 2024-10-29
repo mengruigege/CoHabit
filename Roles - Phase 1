@@ -1,14 +1,14 @@
 Concurrency: Rui, Keya
-  Handle thread-safety, multiple client logins, and concurrent operations.
+  - Handle thread-safety, multiple client logins, and concurrent operations.
 
 Interfaces: Aidan
-  Design and implement core interfaces (User, FriendshipManager, Message).
+  - Design and implement core interfaces (User, FriendshipManager, Message).
 
 Test Cases: Rithivik
-  Write JUnit test cases and test system functionality.
+  - Write JUnit test cases and test system functionality.
 
 Database: Rithivik
-  Design the database schema, implement CRUD operations, and ensure persistence.
+  - Design the database schema, implement CRUD operations, and ensure persistence.
 
 Documentation: Aidan
-  Prepare README, document class/methods functionality, and project instructions.
+  - Prepare README, document class/methods functionality, and project instructions.
