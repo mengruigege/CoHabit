@@ -1,12 +1,26 @@
 Interfaces
 
 User 
- - Basic Information
-
-UserProfile
-- Preferances
+- createProfile
+- getProfile
+- deleteProfile
+- passwordChange/passwordSet
+ 
+FriendManagement
+- blockUser
+- restrictUser
+- addFriend
+- removeFriend
+- unblockUser
+- unrestrictUser
 
 Message
-- content
-- sender
-- receiver
+- sendMessage
+- getMessage
+- deleteMessage
+
+Search
+- searchName
+- searchInterest
+//search location
+
