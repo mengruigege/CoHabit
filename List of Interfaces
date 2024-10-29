@@ -5,6 +5,7 @@ User
 - getProfile
 - deleteProfile
 - passwordChange/passwordSet
+- setPreferences
  
 FriendManagement
 - blockUser
