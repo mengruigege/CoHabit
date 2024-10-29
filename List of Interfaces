@@ -22,6 +22,9 @@ Message
 
 Search
 - searchName
+- searchByDorm
 - searchInterest
+- exactMatch (exactly matches user's searched preferences)
+- partialMatch (partially matches user's searched preferences)
 //search location
 
