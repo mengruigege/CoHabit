@@ -1,0 +1,12 @@
+Interfaces
+
+User 
+ - Basic Information
+
+UserProfile
+- Preferances
+
+Message
+- content
+- sender
+- receiver
