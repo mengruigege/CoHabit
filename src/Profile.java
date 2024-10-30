@@ -1,14 +1,14 @@
-public interface UserInterface { //boolean return type to check for success
+public interface Profile { //boolean return type to check for success
     public boolean createProfile(String name, String pwd, String email, String phoneNum, String userDesc, String uni); //potentially adding "photo" field
-    public boolean deleteProfile();
-    public String getName();
+    public boolean deleteProfile(); //deletes user object
+    public String getName(); //getters
     public String getPwd();
     public String getEmail();
     public String getPhoneNum();
     public String getDesc();
     public String getUni();
     public String getPreferences(); //convert data from preferences fields into a string
-    public void setName(String newName);
+    public void setName(String newName); //setters
     public void setPwd(String newPwd);
     public void setEmail(String newEmail);
     public void setPhoneNum(String newPhoneNum);
