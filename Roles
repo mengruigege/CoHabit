@@ -1,3 +1,5 @@
+Phase 1:
+
 Concurrency: Rui, Keya
   - Handle thread-safety, multiple client logins, and concurrent operations.
 
