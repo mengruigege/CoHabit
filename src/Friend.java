@@ -5,6 +5,6 @@ public interface Friend {
     public boolean allowUser(User user); //reverses restrictions
     public boolean blockUser(User user); //removes user from search; completely block interaction
     public boolean unblockUser(User user); //reverses blocking method
-    public User[] getFriendList(); //returns friends list
-    public void setFriendList(User[] friends); //changes friends list
+    public ArrayList<User> getFriendList(); //returns friends list
+    public void setFriendList(ArrayList<User> friends); //changes friends list
 }
