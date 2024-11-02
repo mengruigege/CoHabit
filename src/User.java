@@ -25,7 +25,11 @@ public class User implements Profile {
         this.pwd = pwd;
         this.email = email;
         this.phoneNum = phoneNum;
-        this.userDesc = userDesc;
+        if (this.userDec = null) {
+            this.userDesc = " "; 
+        } else {
+            this.userDesc = userDesc;
+        }
         this.uni = uni;
         allUsers.add(this);
     }
