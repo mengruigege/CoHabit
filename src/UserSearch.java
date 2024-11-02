@@ -69,46 +69,4 @@ public class UserSearch implements Searchable {
         }
        return matchingUsers;
     }
-
-    //partialMatch - added this method, someone please cross check 
-/** public ArrayList<User> partialMatch(String parameter, String value) {
-        ArrayList<User> matchingUsers = new ArrayList<>();
-
-        synchronized (lock) {
-            for (User pref : User.getAllUsers()) {
-                boolean isMatch = false;
-
-                switch (parameter.toLowerCase()) {
-                    case "name":
-                        isMatch = pref.getName().toLowerCase().contains(value.toLowerCase());
-                        break;
-                    case "email":
-                        isMatch = pref.getEmail().toLowerCase().contains(value.toLowerCase());
-                        break;
-                    case "phone":
-                        isMatch = pref.getPhoneNum().contains(value);
-                        break;
-                    case "university":
-                        isMatch = pref.getUni().toLowerCase().contains(value.toLowerCase());
-                        break;
-                    default:
-                        System.out.println("Invalid parameter type");
-                        break;
-                }
-
-                if (isMatch) {
-                    matchingUsers.add(pref);
-                }
-            }
-        }
-
-        return matchingUsers;
-    }
-}
-*/ 
-
-
-
- 
-
 }
