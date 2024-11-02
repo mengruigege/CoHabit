@@ -40,28 +40,39 @@ public class UserSearch implements Searchable {
 
         return matchingUsers;
     }
-    
 
-    public ArrayList<User> exactMatch(User mainUser) {
-            ArrayList<User> matchingUsers = new ArrayList<>();
-            
-            synchronized (lock) { 
-                for (User user : User.getAllUsers()) {
-                    if (mainUser != user && mainUser.perfectMatch(user)) {
-                        matchingUsers.add(user);
-                    }
+    public ArrayList<User> searchByParameter(String parameter, String value) {
+        ArrayList<User> matchingUsers = new ArrayList<>();
+
+        synchronized (lock) {
+            for (User user : User.getAllUsers()) {
+                if (mainUser != user && mainUser.perfectMatch(user)) {
+                    matchingUsers.add(user);
                 }
             }
-            
-            return matchingUsers;
         }
+        return matchingUsers;
+    }
+
+    public ArrayList<User> exactMatch(Profile mainProfile) {
+        ArrayList<User> matchingUsers = new ArrayList<>();
+
+        synchronized (lock) {
+            for (User user : User.getAllUsers()) {
+                if (mainProfile != user && mainProfile.perfectMatch(user)) {
+                    matchingUsers.add(user);
+                }
+            }
+        }
+        return matchingUsers;
+    }
     
-    public ArrayList<User> partialMatch (User mainUser) {
+    public ArrayList<User> partialMatch (Profile mainProfile) {
         ArrayList<User> matchingUsers = new ArrayList<>();
         for (int i = 5; i > 0 ; i--) {
             for (User user : User.getAllUsers()) {
-                if (!(mainUser.getName().equals(user.getName()))) {
-                    if (mainUser.partial(user) == i) {
+                if (!(mainProfile.getName().equals(user.getName()))) {
+                    if (mainProfile.partial(user) == i) {
                         matchingUsers.add(user);
                     }
                 }

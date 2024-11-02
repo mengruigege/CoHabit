@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 public class Chat implements Sendable {
     private User sender;
-    private User reciever;
+    private User receiver;
 
     private ArrayList<String> messages;
 

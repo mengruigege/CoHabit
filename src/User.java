@@ -5,7 +5,7 @@ public class User implements Profile, FriendManageable, Blockable {
     private String pwd;
     private String email;
     private String phoneNum;
-    private String userDesc;
+    private String userDescription;
     private String uni;
     private String bedTime;
     private boolean alcohol;
@@ -31,10 +31,10 @@ public class User implements Profile, FriendManageable, Blockable {
                     this.pwd = pwd;
                     this.email = email;
                     this.phoneNum = phoneNum;
-                    if (this.userDec = null) {
-                        this.userDesc = " "; 
+                    if (this.userDescription == null) {
+                        this.userDescription = " ";
                     } else {
-                        this.userDesc = userDesc;
+                        this.userDescription = userDesc;
                     }
                     this.uni = uni;
                     allUsers.add(this);
@@ -54,11 +54,11 @@ public class User implements Profile, FriendManageable, Blockable {
         this.name = name;
     }
 
-    public String getPwd() {
+    public String getPassword() {
         return pwd;
     }
 
-    public void setPwd(String pwd) {
+    public void setPassword(String pwd) {
         this.pwd = pwd;
     }
 
@@ -74,23 +74,23 @@ public class User implements Profile, FriendManageable, Blockable {
         return phoneNum;
     }
 
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
-    }
-
-    public String getUserDesc() {
-        return userDesc;
-    }
-
-    public void setUserDesc(String userDesc) {
-        this.userDesc = userDesc;
-    }
-
-    public String getDescription() {
+    public String getUniversity() {
         return uni;
     }
 
-    public void setUni(String uni) {
+    public void setPhoneNumber(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    public void setUserDescription(String userDesc) {
+        this.userDescription = userDesc;
+    }
+
+    public String getDescription() {
+        return userDescription;
+    }
+
+    public void setUniversity(String uni) {
         this.uni = uni;
     }
 
@@ -160,7 +160,7 @@ public class User implements Profile, FriendManageable, Blockable {
         return new ArrayList<>(allUsers);
     }
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name, this.pwd, this.email, this.phoneNum, this.userDesc, this.uni, this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name, this.pwd, this.email, this.phoneNum, this.userDescription, this.uni, this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
 
 

@@ -33,7 +33,6 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
             return true;
         }
         return false;
-
     }
     public synchronized boolean unblockUser(User user) {
         return blocked.remove(user);
@@ -84,6 +83,4 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         Thread thread = new Thread(task); 
         thread.start(); 
     }
-}
-
 }
