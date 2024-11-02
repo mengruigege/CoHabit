@@ -1,41 +1,30 @@
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
+import static org.junit.Assert.assertEquals;
 
-import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-
-public class testUser {
+public class TestUser {
         private User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");;
         private User user2 = new User("Joe", "password234", "joe@gmail.com", "2234567890", "person2", "purdue2");
 
         public void testConstructor() {
             assertEquals("Bob", user1.getName());
-            assertEquals("password123", user1.getPwd());
+            assertEquals("password123", user1.getPassword());
             assertEquals("bob@gmail.com", user1.getEmail());
             assertEquals("1234567890", user1.getPhoneNum());
-            assertEquals("person", user1.getUserDesc());
+            assertEquals("person", user1.getDescription());
         }
 
         public void testGetandSet() {
             user1.setName("newname");
-            user1.setPwd("newpassword");
+            user1.setPassword("newpassword");
             user1.setEmail("newemail@gmail.com");
-            user1.setPhoneNum("1111111111");
-            user1.setUserDesc("newdescription");
-            user1.setUni("newuni");
+            user1.setPhoneNumber("1111111111");
+            user1.setDescription("newdescription");
+            user1.setUniversity("newuni");
 
             assertEquals("newname", user1.getName());
-            assertEquals("newpassword", user1.getPwd());
+            assertEquals("newpassword", user1.getPassword());
             assertEquals("newemail@gmail.com", user1.getEmail());
             assertEquals("1111111111", user1.getPhoneNum());
-            assertEquals("Unewdescription", user1.getUserDesc());
+            assertEquals("Unewdescription", user1.getDescription());
         }
 
         public void testsetPreference() {
