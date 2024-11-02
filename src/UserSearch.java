@@ -27,7 +27,7 @@ public class UserSearch implements Search{
                         }
                         break;
                     case "university":
-                        if (user.getUni().equalsIgnoreCase(value)) {
+                        if (user.getDescription().equalsIgnoreCase(value)) {
                             matchingUsers.add(user);
                         }
                         break;

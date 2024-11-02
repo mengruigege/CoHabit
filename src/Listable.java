@@ -1,4 +1,7 @@
-package PACKAGE_NAME;
+import java.util.ArrayList;
 
-public interface Listable {
+public interface Listable<T> {
+    ArrayList<T> getList();
+    boolean addItem(T item);
+    boolean removeItem(T item);
 }

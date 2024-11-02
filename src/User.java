@@ -71,7 +71,7 @@ public class User implements Profile {
         this.userDesc = userDesc;
     }
 
-    public String getUni() {
+    public String getDescription() {
         return uni;
     }
 
