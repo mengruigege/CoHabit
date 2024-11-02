@@ -25,6 +25,7 @@ public class User implements Profile, FriendManageable, Blockable {
             for (User user : allUsers) {
                 if (user.getName().equals(name)) {
                     throw new BadDataException("Username already exists: " + name); 
+                }
                 else {
                     this.name = name;
                     this.pwd = pwd;
