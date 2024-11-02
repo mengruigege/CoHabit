@@ -93,7 +93,7 @@ public class User implements Profile {
         this.roomHours = roomHours;
     }
     
-    // Equals method that determines if two users have all the same preferences. - are we looking for best match or perfect match?
+    // Equals method that determines if two users have all the same preferences. 
     public boolean perfectMatch(User user) {
         return this.bedTime.equals(user.bedTime) &&
                 this.alcohol == user.alcohol &&
