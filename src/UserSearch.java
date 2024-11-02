@@ -42,7 +42,7 @@ public class UserSearch implements Searchable {
     }
     
 
-    public ArrayList<User> ExactMatch(User mainUser) {
+    public ArrayList<User> exactMatch(User mainUser) {
             ArrayList<User> matchingUsers = new ArrayList<>();
             
             synchronized (lock) { 
@@ -55,6 +55,20 @@ public class UserSearch implements Searchable {
             
             return matchingUsers;
         }
+    
+    public ArrayList<User> partialMatch (User mainUser) {
+        ArrayList<User> matchingUsers = new ArrayList<>();
+        for (int i = 5; i > 0 ; i--) {
+            for (User user : User.getAllUsers()) {
+                if (!(mainUser.getName().equals(user.getName()))) {
+                    if (mainUser.partial(user) == i) {
+                        matchingUsers.add(user);
+                    }
+                }
+            }
+        }
+       return matchingUsers;
+    }
 
     //partialMatch - added this method, someone please cross check 
 /** public ArrayList<User> partialMatch(String parameter, String value) {

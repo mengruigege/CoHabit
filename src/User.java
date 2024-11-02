@@ -25,7 +25,11 @@ public class User implements Profile, FriendManageable, Blockable {
         this.pwd = pwd;
         this.email = email;
         this.phoneNum = phoneNum;
-        this.userDesc = userDesc;
+        if (this.userDec = null) {
+            this.userDesc = " "; 
+        } else {
+            this.userDesc = userDesc;
+        }
         this.uni = uni;
         allUsers.add(this);
     }
@@ -103,6 +107,30 @@ public class User implements Profile, FriendManageable, Blockable {
                 this.roomHours == user.roomHours;
     }
 
+    public int partial(User user) {
+        int count = 0;
+        if (this.bedTime.equals(user.bedTime)) {
+            count++;
+        }
+        if (this.alcohol == user.alcohol) {
+            count++;
+        }
+        if (this.smoke == user.smoke) {
+            count++;
+        }
+        if (this.guests == user.guests) {
+            count++;
+        }
+        if (this.tidy == user.tidy) {
+            count++;
+        }
+        if (this.roomHours == user.roomHours) {
+            count++;
+        }
+        return count;
+
+    }
+
     public synchronized boolean UserExists(User user) {
         if (allUsers.contains(user)) {
             return true; //is this required? can we return the result of the contains() function directly? return allUsers.contains(user);
@@ -119,6 +147,9 @@ public class User implements Profile, FriendManageable, Blockable {
     }
     public static synchronized ArrayList<User> getAllUsers() {
         return new ArrayList<>(allUsers);
+    }
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name, this.pwd, this.email, this.phoneNum, this.userDesc, this.uni, this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
 
 
