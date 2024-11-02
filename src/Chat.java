@@ -1,73 +1,71 @@
-import java.util.ArrayList;
+import java.util.ArrayList; 
 
 public class Chat implements Message {
-    private User sender;
-    private User reciever;
+    private User sender; 
+    private User receiver;
     private ArrayList<String> messages;
 
-    public Chat(User sender, User reciever, ArrayList<String> messageLogs) {
+    //Constructor to initialize all variables with their respective objects
+    public Chat(User sender, User receiver, ArrayList<String> messages) {
         this.sender = sender;
-        this.reciever = reciever;
-        this.messages = new ArrayList<>();
+        this.receiver = receiver;
+        this.messages = new ArrayList<>(messages);
     }
 
-    public boolean sendMessage(User sender, User reciever, String message) { 
-        messages.add(message);
-        return true;
+    //Synchronized method to make sure only one thread can send a message at a time
+    public synchronized boolean sendMessage(User sender, User receiver, String message) { 
+        return messages.add(message);
     }
 
+    //Synchronized method to make sure only one thread can get a message at a time
     public synchronized ArrayList<String> getMessages() {
-        //to make sure only one thread can get a message at a time
-        return messages; //return new ArrayList<>(messages); should we put in this instead? it will make a copy of the text to be returned.
+        return messages; 
     }
 
-    public boolean deleteMessage(User sender, User reciever, String message) {
-        messages.remove(message);
-        return true;
+    //Synchronized method to make sure only one thread can delete a message at a time
+    public synchronized boolean deleteMessage(User sender, User receiver, String message) {
+        return messages.remove(message);
     }
 
-}
-
-/**
-private class SendMessageTask implements Runnable {
-        private final User sender;
-        private final User receiver;
-        private final String message;
-
-        public SendMessageTask(User sender, User receiver, String message) {
-            this.sender = sender;
-            this.receiver = receiver;
-            this.message = message;
-        }
-
-        @Override
-        public void run() {
-            synchronized (Chat.this) {
-                messages.add(message);
-                System.out.println("Message sent: " + message);
+    //Inner class to implement multi-threading in a thread-safe environment for sending messages
+    private class SendMessageTask implements Runnable {
+            private final User sender;
+            private final User receiver;
+            private final String message;
+    
+            public SendMessageTask(User sender, User receiver, String message) {
+                this.sender = sender;
+                this.receiver = receiver;
+                this.message = message;
             }
-        }
-    }
-
-    private class DeleteMessageTask implements Runnable {
-        private final User sender;
-        private final User receiver;
-        private final String message;
-
-        public DeleteMessageTask(User sender, User receiver, String message) {
-            this.sender = sender;
-            this.receiver = receiver;
-            this.message = message;
-        }
-
-        @Override
-        public void run() {
-            synchronized (Chat.this) {
-                if (messages.remove(message)) {
-                    System.out.println("Message deleted: " + message);
+    
+            public void run() {
+                synchronized (Chat.this) {
+                    messages.add(message);
+                    System.out.println("Message sent: " + message);
                 }
             }
         }
-    }
+
+    //Inner class to implement multi-threading in a thread-safe environment for deleting messages
+    private class DeleteMessageTask implements Runnable {
+            private final User sender;
+            private final User receiver;
+            private final String message;
+    
+            public DeleteMessageTask(User sender, User receiver, String message) {
+                this.sender = sender;
+                this.receiver = receiver;
+                this.message = message;
+            }
+    
+            public void run() {
+                synchronized (Chat.this) {
+                    if (messages.remove(message)) {
+                        System.out.println("Message deleted: " + message);
+                    }
+                }
+            }
+     }
 }
-*/
+
