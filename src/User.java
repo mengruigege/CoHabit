@@ -144,6 +144,9 @@ public class User implements Profile {
     public static synchronized ArrayList<User> getAllUsers() {
         return new ArrayList<>(allUsers);
     }
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name, this.pwd, this.email, this.phoneNum, this.userDesc, this.uni, this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
+    }
 
 
 }
