@@ -1,4 +1,6 @@
-public interface Friend {
+import java.util.ArrayList;
+
+public interface FriendManageable {
     public boolean addFriend(User user); //I figured the object to track users will be "User"
     public boolean removeFriend(User user); //removes user from list of friends
     public boolean restrictUser(User user); //restricts user interactions with each other
