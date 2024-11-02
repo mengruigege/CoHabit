@@ -103,6 +103,30 @@ public class User implements Profile {
                 this.roomHours == user.roomHours;
     }
 
+    public int partial(User user) {
+        int count = 0;
+        if (this.bedTime.equals(user.bedTime)) {
+            count++;
+        }
+        if (this.alcohol == user.alcohol) {
+            count++;
+        }
+        if (this.smoke == user.smoke) {
+            count++;
+        }
+        if (this.guests == user.guests) {
+            count++;
+        }
+        if (this.tidy == user.tidy) {
+            count++;
+        }
+        if (this.roomHours == user.roomHours) {
+            count++;
+        }
+        return count;
+
+    }
+
     public synchronized boolean UserExists(User user) {
         if (allUsers.contains(user)) {
             return true; //is this required? can we return the result of the contains() function directly? return allUsers.contains(user);
