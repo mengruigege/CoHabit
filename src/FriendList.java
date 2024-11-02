@@ -48,4 +48,42 @@ public class FriendList implements Friend {
         return blocked;
     }
 
+    // Inner class for executing friend tasks
+    private class FriendTasks implements Runnable {
+        private final User user;
+        private final String action;
+
+        public FriendTasks(User user, String action) {
+            this.user = user;
+            this.action = action;
+        }
+        
+        public void run() {
+            boolean result = false;
+            switch (action.toUpperCase()) {
+                case "ADD_FRIEND":
+                    result = addFriend(user);
+                    break;
+                case "BLOCK_USER":
+                    result = blockUser(user);
+                    break;
+                case "RESTRICT_USER":
+                    result = restrictUser(user);
+                    break;
+            }
+            if (result) {
+                System.out.println(user + " successfully " + action.toLowerCase().replace("_", " ") + "."); 
+            } else {
+                System.out.println("Failed to " + action.toLowerCase().replace("_", " ") + " " + user + "."); 
+            }
+        }
+    }
+
+    public void executeAction(User user, String action) {
+        FriendTasks task = new FriendTasks(user, action); 
+        Thread thread = new Thread(task); 
+        thread.start(); 
+    }
+}
+
 }
