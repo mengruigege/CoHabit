@@ -1,8 +1,10 @@
 import java.util.ArrayList; 
 
-public class Chat implements Message {
-    private User sender; 
-    private User receiver;
+
+public class Chat implements Sendable {
+    private User sender;
+    private User reciever;
+
     private ArrayList<String> messages;
 
     //Constructor to initialize all variables with their respective objects
