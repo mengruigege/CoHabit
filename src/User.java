@@ -13,6 +13,7 @@ public class User implements Profile {
     private boolean guests;
     private int tidy;
     private int roomHours;
+    
     public static final ArrayList<User> allUsers = new ArrayList<>();
     private FriendList friendList;
 
@@ -27,11 +28,9 @@ public class User implements Profile {
         this.userDesc = userDesc;
         this.uni = uni;
         allUsers.add(this);
-
-
     }
 
-
+//getters and setters
     public String getName() {
         return name;
     }
@@ -84,6 +83,7 @@ public class User implements Profile {
         return String.format("Bedtime: %s, Alcohol: %b, Smoke: %b, Guests: %b, Tidiness: %d, Room Hours: %d",
                 this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
+    
     public void setPreferences(String bedTime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
         this.bedTime = bedTime;
         this.alcohol = alcohol;
@@ -92,7 +92,8 @@ public class User implements Profile {
         this.tidy = tidy;
         this.roomHours = roomHours;
     }
-    // Equals method that determines if two users have all the same preferences.
+    
+    // Equals method that determines if two users have all the same preferences. - are we looking for best match or perfect match?
     public boolean perfectMatch(User user) {
         return this.bedTime.equals(user.bedTime) &&
                 this.alcohol == user.alcohol &&
@@ -102,24 +103,21 @@ public class User implements Profile {
                 this.roomHours == user.roomHours;
     }
 
-
-
-    public boolean UserExists(User user) {
+    public synchronized boolean UserExists(User user) {
         if (allUsers.contains(user)) {
-            return true;
+            return true; //is this required? can we return the result of the contains() function directly? return allUsers.contains(user);
         }
         return false;
-
     }
 
 
-    public void deleteUser(User user) {
+    public synchronized void deleteUser(User user) {
         if (UserExists(user)) {
             allUsers.remove(user);
         }
 
     }
-    public static ArrayList<User> getAllUsers() {
+    public static synchronized ArrayList<User> getAllUsers() {
         return new ArrayList<>(allUsers);
     }
 
