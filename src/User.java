@@ -21,17 +21,27 @@ public class User implements Profile, FriendManageable, Blockable {
 //constructor for user
     public User(String name, String pwd, String email, String phoneNum, String userDesc, String uni) {
 
-        this.name = name;
-        this.pwd = pwd;
-        this.email = email;
-        this.phoneNum = phoneNum;
-        if (this.userDec = null) {
-            this.userDesc = " "; 
-        } else {
-            this.userDesc = userDesc;
+        synchronized (allUsers) {  
+            for (User user : allUsers) {
+                if (user.getName().equals(name)) {
+                    throw new BadDataException("Username already exists: " + name); 
+                else {
+                    this.name = name;
+                    this.pwd = pwd;
+                    this.email = email;
+                    this.phoneNum = phoneNum;
+                    if (this.userDec = null) {
+                        this.userDesc = " "; 
+                    } else {
+                        this.userDesc = userDesc;
+                    }
+                    this.uni = uni;
+                    allUsers.add(this);
+                }
+                    
+            }
         }
-        this.uni = uni;
-        allUsers.add(this);
+        
     }
 
 //getters and setters
