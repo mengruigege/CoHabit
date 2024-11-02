@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Chat implements Message {
+public class Chat implements Sendable {
     private User sender;
     private User reciever;
     private ArrayList<String> messages;

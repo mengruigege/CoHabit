@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class User implements Profile {
+public class User implements Profile, FriendManageable, Blockable {
     private String name;
     private String pwd;
     private String email;

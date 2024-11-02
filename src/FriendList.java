@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class FriendList implements Friend {
+public class FriendList implements FriendManageable, Blockable, Listable<User> {
     private ArrayList<User> friends = new ArrayList<User>();
     private ArrayList<User> restricted = new ArrayList<>();
     private ArrayList<User> blocked = new ArrayList<>();

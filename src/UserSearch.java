@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class UserSearch implements Search{
+public class UserSearch implements Searchable {
 
     private static final Object lock = new Object();
     
