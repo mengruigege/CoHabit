@@ -66,6 +66,7 @@ public class UserDatabase {
                     return false;
                 }
             }
+            reader.close();
             return true;
         } catch (IOException e) {
             return false;
@@ -73,6 +74,16 @@ public class UserDatabase {
     }
 
     public boolean writeUser() {
-        return true;
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(databaseOutput));
+
+            for (int i = 0; i < users.size(); i++) {
+                writer.write(users.get(i).toString());
+            }
+            writer.close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }
