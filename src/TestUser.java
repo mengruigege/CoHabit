@@ -27,12 +27,12 @@ public class TestUser {
             assertEquals("Unewdescription", user1.getDescription());
         }
 
-        public void testsetPreference() {
+        public void testSetPreference() {
             user1.setPreferences("10 PM", true, false, true, 3, 5);
             assertEquals("10 PM, true, false, true, 3, 5", user1.getPreferences());
         }
 
-        public void testtoString() {
+        public void testToString() {
             user1.setPreferences("10 PM", true, false, true, 3, 5);
             String expected = "Bob,password123,bob@gmail.com,1234567890,person,purdue,10 PM,true,false,true,3,5";
             assertEquals(expected, user1.toString());
