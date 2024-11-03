@@ -2,11 +2,12 @@ import java.util.ArrayList;
 
 public class FriendList implements FriendManageable, Blockable, Listable<User> {
     private ArrayList<User> friends = new ArrayList<>();
-    private ArrayList<User> restricted = new ArrayList<>();
+    private ArrayList<User> restricted = new ArrayList<>(); //should these be declared final?
     private ArrayList<User> blocked = new ArrayList<>();
     private User owner; 
 
     public FriendList(User owner) {
+        this.owner = owner;
         this.friends = new ArrayList<>();
         this.blocked = new ArrayList<>();
         this.friends.add(owner);
