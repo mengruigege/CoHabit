@@ -61,71 +61,39 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         return blocked;
     }
 
-    // Inner class for executing friend tasks
-    private class FriendTasks implements Runnable {
+    private class UserTask implements Runnable {
         private final User user;
         private final String action;
 
-        public FriendTasks(User user, String action) {
+        public UserTask(User user, String action) {
             this.user = user;
             this.action = action;
         }
-        
+
         public void run() {
             boolean result = false;
             switch (action.toUpperCase()) {
                 case "ADD_FRIEND":
                     result = addFriend(user);
                     break;
+                case "REMOVE_FRIEND":
+                    result = removeFriend(user);
+                    break;
                 case "BLOCK_USER":
                     result = blockUser(user);
+                    break;
+                case "UNBLOCK_USER":
+                    result = unblockUser(user);
                     break;
                 case "RESTRICT_USER":
                     result = restrictUser(user);
                     break;
-            }
-            if (result) {
-                System.out.println(user + " successfully " + action.toLowerCase().replace("_", " ") + "."); 
-            } else {
-                System.out.println("Failed to " + action.toLowerCase().replace("_", " ") + " " + user + "."); 
-            }
-        }
-    }
-
-    public void executeAction(User user, String action) {
-        FriendTasks task = new FriendTasks(user, action); 
-        Thread thread = new Thread(task); 
-        thread.start(); 
-    }
-
-// Inner class to handle friend-related tasks concurrently
-    private class UserTasks implements Runnable {
-        private final User user; 
-        private final String action; 
-
-        public UserTasks(User user, String action) {
-            this.user = user;
-            this.action = action;
-        }
-
-        public void run() {
-            boolean result = false; 
-            switch (action.toUpperCase()) { 
-                case "REMOVE_FRIEND":
-                    result = friends.removeFriend(user); 
-                    break;
-                case "BLOCK_USER":
-                    result = friends.blockUser(user); 
-                    break;
-                case "RESTRICT_USER":
-                    result = friends.restrictUser(user); 
-                    break;
                 case "ALLOW_USER":
-                    result = friends.allowUser(user); 
+                    result = allowUser(user);
                     break;
-                case "ADD_FRIEND":
-                    result = friends.addFriend(user); 
-                    break;
+                default:
+                    System.out.println("Unknown action: " + action);
+                    return;
             }
             
             if (result) {
