@@ -16,30 +16,42 @@ public class User implements Profile, FriendManageable, Blockable {
     private int tidy;
     private int roomHours;
 
-    private FriendList friends;
-    private ArrayList<User> blockedUsers = new ArrayList<>();
+    private FriendList friendUsers;
+    private FriendList blockedUsers;
 
     public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
         this.name = name;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.description = userDescription == null ? "" : userDescription;
+        this.description = description == null ? "" : description;
         this.university = university;
-        this.blockedUsers = new ArrayList<>();
+
+        this.friendUsers = new FriendList();
+        this.blockedUsers = new FriendList();
     }
 
-    public boolean removeFriend(User user) {
-        return friends.removeFriend(user);
+    public ArrayList<User> getFriendUsers() {
+        return friendUsers.getFriends();
     }
+    public boolean removeFriend(User user) {return friendUsers.removeFriend(user);}
     public boolean addFriend(User user) {
-        return friends.addFriend(user);
+        return friendUsers.addFriend(user);
     }
-    public ArrayList<User> getFriends() {
-        return friends.getFriends();
+    public boolean blockUser(User user) {
+        return friendUsers.blockUser(user);
     }
-    public void setFriendList(User user, Database database) {
-        this.friends = new FriendList(user, database);
+    public boolean unblockUser(User user) {
+        return friendUsers.unblockUser(user);
+    }
+    public ArrayList<User> getFriendList(User user) {
+        return friendUsers.getFriends();
+    }
+    public ArrayList<User> getBlockedUsers(User user) {
+        return blockedUsers.getBlocked();
+    }
+    public void setFriendList(ArrayList<User> friends) {
+        this.friendUsers.setFriendList(friends);
     }
 
     public String getName() { return name; }
@@ -59,7 +71,8 @@ public class User implements Profile, FriendManageable, Blockable {
     public void setPhoneNumber(String phoneNum) { this.phoneNumber = phoneNum; }
     public void setUniversity(String university) { this.university = university; }
     public void setDescription(String userDesc) { this.description = userDesc; }
-    public void setPreferences(String bedTime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
+    public void setPreferences(String bedTime, boolean alcohol, boolean smoke,
+                               boolean guests, int tidy, int roomHours) {
         this.bedTime = bedTime;
         this.alcohol = alcohol;
         this.smoke = smoke;
