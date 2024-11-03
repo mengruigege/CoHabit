@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class FriendList implements FriendManageable, Blockable, Listable<User> {
-    private ArrayList<User> friends = new ArrayList<User>();
+    private ArrayList<User> friends = new ArrayList<>();
     private ArrayList<User> restricted = new ArrayList<>();
     private ArrayList<User> blocked = new ArrayList<>();
 
@@ -12,9 +12,11 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         }
         return false;
     }
+
     public synchronized boolean removeFriend(User user) {
-        return (friends.remove(user));
+        return friends.remove(user);
     }
+
     public synchronized boolean restrictUser(User user) {
         if (user != null && friends.contains(user) && !restricted.contains(user)) {
             restricted.add(user);
@@ -22,9 +24,11 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         }
         return false;
     }
+
     public synchronized boolean allowUser(User user) {
         return restricted.remove(user);
     }
+
     public synchronized boolean blockUser(User user) {
         if (user != null && !blocked.contains(user)) {
             blocked.add(user);

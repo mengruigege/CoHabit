@@ -1,17 +1,6 @@
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
+import static org.junit.Assert.assertEquals;
 
-import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-
-public class testUser {
+public class TestUser {
         private User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");;
         private User user2 = new User("Joe", "password234", "joe@gmail.com", "2234567890", "person2", "purdue2");
         private User user3 = new User(null, "password345", "jim@gmail.com", "3334567890", "person3", "purdue3");
@@ -21,6 +10,7 @@ public class testUser {
             assertEquals("Bob", user1.getName());
             assertEquals("password123", user1.getPassword());
             assertEquals("bob@gmail.com", user1.getEmail());
+<<<<<<< HEAD:src/TestCases.java
             assertEquals("1234567890", user1.getPhoneNum());
             assertEquals("person", user1.getDescription());
             assertEquals("purdue",user1.getUniversity());
@@ -48,6 +38,13 @@ public class testUser {
         }
 
         public void testSet() {
+=======
+            assertEquals("1234567890", user1.getPhoneNumber());
+            assertEquals("person", user1.getDescription());
+        }
+
+        public void testGetAndSet() {
+>>>>>>> e340144a428dcbe6d3b3ceab45efc027262b24c2:src/TestUser.java
             user1.setName("newname");
             user1.setPassword("newpassword");
             user1.setEmail("newemail@gmail.com");
@@ -58,6 +55,7 @@ public class testUser {
             assertEquals("newname", user1.getName());
             assertEquals("newpassword", user1.getPassword());
             assertEquals("newemail@gmail.com", user1.getEmail());
+<<<<<<< HEAD:src/TestCases.java
             assertEquals("1111111111", user1.getPhoneNum());
             assertEquals("Unewdescription", user1.getDescription());
             assertEquals("newuni", user1.getUniversity());
@@ -118,6 +116,20 @@ public class testUser {
 
         public void testtoString() {
             String expected = "Bob,password123,bob@gmail.com,1234567890,person,purdue,11 PM,false,false,true,5,5";
+=======
+            assertEquals("1111111111", user1.getPhoneNumber());
+            assertEquals("Unewdescription", user1.getDescription());
+        }
+
+        public void testSetPreference() {
+            user1.setPreferences("10 PM", true, false, true, 3, 5);
+            assertEquals("10 PM, true, false, true, 3, 5", user1.getPreferences());
+        }
+
+        public void testToString() {
+            user1.setPreferences("10 PM", true, false, true, 3, 5);
+            String expected = "Bob,password123,bob@gmail.com,1234567890,person,purdue,10 PM,true,false,true,3,5";
+>>>>>>> e340144a428dcbe6d3b3ceab45efc027262b24c2:src/TestUser.java
             assertEquals(expected, user1.toString());
             String expected2 = "Joe,password234,joe@gmail.com,2234567890,person2,purdue2,12 AM,"",false,true,"",5";
             assertEquals(expected2, user2.toString());
