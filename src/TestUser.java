@@ -1,13 +1,19 @@
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestUser {
-    private User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
-    private User user2 = new User("Joe", "password234", "joe@gmail.com", "2234567890", "person2", "purdue2");
-    private User user3 = new User(null, "password345", "jim@gmail.com", "3334567890", "person3", "purdue3");
-    private User user4 = new User("James", null, null, "4567890123", "person4", "purdue4");
+    private User user1;
+    private User user2;
+    private User user3;
+    private User user4;
 
-    public TestUser() throws UsernameTakenException {
+    @Before
+    public void setUp() throws UsernameTakenException {
+        user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
+        user2 = new User("Joe", "password234", "joe@gmail.com", "2234567890", "person2", "purdue2");
+        user3 = new User(null, "password345", "jim@gmail.com", "3334567890", "person3", "purdue3");
+        user4 = new User("James", null, null, "4567890123", "person4", "purdue4");
     }
 
     @Test
