@@ -1,115 +1,172 @@
-import java.util.*;
+import java.util.ArrayList;
 import java.io.*;
 
-public class UserDatabase {
-    private String databaseOutput;
-    private ArrayList<User> users;
-    private String userIn;
+public class Database {
+    private ArrayList<User> allUsers;
+    private static final String USERS_FILE = "users.txt";
+    private static final String FRIENDS_FILE = "friends.txt";
+    private static final String MESSAGES_FILE = "messages.txt";
 
-    public UserDatabase(String userIn, String databaseOutput) {
-        this.databaseOutput = databaseOutput;
-        this.userIn = userIn;
-        this.users = new ArrayList<>();
+    public UserDatabase() {
+        this.allUsers = new ArrayList<>();
+        loadUsersFromFile();
     }
 
-    public synchronized boolean readUser() {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(userIn));
-            int count = 0;
-            String line = "";
-            String userName = "";
-            String pwd = "";
-            String email = "";
-            String phoneNum = "";
-            String desc = "";
-            String uni = "";
-            String bedtime = "";
-            String alcohol = "";
-            String smoke = "";
-            String guests = "";
-            String tidyS = "";
-            String roomHoursS = "";
-            int index = 0;
+    public boolean addUser(User user) {
+        if (user != null && !usernameExists(user.getName())) {
+            allUsers.add(user);
+            saveUsersToFile();
+            return true;
+        }
+        return false; // User is null or username is taken
+    }
 
-            while ((line = reader.readLine()) != null) {
-                try {
-                    index++;
-                    String[] data = line.split(","); 
-                    userName = data[0];
-                    pwd = data[1];
-                    email = data[2];
-                    phoneNum = data[3];
-                    desc = data[4];
-                    uni = data[5];
-                    bedtime = data[6];
-                    alcohol = data[7];
-                    smoke = data[8];
-                    guests = data[9];
-                    tidyS = data[10];
-                    roomHoursS = data[11];
-                    int tidyI = Integer.parseInt(tidyS);
-                    int roomHoursI = Integer.parseInt(roomHoursS);
-                    
-                    users.add(new User(userName, pwd, email, phoneNum, desc, uni));
-                    if (alcohol.equals("true") && smoke.equals("true") && guests.equals("true")) {
-                        users.get(index).setPreferences(bedtime, true, true, true, tidyI, roomHoursI);
-                    } else if (alcohol.equals("true") && smoke.equals("true") && guests.equals("false")) {
-                        users.get(index).setPreferences(bedtime, true, true, false, tidyI, roomHoursI);
-                    } else if (alcohol.equals("true") && smoke.equals("false") && guests.equals("false")) {
-                        users.get(index).setPreferences(bedtime, true, false, false, tidyI, roomHoursI);
-                    } else if (alcohol.equals("false") && smoke.equals("false") && guests.equals("true")) {
-                        users.get(index).setPreferences(bedtime, false, false, true, tidyI, roomHoursI);
-                    } else if (alcohol.equals("false") && smoke.equals("true") && guests.equals("true")) {
-                        users.get(index).setPreferences(bedtime, false, true, true, tidyI, roomHoursI);
-                    } else if (alcohol.equals("false") && smoke.equals("true") && guests.equals("false")) {
-                        users.get(index).setPreferences(bedtime, false, true, false, tidyI, roomHoursI);
-                    }
-                } catch (Exception e) { //should we have another catch for IndexOutOfBounds to specify
-                    return false;
+    public boolean deleteUser(User user) {
+        boolean removed = allUsers.remove(user);
+        if (removed) {
+            saveUsersToFile();
+            return true;
+        }
+        return removed;
+    }
+
+    public boolean addFriend(User user1, User user2) {
+        if (user1.addFriend(user2) && user2.addFriend(user1)) {
+            saveFriendsToFile();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean usernameExists(String username) {
+        for (User user : allUsers) {
+            if (user.getName().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public User findUserByName(String name) {
+        for (User user : allUsers) {
+            if (user.getName().equals(name)) {
+                return user;
+            }
+        }
+        return null; // User not found
+    }
+
+    public ArrayList<User> getAllUsers() {
+        return new ArrayList<>(allUsers);
+    }
+
+    private void loadUsersFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(",");
+                if (tokens.length == 6) {
+                    String name = tokens[0];
+                    String password = tokens[1];
+                    String email = tokens[2];
+                    String phoneNumber = tokens[3];
+                    String description = tokens[4];
+                    String university = tokens[5];
+
+                    User user = new User(name, password, email, phoneNumber, description, university);
+                    allUsers.add(user);
                 }
             }
-            reader.close();
-            return true;
         } catch (IOException e) {
-            return false;
+            e.printStackTrace();
+        } catch (UsernameTakenException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public synchronized boolean writeUser() {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(databaseOutput));
-
-            for (int i = 0; i < users.size(); i++) {
-                writer.write(users.get(i).toString());
+    private void saveUsersToFile() {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE))) {
+            for (User user : allUsers) {
+                pw.println(user);
             }
-            writer.close();
-            return true;
         } catch (IOException e) {
-            return false;
+            e.printStackTrace();
         }
     }
 
-    public void startReading() {
-        Thread readerThread = new Thread(new UserReader());
-        readerThread.start(); 
-    }
+    private void loadFriendsFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(":");
+                if (tokens.length == 2) {
+                    String username = tokens[0];
+                    String[] friends = tokens[1].split(",");
 
-    public void startWriting() {
-        Thread writerThread = new Thread(new UserWriter());
-        writerThread.start(); 
-    }
+                    User user = findUserByName(username);
 
-    private class UserReader implements Runnable {
-        public void run() {
-            readUser(); 
+                    if (user != null) {
+                        for (String friend : friends) {
+                            User friendUser = findUserByName(friend);
+                            if (friendUser != null) {
+                                friendUser.addFriend(user);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private class UserWriter implements Runnable {
-        @Override
-        public void run() {
-            writeUser(); 
+    private void saveFriendsToFile() {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
+            for (User user : allUsers) {
+                String line = user.getName() + ":";
+
+                for (User friend : user.getFriends()) {
+                    line += friend.getName() + ",";
+                }
+
+                if (line.endsWith(",")) {
+                    line = line.substring(0, line.length() - 1);
+                }
+                pw.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
+
+    public void recordMessages(String sender, String receiver, String message, String timestamp) {
+        String log = String.format("%s,%s,%s,%s", sender, receiver, timestamp, message);
+        try (PrintWriter pr = new PrintWriter(new FileOutputStream(MESSAGES_FILE, true))) {
+            pr.println(log);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<String> loadConversation(String user1, String user2) {
+        ArrayList<String> messages = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(MESSAGES_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String [] tokens = line.split(",", 4);
+                if (tokens.length == 4) {
+                    String sender = tokens[0];
+                    String receiver = tokens[1];
+
+                    if ((sender.equals(user1) && receiver.equals(user2)) || (sender.equals(user2) && receiver.equals(user1))) {
+                        messages.add(line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
 }
