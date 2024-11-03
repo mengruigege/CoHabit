@@ -4,6 +4,15 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
     private ArrayList<User> friends = new ArrayList<>();
     private ArrayList<User> restricted = new ArrayList<>();
     private ArrayList<User> blocked = new ArrayList<>();
+    private User owner; 
+
+    public FriendList(User owner) {
+        this.friends = new ArrayList<>();
+        this.blocked = new ArrayList<>();
+        this.friends.add(owner);
+        this.blocked.add(owner);
+
+    }
 
     public synchronized boolean addFriend(User user) {
         if (user != null && !friends.contains(user) && !blocked.contains(user)) {
