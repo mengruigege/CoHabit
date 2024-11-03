@@ -38,7 +38,7 @@ public class User implements Profile, FriendManageable, Blockable {
     public ArrayList<User> getFriends() {
         return friends.getFriends();
     }
-    public void friendList(User user, Database database) {
+    public void setFriendList(User user, Database database) {
         this.friends = new FriendList(user, database);
     }
 
