@@ -72,13 +72,16 @@ public class User implements Profile, FriendManageable, Blockable {
     public void setUniversity(String university) { this.university = university; }
     public void setDescription(String userDesc) { this.description = userDesc; }
     public void setPreferences(String bedTime, boolean alcohol, boolean smoke,
-                               boolean guests, int tidy, int roomHours) {
-        this.bedTime = bedTime;
-        this.alcohol = alcohol;
-        this.smoke = smoke;
-        this.guests = guests;
-        this.tidy = tidy;
-        this.roomHours = roomHours;
+                               boolean guests, int tidy, int roomHours) throws InvalidInput {
+            this.bedTime = bedTime;
+            this.alcohol = alcohol;
+            this.smoke = smoke;
+            this.guests = guests;
+            this.tidy = tidy;
+            this.roomHours = roomHours;
+            if (bedTime == null || tidy <=0 || tidy > 10 || roomHours < 0) {
+                throw new InvalidInput("Invalid Input");
+            }
     }
 
     // Equals method that determines if two users have all the same preferences.
