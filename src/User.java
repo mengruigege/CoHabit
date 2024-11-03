@@ -24,10 +24,8 @@ public class User implements Profile, FriendManageable, Blockable {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.description = description == null ? "" : description;
+        this.description = userDescription == null ? "" : userDescription;
         this.university = university;
-
-        this.friends = new FriendList();
         this.blockedUsers = new ArrayList<>();
     }
 
@@ -39,6 +37,9 @@ public class User implements Profile, FriendManageable, Blockable {
     }
     public ArrayList<User> getFriends() {
         return friends.getFriends();
+    }
+    public void friendList(User user, Database database) {
+        this.friends = new FriendList(user, database);
     }
 
     public String getName() { return name; }
