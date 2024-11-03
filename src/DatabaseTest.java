@@ -29,9 +29,7 @@ public class DatabaseTest {
     public void testFindUserByName() {
         database.addUser(user1);
         database.addUser(user2);
-
         User find = database.findUserByName("Bob");
-        assertNotNull(find);
         assertEquals("Bob", find.getName());
     }
 }
