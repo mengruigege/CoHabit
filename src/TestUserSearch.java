@@ -19,7 +19,7 @@ public class TestUserSearch {
         ArrayList<User> search = userSearch.searchParameter("email","bob@gmail.com");
         assertEquals("bob@gmail.com",search.get(0).getEmail());
         ArrayList<User> search = userSearch.searchParameter("phone","1234567890");
-        assertEquals("1234567890",search.get(0).getPhoneNum());
+        assertEquals("1234567890",search.get(0).getPhoneNumber());
         ArrayList<User> search = userSearch.searchParameter("desc","person");
         assertEquals("person",search.get(0).getDescription());
         ArrayList<User> search = userSearch.searchParameter("uni","purdue");

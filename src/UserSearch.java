@@ -1,11 +1,14 @@
 import java.util.ArrayList;
 
 public class UserSearch implements Searchable {
-    
-    public ArrayList<User> searchParameter (String parameter, String value) {
+
+    private Database db = new Database();
+
+    public ArrayList<User> searchByParameter(String parameter, String value) {
         ArrayList<User> matchingUsers = new ArrayList<>();
 
-            for (User user : User.allUsers) {
+
+            for (User user : db.getAllUsers()) {
                 switch (parameter.toLowerCase()) {
                     case "name":
                         if (user.getName().equals(value)) {
@@ -36,38 +39,22 @@ public class UserSearch implements Searchable {
         return matchingUsers;
     }
 
-    public ArrayList<User> searchByParameter(String parameter, String value) {
+    public ArrayList<User> exactMatch(User mainUser) {
         ArrayList<User> results = new ArrayList<>();
-
-        synchronized (lock) {
-            for (User user : User.getAllUsers()) {
-                if (mainUser != user && mainUser.perfectMatch(user)) {
-                    results.add(user);
-                }
-            }
-        }
-        return results;
-    }
-
-    public ArrayList<User> exactMatch(Profile mainProfile) {
-        ArrayList<User> results = new ArrayList<>();
-
-        synchronized (lock) {
-            for (User user : User.getAllUsers()) {
-                if (mainProfile != user && mainProfile.perfectMatch(user)) {
-                    results.add(user);
-                }
+        for (User user : db.getAllUsers()) {
+            if (mainUser != user && mainUser.perfectMatch(user)) {
+                results.add(user);
             }
         }
         return results;
     }
     
-    public ArrayList<User> partialMatch(Profile mainProfile) {
+    public ArrayList<User> partialMatch(User mainUser) {
         ArrayList<User> results = new ArrayList<>();
         for (int i = 5; i > 0 ; i--) {
-            for (User user : User.getAllUsers()) {
-                if (!(mainProfile.getName().equals(user.getName()))) {
-                    if (mainProfile.partial(user) == i) {
+            for (User user : db.getAllUsers()) {
+                if (!(mainUser.getName().equals(user.getName()))) {
+                    if (mainUser.partialMatch(user) == i) {
                         results.add(user);
                     }
                 }
