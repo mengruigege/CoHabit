@@ -38,7 +38,7 @@ public class User implements Profile, FriendManageable, Blockable {
     public ArrayList<User> getBlockedUsers() {
         return blockedUsers.getBlocked();
     }
-    public void setFriendUsers(ArrayList<User> friends) {
+    public void setFriendList(ArrayList<User> friends) {
         friendUsers.setFriendList(friends);
     }
     public void setBlockedUsers(ArrayList<User> blocked) {
@@ -53,15 +53,6 @@ public class User implements Profile, FriendManageable, Blockable {
     }
     public boolean unblockUser(User user) {
         return friendUsers.unblockUser(user);
-    }
-    public ArrayList<User> getFriendList(User user) {
-        return friendUsers.getFriends();
-    }
-    public ArrayList<User> getBlockedUsers(User user) {
-        return blockedUsers.getBlocked();
-    }
-    public void setFriendList(ArrayList<User> friends) {
-        this.friendUsers.setFriendList(friends);
     }
 
     public String getName() { return name; }
