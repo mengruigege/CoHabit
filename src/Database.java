@@ -130,7 +130,7 @@ public class Database {
             for (User user : allUsers) {
                 String line = user.getName() + ":";
 
-                for (User friend : user.getFriends()) {
+                for (User friend : user.getFriendList()) {
                     line += friend.getName() + ",";
                 }
 
@@ -178,7 +178,7 @@ public class Database {
             for (User user : allUsers) {
                 String line = user.getName() + ":";
 
-                for (User friend : user.getFriends()) {
+                for (User friend : user.getFriendList()) {
                     line += friend.getName() + ",";
                 }
 

@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class User implements Profile, FriendManageable, Blockable {
@@ -27,12 +28,21 @@ public class User implements Profile, FriendManageable, Blockable {
         this.description = description == null ? "" : description;
         this.university = university;
 
-        this.friendUsers = new FriendList();
-        this.blockedUsers = new FriendList();
+        this.friendUsers = new FriendList(null, null);
+        this.blockedUsers = new FriendList(null, null);
     }
 
-    public ArrayList<User> getFriendUsers() {
+    public ArrayList<User> getFriendList() {
         return friendUsers.getFriends();
+    }
+    public ArrayList<User> getBlockedUsers() {
+        return blockedUsers.getBlocked();
+    }
+    public void setFriendUsers(ArrayList<User> friends) {
+        friendUsers.setFriendList(friends);
+    }
+    public void setBlockedUsers(ArrayList<User> blocked) {
+        blockedUsers.setBlockedUsers(blocked);
     }
     public boolean removeFriend(User user) {return friendUsers.removeFriend(user);}
     public boolean addFriend(User user) {
