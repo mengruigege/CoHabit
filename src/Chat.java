@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Chat implements Sendable {
     private User sender;
     private User receiver;
-
     private ArrayList<String> messages;
 
     //Constructor to initialize all variables with their respective objects

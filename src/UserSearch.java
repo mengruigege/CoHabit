@@ -8,7 +8,6 @@ public class UserSearch implements Searchable {
         ArrayList<User> matchingUsers = new ArrayList<>();
 
         synchronized (lock) {
-
             for (User user : User.allUsers) {
                 switch (parameter.toLowerCase()) {
                     case "name":
@@ -22,7 +21,7 @@ public class UserSearch implements Searchable {
                         }
                         break;
                     case "phone":
-                        if (user.getPhoneNum().equals(value)) {
+                        if (user.getPhoneNumber().equals(value)) {
                             matchingUsers.add(user);
                         }
                         break;
@@ -42,42 +41,42 @@ public class UserSearch implements Searchable {
     }
 
     public ArrayList<User> searchByParameter(String parameter, String value) {
-        ArrayList<User> matchingUsers = new ArrayList<>();
+        ArrayList<User> results = new ArrayList<>();
 
         synchronized (lock) {
             for (User user : User.getAllUsers()) {
                 if (mainUser != user && mainUser.perfectMatch(user)) {
-                    matchingUsers.add(user);
+                    results.add(user);
                 }
             }
         }
-        return matchingUsers;
+        return results;
     }
 
     public ArrayList<User> exactMatch(Profile mainProfile) {
-        ArrayList<User> matchingUsers = new ArrayList<>();
+        ArrayList<User> results = new ArrayList<>();
 
         synchronized (lock) {
             for (User user : User.getAllUsers()) {
                 if (mainProfile != user && mainProfile.perfectMatch(user)) {
-                    matchingUsers.add(user);
+                    results.add(user);
                 }
             }
         }
-        return matchingUsers;
+        return results;
     }
     
-    public ArrayList<User> partialMatch (Profile mainProfile) {
-        ArrayList<User> matchingUsers = new ArrayList<>();
+    public ArrayList<User> partialMatch(Profile mainProfile) {
+        ArrayList<User> results = new ArrayList<>();
         for (int i = 5; i > 0 ; i--) {
             for (User user : User.getAllUsers()) {
                 if (!(mainProfile.getName().equals(user.getName()))) {
                     if (mainProfile.partial(user) == i) {
-                        matchingUsers.add(user);
+                        results.add(user);
                     }
                 }
             }
         }
-       return matchingUsers;
+       return results;
     }
 }
