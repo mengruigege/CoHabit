@@ -147,50 +147,54 @@ public class TestUser {
     }
 
     @Test
-    public void testSetPreference1() {
+    public void testSetPreference1() throws InvalidInput {
         user1.setPreferences("11 PM", false, false, true, 5, 5);
         assertEquals("11 PM, false, false, true, 5, 5", user1.getPreferences());
     }
 
     @Test
-    public void testSetPreference2() {
+    public void testSetPreference2() throws InvalidInput {
         user2.setPreferences("12 AM", false, false, true, 3, 5);
         assertEquals("12 AM, false, false, true, 3, 5", user2.getPreferences());
     }
 
     @Test
-    public void testSetPreference3() {
+    public void testSetPreference3() throws InvalidInput {
         user3.setPreferences("10 PM", true, true, false, 4, 0);
         assertEquals("10 PM, true, true, false, 4, 0", user3.getPreferences());
     }
 
     @Test
-    public void testSetPreference4() {
+    public void testSetPreference4() throws InvalidInput {
         user4.setPreferences("11 PM", true, false, true, 2, 3);
         assertEquals("11 PM, true, false, true, 2, 3", user4.getPreferences());
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws InvalidInput {
+        user1.setPreferences("11 PM", false, false, true, 5, 5);
         String expected = "Bob,password123,bob@gmail.com,1234567890,person,purdue,11 PM,false,false,true,5,5";
         assertEquals(expected, user1.toString());
     }
 
     @Test
-    public void testToString2() {
-        String expected2 = "Joe,password234,joe@gmail.com,2234567890,person2,purdue2,12 AM, ,false,true, ,5";
+    public void testToString2() throws InvalidInput {
+        user2.setPreferences("12 AM", false, false, true, 3, 5);
+        String expected2 = "Joe,password234,joe@gmail.com,2234567890,person2,purdue2,12 AM,false,false,true,3,5";
         assertEquals(expected2, user2.toString());
     }
 
     @Test
-    public void testToString3() {
-        String expected3 = ",password345, jim@gmail.com, 3334567890, person3, purdue3 ,10 PM,true, ,false,4,";
+    public void testToString3() throws InvalidInput {
+        user3.setPreferences("10 PM", true, true, false, 4, 0);
+        String expected3 = "null,password345,jim@gmail.com,3334567890,person3,purdue3,10 PM,true,true,false,4,0";
         assertEquals(expected3, user3.toString());
     }
 
     @Test
-    public void testToString4() {
-        String expected4 = "James, , ,4567890123,person4,purdue4,11 PM,true,false, ,2, ";
+    public void testToString4() throws InvalidInput {
+        user4.setPreferences("11 PM", true, false, true, 2, 3);
+        String expected4 = "James,null,null,4567890123,person4,purdue4,11 PM,true,false,true,2,3";
         assertEquals(expected4, user4.toString());
     }
 }

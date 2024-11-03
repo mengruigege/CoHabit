@@ -26,6 +26,7 @@ public class User implements Profile, FriendManageable, Blockable {
         this.phoneNumber = phoneNumber;
         this.description = userDescription == null ? "" : userDescription;
         this.university = university;
+
     }
 
     public ArrayList<User> getFriendList() {
