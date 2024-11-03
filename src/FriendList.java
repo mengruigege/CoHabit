@@ -15,8 +15,11 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
     }
 
     public synchronized boolean addFriend(User user) {
-        if (user != null && !friends.contains(user) && !blocked.contains(user)) {
+        if (user != null && !friends.contains(user)) {
             friends.add(user);
+            if (blocked.contains(user)) {
+                unblockUser(user); 
+            }
             return true;
         }
         return false;
@@ -26,17 +29,14 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         return friends.remove(user);
     }
 
-    
 
-    public synchronized boolean allowUser(User user) {
-        return restricted.remove(user);
-    }
 
     public synchronized boolean blockUser(User user) {
         if (user != null && !blocked.contains(user)) {
             blocked.add(user);
-            friends.remove(user);
-            restricted.remove(user);
+            if (friends.contains(user)) {
+                removeFriend(user);
+            }
             return true;
         }
         return false;
