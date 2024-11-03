@@ -1,17 +1,6 @@
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
+import static org.junit.Assert.assertEquals;
 
-import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-
-public class testUser {
+public class TestUser {
         private User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");;
         private User user2 = new User("Joe", "password234", "joe@gmail.com", "2234567890", "person2", "purdue2");
         private User user3 = new User(null, "password345", "jim@gmail.com", "3334567890", "person3", "purdue3");
