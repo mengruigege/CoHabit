@@ -96,4 +96,43 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         Thread thread = new Thread(task); 
         thread.start(); 
     }
+
+// Inner class to handle friend-related tasks concurrently
+    private class UserTasks implements Runnable {
+        private final User user; 
+        private final String action; 
+
+        public UserTasks(User user, String action) {
+            this.user = user;
+            this.action = action;
+        }
+
+        public void run() {
+            boolean result = false; 
+            switch (action.toUpperCase()) { 
+                case "REMOVE_FRIEND":
+                    result = friends.removeFriend(user); 
+                    break;
+                case "BLOCK_USER":
+                    result = friends.blockUser(user); 
+                    break;
+                case "RESTRICT_USER":
+                    result = friends.restrictUser(user); 
+                    break;
+                case "ALLOW_USER":
+                    result = friends.allowUser(user); 
+                    break;
+                case "ADD_FRIEND":
+                    result = friends.addFriend(user); 
+                    break;
+            }
+            
+            if (result) {
+                System.out.println(user.getName() + " successfully " + action.toLowerCase().replace("_", " ") + ".");
+            } else {
+                System.out.println("Failed to " + action.toLowerCase().replace("_", " ") + " " + user.getName() + ".");
+            }
+        }
+    }
+
 }
