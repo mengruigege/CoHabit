@@ -8,11 +8,11 @@ public class TestUser {
             assertEquals("Bob", user1.getName());
             assertEquals("password123", user1.getPassword());
             assertEquals("bob@gmail.com", user1.getEmail());
-            assertEquals("1234567890", user1.getPhoneNum());
+            assertEquals("1234567890", user1.getPhoneNumber());
             assertEquals("person", user1.getDescription());
         }
 
-        public void testGetandSet() {
+        public void testGetAndSet() {
             user1.setName("newname");
             user1.setPassword("newpassword");
             user1.setEmail("newemail@gmail.com");
@@ -23,7 +23,7 @@ public class TestUser {
             assertEquals("newname", user1.getName());
             assertEquals("newpassword", user1.getPassword());
             assertEquals("newemail@gmail.com", user1.getEmail());
-            assertEquals("1111111111", user1.getPhoneNum());
+            assertEquals("1111111111", user1.getPhoneNumber());
             assertEquals("Unewdescription", user1.getDescription());
         }
 

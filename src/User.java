@@ -2,11 +2,11 @@ import java.util.ArrayList;
 
 public class User implements Profile, FriendManageable, Blockable {
     private String name;
-    private String pwd;
+    private String password;
     private String email;
-    private String phoneNum;
-    private String userDescription;
-    private String uni;
+    private String phoneNumber;
+    private String description;
+    private String university;
     private String bedTime;
     private boolean alcohol;
     private boolean smoke;
@@ -15,37 +15,42 @@ public class User implements Profile, FriendManageable, Blockable {
     private int roomHours;
     
     public static final ArrayList<User> allUsers = new ArrayList<>();
-    private FriendList friendList;
+    private static Object lock = new Object();
+    private FriendList friends = new FriendList();
+    private ArrayList<User> blockedUsers = new ArrayList<>();
 
-
-//constructor for user
-    public User(String name, String pwd, String email, String phoneNum, String userDesc, String uni) {
-
-        synchronized (allUsers) {  
+    public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
+        synchronized (lock) {  // is this necessary?
+            boolean userExists = false;
             for (User user : allUsers) {
                 if (user.getName().equals(name)) {
-                    throw new BadDataException("Username already exists: " + name); 
+                    userExists = true;
+                    throw new UsernameTakenException("Username already taken");
                 }
-                else {
-                    this.name = name;
-                    this.pwd = pwd;
-                    this.email = email;
-                    this.phoneNum = phoneNum;
-                    if (this.userDescription == null) {
-                        this.userDescription = " ";
-                    } else {
-                        this.userDescription = userDesc;
-                    }
-                    this.uni = uni;
-                    allUsers.add(this);
+            }
+            // correct logic for looping through all of them
+            if (!userExists) {
+                this.name = name;
+                this.password = password;
+                this.email = email;
+                this.phoneNumber = phoneNumber;
+                if (this.description == null) {
+                    this.description = " ";
+                } else {
+                    this.description = userDescription;
                 }
-                    
+                this.university = university;
+                allUsers.add(this);
             }
         }
-        
     }
 
-//getters and setters
+    public boolean removeFriend(User user) {
+        synchronized (lock) {
+            return friends.remove(user);
+        }
+    }
+
     public String getName() {
         return name;
     }
@@ -55,11 +60,11 @@ public class User implements Profile, FriendManageable, Blockable {
     }
 
     public String getPassword() {
-        return pwd;
+        return password;
     }
 
     public void setPassword(String pwd) {
-        this.pwd = pwd;
+        this.password = pwd;
     }
 
     public String getEmail() {
@@ -70,28 +75,28 @@ public class User implements Profile, FriendManageable, Blockable {
         this.email = email;
     }
 
-    public String getPhoneNum() {
-        return phoneNum;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public String getUniversity() {
-        return uni;
+        return university;
     }
 
     public void setPhoneNumber(String phoneNum) {
-        this.phoneNum = phoneNum;
+        this.phoneNumber = phoneNum;
     }
 
-    public void setUserDescription(String userDesc) {
-        this.userDescription = userDesc;
+    public void setDescription(String userDesc) {
+        this.description = userDesc;
     }
 
     public String getDescription() {
-        return userDescription;
+        return description;
     }
 
-    public void setUniversity(String uni) {
-        this.uni = uni;
+    public void setUniversity(String university) {
+        this.university = university;
     }
 
     public String getPreferences() {
@@ -118,7 +123,7 @@ public class User implements Profile, FriendManageable, Blockable {
                 this.roomHours == user.roomHours;
     }
 
-    public int partial(User user) {
+    public int partialMatch(User user) {
         int count = 0;
         if (this.bedTime.equals(user.bedTime)) {
             count++;
@@ -144,7 +149,8 @@ public class User implements Profile, FriendManageable, Blockable {
 
     public synchronized boolean UserExists(User user) {
         if (allUsers.contains(user)) {
-            return true; //is this required? can we return the result of the contains() function directly? return allUsers.contains(user);
+            return true; //is this required? can we return the result of the
+            // contains() function directly? return allUsers.contains(user);
         }
         return false;
     }
@@ -160,8 +166,9 @@ public class User implements Profile, FriendManageable, Blockable {
         return new ArrayList<>(allUsers);
     }
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name, this.pwd, this.email, this.phoneNum, this.userDescription, this.uni, this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name,
+                this.password, this.email, this.phoneNumber, this.description,
+                this.university, this.bedTime, this.alcohol, this.smoke, this.guests,
+                this.tidy, this.roomHours);
     }
-
-
 }

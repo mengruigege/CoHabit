@@ -22,7 +22,7 @@ public class UserSearch implements Searchable {
                         }
                         break;
                     case "phone":
-                        if (user.getPhoneNum().equals(value)) {
+                        if (user.getPhoneNumber().equals(value)) {
                             matchingUsers.add(user);
                         }
                         break;
