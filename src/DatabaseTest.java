@@ -1,8 +1,15 @@
 import java.util.ArrayList;
+
+import static org.junit.Assert.*;
+
 public class DatabaseTest {
     private Database database;
     User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");;
     User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
+
+    public DatabaseTest() throws UsernameTakenException {
+    }
+
     public void testAddUser() {
         boolean result = database.addUser(user1);
         assertTrue(result);

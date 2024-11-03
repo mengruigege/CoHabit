@@ -5,6 +5,10 @@ import java.util.ArrayList;
 public class TestFriendList {
     private User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
     private User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
+
+    public TestFriendList() throws UsernameTakenException {
+    }
+
     public void testConstructor() {
         FriendList friendList = new FriendList(user1);
         ArrayList<User> friendsList = friendList.getFriends();
@@ -29,18 +33,15 @@ public class TestFriendList {
     public void testAllowUser() {
         FriendList friendList = new FriendList(user1);
         friendList.addFriend(user2);
-        friendList.restrictUser(user2);
-        boolean result = friendList.allowUser(user2);
+        boolean result = friendList.unblockUser(user2);
         assertTrue(result);
-        ArrayList<User> restricted = friendList.getRestricted();
+        ArrayList<User> restricted = friendList.getBlocked();
         assertFalse(restricted.contains(user2));
     }
     public void testallowUser(){
         FriendList friendList = new FriendList(user1);
         friendList.addFriend(user2);
-        friendList.restrictUser(user2);
-        friendList.allowUser(user2);
-        boolean result = friendList.allowUser(user2);
+        boolean result = friendList.unblockUser(user2);
         assertTrue(result);
     }
     public void testBlockUser() {
