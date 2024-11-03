@@ -10,6 +10,7 @@ public class TestUser {
 
     public TestUser() throws UsernameTakenException {}
 
+    @Test
     public void testConstructor1() {
         assertEquals("Bob", user1.getName());
         assertEquals("password123", user1.getPassword());
@@ -19,6 +20,7 @@ public class TestUser {
         assertEquals("purdue", user1.getUniversity());
     }
 
+    @Test
     public void testConstructor2() {
         assertEquals("Joe", user2.getName());
         assertEquals("password234", user2.getPassword());
@@ -28,6 +30,7 @@ public class TestUser {
         assertEquals("purdue2", user2.getUniversity());
     }
 
+    @Test
     public void testConstructor3() {
         assertEquals("", user3.getName());
         assertEquals("password345", user3.getPassword());
@@ -37,6 +40,7 @@ public class TestUser {
         assertEquals("purdue3", user3.getUniversity());
     }
 
+    @Test
     public void testConstructor4() {
         assertEquals("James", user4.getName());
         assertEquals("", user4.getPassword());
@@ -142,41 +146,49 @@ public class TestUser {
         assertEquals("", user4.getPhoneNumber());  // Assuming null phone number defaults to empty string
     }
 
+    @Test
     public void testSetPreference1() {
         user1.setPreferences("11 PM", false, false, true, 5, 5);
         assertEquals("11 PM, true, false, true, 3, 5", user1.getPreferences());
     }
 
+    @Test
     public void testSetPreference2() {
         user2.setPreferences("12 AM", null, false, true, null, 5);
         assertEquals("12 AM, , false, true, , 5", user2.getPreferences());
     }
 
+    @Test
     public void testSetPreference3() {
         user3.setPreferences("10 PM", true, null, false, 4, null);
         assertEquals("10 PM, true, , false, 4, ,", user3.getPreferences());
     }
 
+    @Test
     public void testSetPreference4() {
         user4.setPreferences("11 PM", true, false, null, 2, null);
         assertEquals("11 PM, true, false, , 2, ,", user4.getPreferences());
     }
 
+    @Test
     public void testToString() {
         String expected = "Bob,password123,bob@gmail.com,1234567890,person,purdue,11 PM,false,false,true,5,5";
         assertEquals(expected, user1.toString());
     }
 
+    @Test
     public void testToString2() {
         String expected2 = "Joe,password234,joe@gmail.com,2234567890,person2,purdue2,12 AM, ,false,true, ,5";
         assertEquals(expected2, user2.toString());
     }
 
+    @Test
     public void testToString3() {
         String expected3 = ",password345, jim@gmail.com, 3334567890, person3, purdue3 ,10 PM,true, ,false,4,";
         assertEquals(expected3, user3.toString());
     }
 
+    @Test
     public void testToString4() {
         String expected4 = "James, , ,4567890123,person4,purdue4,11 PM,true,false, ,2, ";
         assertEquals(expected4, user4.toString());
