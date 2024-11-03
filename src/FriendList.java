@@ -76,9 +76,6 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
                 case "UNBLOCK_USER":
                     result = unblockUser(user);
                     break;
-                case "RESTRICT_USER":
-                    result = restrictUser(user);
-                    break;
                 case "ALLOW_USER":
                     result = allowUser(user);
                     break;
