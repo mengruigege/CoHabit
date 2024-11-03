@@ -74,9 +74,6 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
                 case "UNBLOCK_USER":
                     result = unblockUser(user);
                     break;
-                case "ALLOW_USER":
-                    result = allowUser(user);
-                    break;
                 default:
                     System.out.println("Unknown action: " + action);
                     return;

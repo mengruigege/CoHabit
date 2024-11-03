@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.io.*;
 
@@ -95,9 +96,10 @@ public class Database {
         }
     }
 
-    public void loadFriendsFromFile() {
+    public ArrayList<User> loadFriendsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
             String line;
+            ArrayList<User> friendList = new ArrayList<>();
             while ((line = br.readLine()) != null) {
                 String[] tokens = line.split(":");
                 if (tokens.length == 2) {
@@ -110,14 +112,16 @@ public class Database {
                         for (String friend : friends) {
                             User friendUser = findUserByName(friend);
                             if (friendUser != null) {
-                                friendUser.addFriend(user);
+                                friendList.add(friendUser);
                             }
                         }
                     }
                 }
             }
+            return friendList;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -140,29 +144,32 @@ public class Database {
         }
     }
 
-    public void loadBlockedFromFile() {
+    public ArrayList<User> loadBlockedFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
             String line;
+            ArrayList<User> blockedList = new ArrayList<>();
             while ((line = br.readLine()) != null) {
                 String[] tokens = line.split(":");
                 if (tokens.length == 2) {
                     String username = tokens[0];
-                    String[] friends = tokens[1].split(",");
+                    String[] blocked = tokens[1].split(",");
 
                     User user = findUserByName(username);
 
                     if (user != null) {
-                        for (String friend : friends) {
-                            User friendUser = findUserByName(friend);
-                            if (friendUser != null) {
-                                friendUser.addFriend(user);
+                        for (String block : blocked) {
+                            User blockedUser = findUserByName(block);
+                            if (blockedUser != null) {
+                                blockedList.add(blockedUser);
                             }
                         }
                     }
                 }
             }
+            return blockedList;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
