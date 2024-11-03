@@ -1,17 +1,17 @@
 import java.util.ArrayList;
 
 public class FriendList implements FriendManageable, Blockable, Listable<User> {
-    private final ArrayList<User> friends = new ArrayList<>();
-    private final ArrayList<User> blocked = new ArrayList<>();
-    private User owner; 
+    private ArrayList<User> friends = new ArrayList<>();
+    private ArrayList<User> blocked = new ArrayList<>();
+    private User user;
+    private Database database;
 
-    public FriendList(User owner) {
-        this.owner = owner;
-        this.friends = new ArrayList<>();
+    public FriendList(User user, Database database) {
+        this.user = user;
+        this.database = database;
+
+        this.friends = new ArrayList<>(database.loadConversation());
         this.blocked = new ArrayList<>();
-        this.friends.add(owner);
-        this.blocked.add(owner);
-
     }
 
     public synchronized boolean addFriend(User user) {

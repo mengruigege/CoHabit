@@ -60,7 +60,7 @@ public class Database {
         return new ArrayList<>(allUsers);
     }
 
-    private void loadUsersFromFile() {
+    public void loadUsersFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -84,7 +84,7 @@ public class Database {
         }
     }
 
-    private void saveUsersToFile() {
+    public void saveUsersToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE))) {
             for (User user : allUsers) {
                 pw.println(user);
@@ -94,7 +94,7 @@ public class Database {
         }
     }
 
-    private void loadFriendsFromFile() {
+    public void loadFriendsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -120,7 +120,7 @@ public class Database {
         }
     }
 
-    private void saveFriendsToFile() {
+    public void saveFriendsToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
             for (User user : allUsers) {
                 String line = user.getName() + ":";
