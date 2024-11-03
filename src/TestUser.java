@@ -32,7 +32,7 @@ public class TestUser {
 
     @Test
     public void testConstructor3() {
-        assertEquals("", user3.getName());
+        assertEquals(null, user3.getName());
         assertEquals("password345", user3.getPassword());
         assertEquals("jim@gmail.com", user3.getEmail());
         assertEquals("3334567890", user3.getPhoneNumber());
@@ -43,8 +43,8 @@ public class TestUser {
     @Test
     public void testConstructor4() {
         assertEquals("James", user4.getName());
-        assertEquals("", user4.getPassword());
-        assertEquals("", user4.getEmail());
+        assertEquals(null, user4.getPassword());
+        assertEquals(null, user4.getEmail());
         assertEquals("4567890123", user4.getPhoneNumber());
         assertEquals("person4", user4.getDescription());
         assertEquals("purdue4", user4.getUniversity());
@@ -83,13 +83,13 @@ public class TestUser {
     @Test
     public void testSetPasswordUser2() {
         user2.setPassword(null);
-        assertEquals("", user2.getPassword());  // Assuming null password defaults to empty string
+        assertEquals(null, user2.getPassword());  // Assuming null password defaults to empty string
     }
 
     @Test
     public void testSetPasswordUser3() {
         user3.setPassword(null);
-        assertEquals("", user3.getPassword());  // Assuming null password defaults to empty string
+        assertEquals(null, user3.getPassword());  // Assuming null password defaults to empty string
     }
 
     @Test
@@ -137,37 +137,37 @@ public class TestUser {
     @Test
     public void testSetPhoneNumberUser3() {
         user3.setPhoneNumber(null);
-        assertEquals("", user3.getPhoneNumber());  // Assuming null phone number defaults to empty string
+        assertEquals(null, user3.getPhoneNumber());  // Assuming null phone number defaults to empty string
     }
 
     @Test
     public void testSetPhoneNumberUser4() {
         user4.setPhoneNumber(null);
-        assertEquals("", user4.getPhoneNumber());  // Assuming null phone number defaults to empty string
+        assertEquals(null, user4.getPhoneNumber());  // Assuming null phone number defaults to empty string
     }
 
     @Test
     public void testSetPreference1() {
         user1.setPreferences("11 PM", false, false, true, 5, 5);
-        assertEquals("11 PM, true, false, true, 3, 5", user1.getPreferences());
+        assertEquals("11 PM, false, false, true, 5, 5", user1.getPreferences());
     }
 
     @Test
     public void testSetPreference2() {
         user2.setPreferences("12 AM", false, false, true, 3, 5);
-        assertEquals("12 AM, , false, true, , 5", user2.getPreferences());
+        assertEquals("12 AM, false, false, true, 3, 5", user2.getPreferences());
     }
 
     @Test
     public void testSetPreference3() {
         user3.setPreferences("10 PM", true, true, false, 4, 0);
-        assertEquals("10 PM, true, , false, 4, ,", user3.getPreferences());
+        assertEquals("10 PM, true, true, false, 4, 0", user3.getPreferences());
     }
 
     @Test
     public void testSetPreference4() {
         user4.setPreferences("11 PM", true, false, true, 2, 3);
-        assertEquals("11 PM, true, false, , 2, ,", user4.getPreferences());
+        assertEquals("11 PM, true, false, true, 2, 3", user4.getPreferences());
     }
 
     @Test

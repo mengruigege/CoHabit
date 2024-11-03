@@ -24,11 +24,8 @@ public class User implements Profile, FriendManageable, Blockable {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.description = description == null ? "" : description;
+        this.description = userDescription == null ? "" : userDescription;
         this.university = university;
-
-        this.friendUsers = new FriendList(null, null);
-        this.blockedUsers = new FriendList(null, null);
     }
 
     public ArrayList<User> getFriendList() {
@@ -61,7 +58,7 @@ public class User implements Profile, FriendManageable, Blockable {
     public String getUniversity() { return university; }
     public String getDescription() { return description; }
     public String getPreferences() {
-        return String.format("Bedtime: %s, Alcohol: %b, Smoke: %b, Guests: %b, Tidiness: %d, Room Hours: %d",
+        return String.format("%s, %b, %b, %b, %d, %d",
                 this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
 
@@ -121,7 +118,7 @@ public class User implements Profile, FriendManageable, Blockable {
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name,
                 this.password, this.email, this.phoneNumber, this.description,
-                this.university, this.bedTime, this.alcohol, this.smoke, this.guests,
-                this.tidy, this.roomHours);
+                this.university, bedTime, alcohol, smoke, guests,
+                tidy, roomHours);
     }
 }
