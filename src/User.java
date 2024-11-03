@@ -41,6 +41,7 @@ public class User implements Profile, FriendManageable, Blockable {
                 }
                 this.university = university;
                 allUsers.add(this);
+                this.friendList = new FriendList(this); 
             }
         }
     }
