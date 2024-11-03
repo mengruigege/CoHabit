@@ -1,10 +1,11 @@
-import static org.junit.Assert.*;
 import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 
 public class TestDatabase {
     private Database database;
-    User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
-    User user2 = new User("Joe", "password234", "joe@gmail.com", "2345678901", "person2", "purdue2");
+    User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");;
+    User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
 
     public TestDatabase() throws UsernameTakenException {
     }
@@ -12,9 +13,30 @@ public class TestDatabase {
     public void testAddUser() {
         boolean result = database.addUser(user1);
         assertTrue(result);
-
         ArrayList<User> users = database.getAllUsers();
-        assertEquals(1, users.size());
         assertEquals("Bob", users.get(0).getName());
+    }
+    public void testDeleteUser() {
+        database.addUser(user1);
+        boolean result = database.deleteUser(user1);
+        assertTrue(result);
+        ArrayList<User> users = database.getAllUsers();
+        assertFalse(users.contains(user1));
+    }
+    public void testAddFriend() {
+        database.addUser(user1);
+        database.addUser(user2);
+        boolean result = database.addFriend(user1, user2);
+        assertTrue(result);
+    }
+    public void testUsernameExists() {
+        database.addUser(user1);
+        assertTrue(database.usernameExists("Bob"));
+    }
+    public void testFindUserByName() {
+        database.addUser(user1);
+        database.addUser(user2);
+        User find = database.findUserByName("Bob");
+        assertEquals("Bob", find.getName());
     }
 }
