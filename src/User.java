@@ -1,110 +1,63 @@
 import java.util.ArrayList;
 
 public class User implements Profile, FriendManageable, Blockable {
+
     private String name;
     private String password;
     private String email;
     private String phoneNumber;
     private String description;
     private String university;
+
     private String bedTime;
     private boolean alcohol;
     private boolean smoke;
     private boolean guests;
     private int tidy;
     private int roomHours;
-    
-    public static final ArrayList<User> allUsers = new ArrayList<>();
-    private static Object lock = new Object();
-    private FriendList friends = new FriendList();
+
+    private FriendList friends;
     private ArrayList<User> blockedUsers = new ArrayList<>();
 
     public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
-        synchronized (lock) {  // is this necessary?
-            boolean userExists = false;
-            for (User user : allUsers) {
-                if (user.getName().equals(name)) {
-                    userExists = true;
-                    throw new UsernameTakenException("Username already taken");
-                }
-            }
-            // correct logic for looping through all of them
-            if (!userExists) {
-                this.name = name;
-                this.password = password;
-                this.email = email;
-                this.phoneNumber = phoneNumber;
-                if (this.description == null) {
-                    this.description = " ";
-                } else {
-                    this.description = userDescription;
-                }
-                this.university = university;
-                allUsers.add(this);
-                this.friendList = new FriendList(this); 
-            }
-        }
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.description = description == null ? "" : description;
+        this.university = university;
+
+        this.friends = new FriendList();
+        this.blockedUsers = new ArrayList<>();
     }
 
     public boolean removeFriend(User user) {
-        synchronized (lock) {
-            return friends.remove(user);
-        }
+        return friends.removeFriend(user);
+    }
+    public boolean addFriend(User user) {
+        return friends.addFriend(user);
+    }
+    public ArrayList<User> getFriends(User user) {
+        return friends.getFriends();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String pwd) {
-        this.password = pwd;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getUniversity() {
-        return university;
-    }
-
-    public void setPhoneNumber(String phoneNum) {
-        this.phoneNumber = phoneNum;
-    }
-
-    public void setDescription(String userDesc) {
-        this.description = userDesc;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setUniversity(String university) {
-        this.university = university;
-    }
-
+    public String getName() { return name; }
+    public String getPassword() { return password; }
+    public String getEmail() { return email; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public String getUniversity() { return university; }
+    public String getDescription() { return description; }
     public String getPreferences() {
         return String.format("Bedtime: %s, Alcohol: %b, Smoke: %b, Guests: %b, Tidiness: %d, Room Hours: %d",
                 this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
-    
+
+    public void setName(String name) { this.name = name; }
+    public void setPassword(String pwd) { this.password = pwd; }
+    public void setEmail(String email) { this.email = email; }
+    public void setPhoneNumber(String phoneNum) { this.phoneNumber = phoneNum; }
+    public void setUniversity(String university) { this.university = university; }
+    public void setDescription(String userDesc) { this.description = userDesc; }
     public void setPreferences(String bedTime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
         this.bedTime = bedTime;
         this.alcohol = alcohol;
@@ -113,8 +66,8 @@ public class User implements Profile, FriendManageable, Blockable {
         this.tidy = tidy;
         this.roomHours = roomHours;
     }
-    
-    // Equals method that determines if two users have all the same preferences. 
+
+    // Equals method that determines if two users have all the same preferences.
     public boolean perfectMatch(User user) {
         return this.bedTime.equals(user.bedTime) &&
                 this.alcohol == user.alcohol &&
