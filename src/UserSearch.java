@@ -8,7 +8,6 @@ public class UserSearch implements Searchable {
         ArrayList<User> matchingUsers = new ArrayList<>();
 
         synchronized (lock) {
-
             for (User user : User.allUsers) {
                 switch (parameter.toLowerCase()) {
                     case "name":
@@ -22,7 +21,7 @@ public class UserSearch implements Searchable {
                         }
                         break;
                     case "phone":
-                        if (user.getPhoneNum().equals(value)) {
+                        if (user.getPhoneNumber().equals(value)) {
                             matchingUsers.add(user);
                         }
                         break;
@@ -40,75 +39,44 @@ public class UserSearch implements Searchable {
 
         return matchingUsers;
     }
-    
 
-    public ArrayList<User> exactMatch(User mainUser) {
-            ArrayList<User> matchingUsers = new ArrayList<>();
-            
-            synchronized (lock) { 
-                for (User user : User.getAllUsers()) {
-                    if (mainUser != user && mainUser.perfectMatch(user)) {
-                        matchingUsers.add(user);
-                    }
-                }
-            }
-            
-            return matchingUsers;
-        }
-    
-    public ArrayList<User> partialMatch (User mainUser) {
-        ArrayList<User> matchingUsers = new ArrayList<>();
-        for (int i = 5; i > 0 ; i--) {
-            for (User user : User.getAllUsers()) {
-                if (!(mainUser.getName().equals(user.getName()))) {
-                    if (mainUser.partial(user) == i) {
-                        matchingUsers.add(user);
-                    }
-                }
-            }
-        }
-       return matchingUsers;
-    }
-
-    //partialMatch - added this method, someone please cross check 
-/** public ArrayList<User> partialMatch(String parameter, String value) {
-        ArrayList<User> matchingUsers = new ArrayList<>();
+    public ArrayList<User> searchByParameter(String parameter, String value) {
+        ArrayList<User> results = new ArrayList<>();
 
         synchronized (lock) {
-            for (User pref : User.getAllUsers()) {
-                boolean isMatch = false;
-
-                switch (parameter.toLowerCase()) {
-                    case "name":
-                        isMatch = pref.getName().toLowerCase().contains(value.toLowerCase());
-                        break;
-                    case "email":
-                        isMatch = pref.getEmail().toLowerCase().contains(value.toLowerCase());
-                        break;
-                    case "phone":
-                        isMatch = pref.getPhoneNum().contains(value);
-                        break;
-                    case "university":
-                        isMatch = pref.getUni().toLowerCase().contains(value.toLowerCase());
-                        break;
-                    default:
-                        System.out.println("Invalid parameter type");
-                        break;
-                }
-
-                if (isMatch) {
-                    matchingUsers.add(pref);
+            for (User user : User.getAllUsers()) {
+                if (mainUser != user && mainUser.perfectMatch(user)) {
+                    results.add(user);
                 }
             }
         }
-
-        return matchingUsers;
+        return results;
     }
-}
-*/ 
 
+    public ArrayList<User> exactMatch(Profile mainProfile) {
+        ArrayList<User> results = new ArrayList<>();
 
-
- 
-
+        synchronized (lock) {
+            for (User user : User.getAllUsers()) {
+                if (mainProfile != user && mainProfile.perfectMatch(user)) {
+                    results.add(user);
+                }
+            }
+        }
+        return results;
+    }
+    
+    public ArrayList<User> partialMatch(Profile mainProfile) {
+        ArrayList<User> results = new ArrayList<>();
+        for (int i = 5; i > 0 ; i--) {
+            for (User user : User.getAllUsers()) {
+                if (!(mainProfile.getName().equals(user.getName()))) {
+                    if (mainProfile.partial(user) == i) {
+                        results.add(user);
+                    }
+                }
+            }
+        }
+       return results;
+    }
 }

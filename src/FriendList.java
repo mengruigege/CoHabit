@@ -1,9 +1,18 @@
 import java.util.ArrayList;
 
 public class FriendList implements FriendManageable, Blockable, Listable<User> {
-    private ArrayList<User> friends = new ArrayList<User>();
+    private ArrayList<User> friends = new ArrayList<>();
     private ArrayList<User> restricted = new ArrayList<>();
     private ArrayList<User> blocked = new ArrayList<>();
+    private User owner; 
+
+    public FriendList(User owner) {
+        this.friends = new ArrayList<>();
+        this.blocked = new ArrayList<>();
+        this.friends.add(owner);
+        this.blocked.add(owner);
+
+    }
 
     public synchronized boolean addFriend(User user) {
         if (user != null && !friends.contains(user) && !blocked.contains(user)) {
@@ -12,9 +21,11 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         }
         return false;
     }
+
     public synchronized boolean removeFriend(User user) {
-        return (friends.remove(user));
+        return friends.remove(user);
     }
+
     public synchronized boolean restrictUser(User user) {
         if (user != null && friends.contains(user) && !restricted.contains(user)) {
             restricted.add(user);
@@ -22,9 +33,11 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         }
         return false;
     }
+
     public synchronized boolean allowUser(User user) {
         return restricted.remove(user);
     }
+
     public synchronized boolean blockUser(User user) {
         if (user != null && !blocked.contains(user)) {
             blocked.add(user);
@@ -33,7 +46,6 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
             return true;
         }
         return false;
-
     }
     public synchronized boolean unblockUser(User user) {
         return blocked.remove(user);
@@ -84,6 +96,4 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         Thread thread = new Thread(task); 
         thread.start(); 
     }
-}
-
 }
