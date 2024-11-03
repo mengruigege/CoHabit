@@ -1,93 +1,63 @@
 import java.util.ArrayList;
 
 public class User implements Profile, FriendManageable, Blockable {
+
     private String name;
-    private String pwd;
+    private String password;
     private String email;
-    private String phoneNum;
-    private String userDesc;
-    private String uni;
+    private String phoneNumber;
+    private String description;
+    private String university;
+
     private String bedTime;
     private boolean alcohol;
     private boolean smoke;
     private boolean guests;
     private int tidy;
     private int roomHours;
-    
-    public static final ArrayList<User> allUsers = new ArrayList<>();
-    private FriendList friendList;
 
+    private FriendList friends;
+    private ArrayList<User> blockedUsers = new ArrayList<>();
 
-//constructor for user
-    public User(String name, String pwd, String email, String phoneNum, String userDesc, String uni) {
-
+    public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
         this.name = name;
-        this.pwd = pwd;
+        this.password = password;
         this.email = email;
-        this.phoneNum = phoneNum;
-        if (this.userDec = null) {
-            this.userDesc = " "; 
-        } else {
-            this.userDesc = userDesc;
-        }
-        this.uni = uni;
-        allUsers.add(this);
+        this.phoneNumber = phoneNumber;
+        this.description = description == null ? "" : description;
+        this.university = university;
+
+        this.friends = new FriendList();
+        this.blockedUsers = new ArrayList<>();
     }
 
-//getters and setters
-    public String getName() {
-        return name;
+    public boolean removeFriend(User user) {
+        return friends.removeFriend(user);
+    }
+    public boolean addFriend(User user) {
+        return friends.addFriend(user);
+    }
+    public ArrayList<User> getFriends(User user) {
+        return friends.getFriends();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNum() {
-        return phoneNum;
-    }
-
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
-    }
-
-    public String getUserDesc() {
-        return userDesc;
-    }
-
-    public void setUserDesc(String userDesc) {
-        this.userDesc = userDesc;
-    }
-
-    public String getDescription() {
-        return uni;
-    }
-
-    public void setUni(String uni) {
-        this.uni = uni;
-    }
-
+    public String getName() { return name; }
+    public String getPassword() { return password; }
+    public String getEmail() { return email; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public String getUniversity() { return university; }
+    public String getDescription() { return description; }
     public String getPreferences() {
         return String.format("Bedtime: %s, Alcohol: %b, Smoke: %b, Guests: %b, Tidiness: %d, Room Hours: %d",
                 this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
-    
+
+    public void setName(String name) { this.name = name; }
+    public void setPassword(String pwd) { this.password = pwd; }
+    public void setEmail(String email) { this.email = email; }
+    public void setPhoneNumber(String phoneNum) { this.phoneNumber = phoneNum; }
+    public void setUniversity(String university) { this.university = university; }
+    public void setDescription(String userDesc) { this.description = userDesc; }
     public void setPreferences(String bedTime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
         this.bedTime = bedTime;
         this.alcohol = alcohol;
@@ -96,8 +66,8 @@ public class User implements Profile, FriendManageable, Blockable {
         this.tidy = tidy;
         this.roomHours = roomHours;
     }
-    
-    // Equals method that determines if two users have all the same preferences. 
+
+    // Equals method that determines if two users have all the same preferences.
     public boolean perfectMatch(User user) {
         return this.bedTime.equals(user.bedTime) &&
                 this.alcohol == user.alcohol &&
@@ -107,7 +77,7 @@ public class User implements Profile, FriendManageable, Blockable {
                 this.roomHours == user.roomHours;
     }
 
-    public int partial(User user) {
+    public int partialMatch(User user) {
         int count = 0;
         if (this.bedTime.equals(user.bedTime)) {
             count++;
@@ -133,7 +103,8 @@ public class User implements Profile, FriendManageable, Blockable {
 
     public synchronized boolean UserExists(User user) {
         if (allUsers.contains(user)) {
-            return true; //is this required? can we return the result of the contains() function directly? return allUsers.contains(user);
+            return true; //is this required? can we return the result of the
+            // contains() function directly? return allUsers.contains(user);
         }
         return false;
     }
@@ -149,8 +120,9 @@ public class User implements Profile, FriendManageable, Blockable {
         return new ArrayList<>(allUsers);
     }
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name, this.pwd, this.email, this.phoneNum, this.userDesc, this.uni, this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
+        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name,
+                this.password, this.email, this.phoneNumber, this.description,
+                this.university, this.bedTime, this.alcohol, this.smoke, this.guests,
+                this.tidy, this.roomHours);
     }
-
-
 }
