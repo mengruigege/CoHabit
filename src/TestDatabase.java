@@ -1,3 +1,5 @@
+import org.junit.Test;
+
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -9,13 +11,14 @@ public class TestDatabase {
 
     public TestDatabase() throws UsernameTakenException {
     }
-
+    @Test
     public void testAddUser() {
         boolean result = database.addUser(user1);
         assertTrue(result);
         ArrayList<User> users = database.getAllUsers();
         assertEquals("Bob", users.get(0).getName());
     }
+    @Test
     public void testDeleteUser() {
         database.addUser(user1);
         boolean result = database.deleteUser(user1);
@@ -23,16 +26,19 @@ public class TestDatabase {
         ArrayList<User> users = database.getAllUsers();
         assertFalse(users.contains(user1));
     }
+    @Test
     public void testAddFriend() {
         database.addUser(user1);
         database.addUser(user2);
         boolean result = database.addFriend(user1, user2);
         assertTrue(result);
     }
+    @Test
     public void testUsernameExists() {
         database.addUser(user1);
         assertTrue(database.usernameExists("Bob"));
     }
+    @Test
     public void testFindUserByName() {
         database.addUser(user1);
         database.addUser(user2);

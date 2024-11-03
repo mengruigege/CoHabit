@@ -20,6 +20,7 @@ public class TestUserSearch {
         users.addUser(user1);
         users.addUser(user2);
     }
+    @Test
     public void testsearchParamter(){
         ArrayList<User> search = userSearch.searchByParameter("name","Bob");
         assertEquals("Bob",search.get(0).getName());
@@ -34,10 +35,12 @@ public class TestUserSearch {
         search = userSearch.searchByParameter("uni","purdue");
         assertEquals("purdue",search.get(0).getUniversity());
     }
+    @Test
     public void testExactMatch() {
         ArrayList<User> exact = userSearch.exactMatch(user1);
         assertEquals("Bob", exact.get(0).getName());
     }
+    @Test
     public void testPartialMatch() {
         ArrayList<User> partial = userSearch.partialMatch(user1);
         // Assuming partial matches are based on a score, and we only add if score > 0
