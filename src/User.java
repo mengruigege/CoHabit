@@ -27,12 +27,21 @@ public class User implements Profile, FriendManageable, Blockable {
         this.description = description == null ? "" : description;
         this.university = university;
 
-        this.friendUsers = new FriendList();
-        this.blockedUsers = new FriendList();
+        this.friendUsers = new FriendList(null, null);
+        this.blockedUsers = new FriendList(null, null);
     }
 
-    public ArrayList<User> getFriendUsers() {
+    public ArrayList<User> getFriendList() {
         return friendUsers.getFriends();
+    }
+    public ArrayList<User> getBlockedUsers() {
+        return blockedUsers.getBlocked();
+    }
+    public void setFriendList(ArrayList<User> friends) {
+        friendUsers.setFriendList(friends);
+    }
+    public void setBlockedUsers(ArrayList<User> blocked) {
+        blockedUsers.setBlockedUsers(blocked);
     }
     public boolean removeFriend(User user) {return friendUsers.removeFriend(user);}
     public boolean addFriend(User user) {
@@ -43,15 +52,6 @@ public class User implements Profile, FriendManageable, Blockable {
     }
     public boolean unblockUser(User user) {
         return friendUsers.unblockUser(user);
-    }
-    public ArrayList<User> getFriendList(User user) {
-        return friendUsers.getFriends();
-    }
-    public ArrayList<User> getBlockedUsers(User user) {
-        return blockedUsers.getBlocked();
-    }
-    public void setFriendList(ArrayList<User> friends) {
-        this.friendUsers.setFriendList(friends);
     }
 
     public String getName() { return name; }

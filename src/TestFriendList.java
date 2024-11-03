@@ -23,7 +23,7 @@ public class TestFriendList {
 
     }
     public void testRemoveFriend() {
-        FriendList friendList = new FriendList(user1;
+        FriendList friendList = new FriendList(user1);
         friendList.addFriend(user2);
         boolean result = friendList.removeFriend(user2);
         assertTrue(result);

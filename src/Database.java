@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.io.*;
 
 public class Database {
-    private ArrayList<User> allUsers;
+    private static ArrayList<User> allUsers;
     private static final String USERS_FILE = "users.txt";
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
@@ -130,7 +130,7 @@ public class Database {
             for (User user : allUsers) {
                 String line = user.getName() + ":";
 
-                for (User friend : user.getFriends()) {
+                for (User friend : user.getFriendList()) {
                     line += friend.getName() + ",";
                 }
 
@@ -178,7 +178,7 @@ public class Database {
             for (User user : allUsers) {
                 String line = user.getName() + ":";
 
-                for (User friend : user.getFriends()) {
+                for (User friend : user.getFriendList()) {
                     line += friend.getName() + ",";
                 }
 

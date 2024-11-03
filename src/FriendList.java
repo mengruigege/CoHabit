@@ -37,6 +37,10 @@ public class FriendList implements FriendManageable, Blockable {
         return blocked;
     }
 
+    public void setBlockedUsers(ArrayList<User> blocked) {
+        this.blocked = blocked;
+    }
+
     public synchronized boolean removeFriend(User user) {
         return friends.remove(user);
     }
