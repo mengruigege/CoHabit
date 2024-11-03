@@ -9,9 +9,10 @@ public class UserDatabase {
     public UserDatabase(String userIn, String databaseOutput) {
         this.databaseOutput = databaseOutput;
         this.userIn = userIn;
+        this.users = new ArrayList<>();
     }
 
-    public boolean readUser() {
+    public synchronized boolean readUser() {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(userIn));
             int count = 0;
@@ -33,7 +34,7 @@ public class UserDatabase {
             while ((line = reader.readLine()) != null) {
                 try {
                     index++;
-                    String[] data = line.split(",");
+                    String[] data = line.split(","); 
                     userName = data[0];
                     pwd = data[1];
                     email = data[2];
@@ -48,6 +49,7 @@ public class UserDatabase {
                     roomHoursS = data[11];
                     int tidyI = Integer.parseInt(tidyS);
                     int roomHoursI = Integer.parseInt(roomHoursS);
+                    
                     users.add(new User(userName, pwd, email, phoneNum, desc, uni));
                     if (alcohol.equals("true") && smoke.equals("true") && guests.equals("true")) {
                         users.get(index).setPreferences(bedtime, true, true, true, tidyI, roomHoursI);
@@ -62,7 +64,7 @@ public class UserDatabase {
                     } else if (alcohol.equals("false") && smoke.equals("true") && guests.equals("false")) {
                         users.get(index).setPreferences(bedtime, false, true, false, tidyI, roomHoursI);
                     }
-                } catch (Exception e) {
+                } catch (Exception e) { //should we have another catch for IndexOutOfBounds to specify
                     return false;
                 }
             }
@@ -73,7 +75,7 @@ public class UserDatabase {
         }
     }
 
-    public boolean writeUser() {
+    public synchronized boolean writeUser() {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(databaseOutput));
 
@@ -86,4 +88,28 @@ public class UserDatabase {
             return false;
         }
     }
+
+    public void startReading() {
+        Thread readerThread = new Thread(new UserReader());
+        readerThread.start(); 
+    }
+
+    public void startWriting() {
+        Thread writerThread = new Thread(new UserWriter());
+        writerThread.start(); 
+    }
+
+    private class UserReader implements Runnable {
+        public void run() {
+            readUser(); 
+        }
+    }
+
+    private class UserWriter implements Runnable {
+        @Override
+        public void run() {
+            writeUser(); 
+        }
+    }
+
 }
