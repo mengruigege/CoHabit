@@ -6,6 +6,7 @@ public class Database {
     private static final String USERS_FILE = "users.txt";
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
+    private static final String BLOCKED_FILE = "blocked.txt";
 
     public Database() {
         this.allUsers = new ArrayList<>();
@@ -139,6 +140,50 @@ public class Database {
         }
     }
 
+    public void loadBlockedFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(":");
+                if (tokens.length == 2) {
+                    String username = tokens[0];
+                    String[] friends = tokens[1].split(",");
+
+                    User user = findUserByName(username);
+
+                    if (user != null) {
+                        for (String friend : friends) {
+                            User friendUser = findUserByName(friend);
+                            if (friendUser != null) {
+                                friendUser.addFriend(user);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveBlockedToFile() {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(BLOCKED_FILE))) {
+            for (User user : allUsers) {
+                String line = user.getName() + ":";
+
+                for (User friend : user.getFriends()) {
+                    line += friend.getName() + ",";
+                }
+
+                if (line.endsWith(",")) {
+                    line = line.substring(0, line.length() - 1);
+                }
+                pw.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void recordMessages(String sender, String receiver, String message, String timestamp) {
         String log = String.format("%s,%s,%s,%s", sender, receiver, timestamp, message);

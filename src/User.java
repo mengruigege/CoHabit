@@ -37,7 +37,7 @@ public class User implements Profile, FriendManageable, Blockable {
     public boolean addFriend(User user) {
         return friends.addFriend(user);
     }
-    public ArrayList<User> getFriends(User user) {
+    public ArrayList<User> getFriends() {
         return friends.getFriends();
     }
 
@@ -101,24 +101,6 @@ public class User implements Profile, FriendManageable, Blockable {
 
     }
 
-    public synchronized boolean UserExists(User user) {
-        if (allUsers.contains(user)) {
-            return true; //is this required? can we return the result of the
-            // contains() function directly? return allUsers.contains(user);
-        }
-        return false;
-    }
-
-
-    public synchronized void deleteUser(User user) {
-        if (UserExists(user)) {
-            allUsers.remove(user);
-        }
-
-    }
-    public static synchronized ArrayList<User> getAllUsers() {
-        return new ArrayList<>(allUsers);
-    }
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name,
                 this.password, this.email, this.phoneNumber, this.description,

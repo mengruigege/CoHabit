@@ -10,8 +10,8 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         this.user = user;
         this.database = database;
 
-        this.friends = new ArrayList<>(database.loadConversation());
-        this.blocked = new ArrayList<>();
+        this.friends = new ArrayList<>(database.loadFriendsFromFile());
+        this.blocked = new ArrayList<>(database.loadBlockedFromFile());
     }
 
     public synchronized boolean addFriend(User user) {
@@ -28,8 +28,6 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
     public synchronized boolean removeFriend(User user) {
         return friends.remove(user);
     }
-
-
 
     public synchronized boolean blockUser(User user) {
         if (user != null && !blocked.contains(user)) {
