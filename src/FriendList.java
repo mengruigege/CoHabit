@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class FriendList implements FriendManageable, Blockable, Listable<User> {
+public class FriendList implements FriendManageable, Blockable {
     private ArrayList<User> friends = new ArrayList<>();
     private ArrayList<User> blocked = new ArrayList<>();
     private User user;
@@ -23,6 +23,18 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
             return true;
         }
         return false;
+    }
+
+    public ArrayList<User> getFriendList() {
+        return friends;
+    }
+
+    public void setFriendList(ArrayList<User> friends) {
+        this.friends = friends;
+    }
+
+    public ArrayList<User> getBlockedUsers() {
+        return blocked;
     }
 
     public synchronized boolean removeFriend(User user) {
