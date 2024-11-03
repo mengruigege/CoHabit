@@ -7,7 +7,7 @@ public class Database {
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
 
-    public UserDatabase() {
+    public Database() {
         this.allUsers = new ArrayList<>();
         loadUsersFromFile();
     }
