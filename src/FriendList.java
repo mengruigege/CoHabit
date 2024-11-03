@@ -1,9 +1,8 @@
 import java.util.ArrayList;
 
 public class FriendList implements FriendManageable, Blockable, Listable<User> {
-    private ArrayList<User> friends = new ArrayList<>();
-    private ArrayList<User> restricted = new ArrayList<>(); //should these be declared final?
-    private ArrayList<User> blocked = new ArrayList<>();
+    private final ArrayList<User> friends = new ArrayList<>();
+    private final ArrayList<User> blocked = new ArrayList<>();
     private User owner; 
 
     public FriendList(User owner) {
@@ -27,13 +26,7 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
         return friends.remove(user);
     }
 
-    public synchronized boolean restrictUser(User user) {
-        if (user != null && friends.contains(user) && !restricted.contains(user)) {
-            restricted.add(user);
-            return true;
-        }
-        return false;
-    }
+    
 
     public synchronized boolean allowUser(User user) {
         return restricted.remove(user);
@@ -54,9 +47,7 @@ public class FriendList implements FriendManageable, Blockable, Listable<User> {
     public synchronized ArrayList<User> getFriends() {
         return friends;
     }
-    public synchronized ArrayList<User> getRestricted() {
-        return restricted;
-    }
+    
     public synchronized ArrayList<User> getBlocked() {
         return blocked;
     }
