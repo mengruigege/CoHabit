@@ -154,19 +154,19 @@ public class TestUser {
 
     @Test
     public void testSetPreference2() {
-        user2.setPreferences("12 AM", null, false, true, null, 5);
+        user2.setPreferences("12 AM", false, false, true, 3, 5);
         assertEquals("12 AM, , false, true, , 5", user2.getPreferences());
     }
 
     @Test
     public void testSetPreference3() {
-        user3.setPreferences("10 PM", true, null, false, 4, null);
+        user3.setPreferences("10 PM", true, true, false, 4, 0);
         assertEquals("10 PM, true, , false, 4, ,", user3.getPreferences());
     }
 
     @Test
     public void testSetPreference4() {
-        user4.setPreferences("11 PM", true, false, null, 2, null);
+        user4.setPreferences("11 PM", true, false, true, 2, 3);
         assertEquals("11 PM, true, false, , 2, ,", user4.getPreferences());
     }
 
