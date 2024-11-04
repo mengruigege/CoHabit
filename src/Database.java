@@ -4,6 +4,10 @@ import java.io.*;
 
 public class Database {
     private static ArrayList<User> allUsers;
+    File usersFile = new File("users.txt");
+    File friendsFile = new File("friends.txt");
+    File messagesFile = new File("messages.txt");
+    File blockedFile = new File("blocked.txt");
     private static final String USERS_FILE = "users.txt";
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
