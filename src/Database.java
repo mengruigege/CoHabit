@@ -218,8 +218,8 @@ public class Database {
         }
     }
 
-    public synchronized void recordMessages(String sender, String receiver, String message, String timestamp) {
-        String log = String.format("%s,%s,%s,%s", sender, receiver, timestamp, message);
+    public synchronized void recordMessages(String sender, String receiver, String message) {
+        String log = String.format("%s,%s,%s", sender, receiver, message);
         try (PrintWriter pr = new PrintWriter(new FileOutputStream(MESSAGES_FILE, true))) {
             pr.println(log);
         } catch (IOException e) {
@@ -232,8 +232,8 @@ public class Database {
         try (BufferedReader br = new BufferedReader(new FileReader(MESSAGES_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] tokens = line.split(",", 4);
-                if (tokens.length == 4) {
+                String[] tokens = line.split(",", 3);
+                if (tokens.length == 3) {
                     String sender = tokens[0];
                     String receiver = tokens[1];
 

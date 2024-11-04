@@ -161,8 +161,8 @@ public class TestDatabase {
 
     @Test
     public void testRecordAndLoadConversation() {
-        database.recordMessages("Bob", "Jim", "Hello, Jim!", "2024-10-01 10:00");
-        database.recordMessages("Jim", "Bob", "Hi, Bob!", "2024-10-01 10:05");
+        database.recordMessages("Bob", "Jim", "Hello, Jim!");
+        database.recordMessages("Jim", "Bob", "Hi, Bob!");
 
         ArrayList<String> conversation = database.loadConversation("Bob", "Jim");
         assertEquals(2, conversation.size());
