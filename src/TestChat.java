@@ -72,8 +72,7 @@ public class TestChat {
         Chat chat = new Chat(user1, user2, new ArrayList<>());
         chat.sendMessage(user1, user2, null);
 
-        ArrayList<String> messages = chat.getMessages();
-        assertTrue(messages.isEmpty());  // Null message should not be added
+        assertTrue(chat.getMessages().isEmpty());  // Null message should not be added
     }
 
     // Tests for deleteMessage(User sender, User receiver, String message) method

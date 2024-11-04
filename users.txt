@@ -1,0 +1,2 @@
+Bob,password123,bob@gmail.com,1234567890,person,purdue,null,false,false,false,0,0
+Jim,password234,jim@gmail.com,2345678901,person2,purdue2,null,false,false,false,0,0

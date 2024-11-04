@@ -15,7 +15,12 @@ public class Chat implements Sendable {
 
     //Synchronized method to make sure only one thread can send a message at a time
     public synchronized boolean sendMessage(User sender, User receiver, String message) {
-        return messages.add(message);
+        if(message != null) {
+            messages.add(message);
+        } else {
+            return false;
+        }
+        return true;
     }
 
     //Synchronized method to make sure only one thread can get a message at a time
