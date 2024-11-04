@@ -3,7 +3,7 @@
 **Submitted On Vocareum By
 Rui Meng**
 
-##_**Introduction**_
+## _**Introduction**_
 
 For this project, we have created several classes for the first phase of the creation of our very own social media app - CoHabit. CoHabit is an app that eases the roommate search issue through matching various preferences of users. We have also implemented a direct messaging service for communication amongst app users.
 
@@ -28,9 +28,9 @@ For the implementation of the database side of the app, we have created the nece
 17. TestDatabase.java
 18. TestFriendList.java
 
-##_**Description**_
+## _**Description**_
 
-###**Classes**
+### **Classes**
 
 <ins> _Summary_ </ins>
 
@@ -110,6 +110,8 @@ _Message Deletion Tests:_
 Successful Deletion: Validates that a specific message can be deleted and that the remaining messages are as expected.
 No Match for Deletion: Tests the behavior when trying to delete a non-existent message, ensuring the message list remains unchanged.
 Empty Chat Deletion: Verifies that attempting to delete from an empty chat returns false and keeps the chat empty.
+
+---
 
 **FriendList.java**
 
@@ -351,7 +353,7 @@ Checks the partialMatch method to ensure it can identify user2 as a partial matc
 
 ---
 
-###**Exceptions**
+### **Exceptions**
 
 _UsernameTakenException.java_
 
@@ -366,7 +368,9 @@ Constructor
 |-------------------------------------------|----------------------------------------------------------|
 | InvalidInputException(String input)       | Constructs a new exception indicating invalid input.    |
 
-###**Interfaces **
+---
+
+### **Interfaces **
 
 1. Blockable.java
 
