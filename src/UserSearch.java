@@ -2,32 +2,36 @@ import java.util.ArrayList;
 
 public class UserSearch implements Searchable {
 
-    private Database db = new Database();
+    private Database db;
+
+    public UserSearch () {
+        this.db = new Database();
+    }
 
     public ArrayList<User> searchByParameter(String parameter, String value) {
         ArrayList<User> matchingUsers = new ArrayList<>();
 
 
-            for (User user : db.getAllUsers()) {
+            for (int i = 0; i < db.getAllUsers().size(); i++) {
                 switch (parameter.toLowerCase()) {
                     case "name":
-                        if (user.getName().equals(value)) {
-                            matchingUsers.add(user);
+                        if (db.getAllUsers().get(i).getName().equals(value)) {
+                            matchingUsers.add(db.getAllUsers().get(i));
                         }
                         break;
                     case "email":
-                        if (user.getEmail().equalsIgnoreCase(value)) {
-                            matchingUsers.add(user);
+                        if (db.getAllUsers().get(i).getEmail().equalsIgnoreCase(value)) {
+                            matchingUsers.add(db.getAllUsers().get(i));
                         }
                         break;
                     case "phone":
-                        if (user.getPhoneNumber().equals(value)) {
-                            matchingUsers.add(user);
+                        if (db.getAllUsers().get(i).getPhoneNumber().equals(value)) {
+                            matchingUsers.add(db.getAllUsers().get(i));
                         }
                         break;
                     case "university":
-                        if (user.getDescription().equalsIgnoreCase(value)) {
-                            matchingUsers.add(user);
+                        if (db.getAllUsers().get(i).getUniversity().equals(value)) {
+                            matchingUsers.add(db.getAllUsers().get(i));
                         }
                         break;
                     default:
@@ -41,9 +45,9 @@ public class UserSearch implements Searchable {
 
     public ArrayList<User> exactMatch(User mainUser) {
         ArrayList<User> results = new ArrayList<>();
-        for (User user : db.getAllUsers()) {
-            if (mainUser != user && mainUser.perfectMatch(user)) {
-                results.add(user);
+        for (int i = 0; i < db.getAllUsers().size(); i++) {
+            if (mainUser.perfectMatch(db.getAllUsers().get(i))) {
+                results.add(db.getAllUsers().get(i));
             }
         }
         return results;

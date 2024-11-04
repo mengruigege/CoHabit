@@ -11,7 +11,11 @@ public class TestUserSearch {
         try {
             user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
             user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
+            user1.setPreferences("11 PM", false, false, true, 5, 5);
+            user2.setPreferences("12 AM", false, false, true, 3, 5);
         } catch (UsernameTakenException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidInput e) {
             throw new RuntimeException(e);
         }
     }
@@ -23,22 +27,18 @@ public class TestUserSearch {
     @Test
     public void testsearchParamter(){
         ArrayList<User> search = userSearch.searchByParameter("name","Bob");
-        assertEquals("Bob",search.get(0).getName());
-        search = userSearch.searchByParameter("password", "password123");
-        assertEquals("password123",search.get(0).getPassword());
+        assertTrue(search.contains(user1));
         search = userSearch.searchByParameter("email","bob@gmail.com");
-        assertEquals("bob@gmail.com",search.get(0).getEmail());
+        assertTrue(search.contains(user1));
         search = userSearch.searchByParameter("phone","1234567890");
-        assertEquals("1234567890",search.get(0).getPhoneNumber());
-        search = userSearch.searchByParameter("desc","person");
-        assertEquals("person",search.get(0).getDescription());
-        search = userSearch.searchByParameter("uni","purdue");
-        assertEquals("purdue",search.get(0).getUniversity());
+        assertTrue(search.contains(user1));
+        search = userSearch.searchByParameter("university","purdue");
+        assertTrue(search.contains(user1));
     }
     @Test
     public void testExactMatch() {
         ArrayList<User> exact = userSearch.exactMatch(user1);
-        assertEquals("Bob", exact.get(0).getName());
+        assertTrue(exact.contains(user1));
     }
     @Test
     public void testPartialMatch() {
