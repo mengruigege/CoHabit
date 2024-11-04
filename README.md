@@ -429,7 +429,7 @@ Constructor
 ### **Extra Credit - Images**
 
 * enum MessageType
-Defines three types of messages: TEXT, IMAGE, and VIDEO
+<br> Defines three types of messages: TEXT, IMAGE, and VIDEO
 
 * Methods added to Database.java
   
