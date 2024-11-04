@@ -1,5 +1,6 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.nio.file.*;
 import java.io.*;
 
 /**
@@ -21,6 +22,7 @@ public class Database {
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
     private static final String BLOCKED_FILE = "blocked.txt";
+    private static final String PROFILE_PICTURE_FOLDER = "profile_pictures";
     private static final Object lock = new Object();
 
     public Database() {
@@ -110,6 +112,7 @@ public class Database {
                     String university = data[5];
 
                     User user = new User(name, password, email, phoneNumber, description, university);
+                    loadProfilePicture(user);
                     allUsers.add(user);
                 }
             }
@@ -120,6 +123,38 @@ public class Database {
         }
     }
 
+    private void saveProfilePicture(User user) {
+        byte[] pictureData = user.getProfilePicture();
+        if (pictureData == null) {
+            return;
+        }
+        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        try (FileOutputStream fos = new FileOutputStream(pictureFile)) {
+            fos.write(pictureData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadProfilePicture(User user) {
+        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        if (pictureFile.exists()) {
+            try (FileInputStream fis = new FileInputStream(pictureFile)) {
+                byte[] pictureData = fis.readAllBytes();
+                user.setProfilePicture(pictureData);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void deleteProfilePicture(User user) {
+        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        if (pictureFile.exists()) {
+            pictureFile.delete();
+        }
+    }
+    
     public synchronized void saveUsersToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE))) {
             for (User user : allUsers) {
