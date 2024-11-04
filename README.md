@@ -409,6 +409,8 @@ Constructor
 * public void setName(String newName) 
 * public void setDescription(String newDesc)
 * public void setUniversity(String newUni)
+* public byte[] getProfilePicture();
+* public void setProfilePicture(byte[] pictureData);
 
 5. Searchable.java
 
@@ -426,4 +428,24 @@ Constructor
 
 ### **Extra Credit - Images**
 
+* enum MessageType
+<br> Defines three types of messages: TEXT, IMAGE, and VIDEO
+
+* Methods added to Database.java
+  
+| Modifier | Function Name                      | Description                                |
+|----------|------------------------------------|--------------------------------------------|
+| public   | `saveProfilePicture(User user)`    | Saves user's profile picture to a file.    |
+| public   | `loadProfilePicture(User user)`    | Loads profile picture from a file.         |
+| public   | `deleteProfilePicture(User user)`  | Deletes user's profile picture file.       |
+
+  
+* Methods addes to User.java
+
+| Modifier | Function Name                | Description                                                                                      |
+|----------|------------------------------|--------------------------------------------------------------------------------------------------|
+| public   | `setDescription(String userDesc)` | Sets the user's description.                                                                |
+| public   | `getProfilePicture()`        | Retrieves the user's profile picture data as a byte array.                                       |
+
+---
 
