@@ -2,6 +2,17 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.io.*;
 
+/**
+ * Team Project Phase 1 - CoHabit
+ *
+ * This program works to implement a roommate search algorithm
+ *
+ * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng 
+ *
+ * @version November 3rd, 2024
+ *
+ */
+
 public class Database {
     private static ArrayList<User> allUsers;
     File usersFile = new File("users.txt");
