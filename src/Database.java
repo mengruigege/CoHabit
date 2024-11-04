@@ -40,31 +40,29 @@ public class Database {
         return removed;
     }
 
-    public boolean addFriend(User user1, User user2) {
-        synchronized (lock) {
-            boolean isFriend1 = false;
-            boolean isFriend2 = false;
-            for (User user : user1.getFriendList()) {
-                if (user1.getName().equals(user2.getName())) {
-                    isFriend1 = true;
-                    break;
-                }
+    public synchronized boolean addFriend(User user1, User user2) {
+        boolean isFriend1 = false;
+        boolean isFriend2 = false;
+        for (User user : user1.getFriendList()) {
+            if (user1.getName().equals(user2.getName())) {
+                isFriend1 = true;
+                break;
             }
-            for (User user : user2.getFriendList()) {
-                if (user1.getName().equals(user.getName())) {
-                    isFriend2 = true;
-                    break;
-                }
+        }
+        for (User user : user2.getFriendList()) {
+            if (user1.getName().equals(user.getName())) {
+                isFriend2 = true;
+                break;
             }
-            if (isFriend1 && isFriend2) {
-                saveFriendsToFile();
-                return true;
-            }
+        }
+        if (isFriend1 && isFriend2) {
+            saveFriendsToFile();
+            return true;
         }
         return false;
     }
 
-    public boolean usernameExists(String username) {
+    public synchronized boolean usernameExists(String username) {
         for (User user : allUsers) {
             if (user.getName().equals(username)) {
                 return true;
@@ -73,7 +71,7 @@ public class Database {
         return false;
     }
 
-    public User findUserByName(String name) {
+    public synchronized User findUserByName(String name) {
         for (User user : allUsers) {
             if (user.getName().equals(name)) {
                 return user;
@@ -84,11 +82,11 @@ public class Database {
 
     public ArrayList<User> getAllUsers() {
         synchronized (lock) {
-        return new ArrayList<>(allUsers);
+            return new ArrayList<>(allUsers);
         }
     }
 
-    public void loadUsersFromFile() {
+    public synchronized void loadUsersFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -114,7 +112,7 @@ public class Database {
         }
     }
 
-    public void saveUsersToFile() {
+    public synchronized void saveUsersToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE))) {
             for (User user : allUsers) {
                 pw.println(user);
@@ -124,7 +122,7 @@ public class Database {
         }
     }
 
-    public ArrayList<User> loadFriendsFromFile() {
+    public synchronized ArrayList<User> loadFriendsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
             String line;
             ArrayList<User> friendList = new ArrayList<>();
@@ -153,7 +151,7 @@ public class Database {
         }
     }
 
-    public void saveFriendsToFile() {
+    public synchronized void saveFriendsToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
             for (User user : allUsers) {
                 String line = user.getName() + ":";
@@ -172,7 +170,7 @@ public class Database {
         }
     }
 
-    public ArrayList<User> loadBlockedFromFile() {
+    public synchronized ArrayList<User> loadBlockedFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
             String line;
             ArrayList<User> blockedList = new ArrayList<>();
@@ -201,7 +199,7 @@ public class Database {
         }
     }
 
-    public void saveBlockedToFile() {
+    public synchronized void saveBlockedToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(BLOCKED_FILE))) {
             for (User user : allUsers) {
                 String line = user.getName() + ":";
@@ -220,7 +218,7 @@ public class Database {
         }
     }
 
-    public void recordMessages(String sender, String receiver, String message, String timestamp) {
+    public synchronized void recordMessages(String sender, String receiver, String message, String timestamp) {
         String log = String.format("%s,%s,%s,%s", sender, receiver, timestamp, message);
         try (PrintWriter pr = new PrintWriter(new FileOutputStream(MESSAGES_FILE, true))) {
             pr.println(log);
@@ -231,22 +229,24 @@ public class Database {
 
     public ArrayList<String> loadConversation(String user1, String user2) {
         ArrayList<String> messages = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(MESSAGES_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String [] tokens = line.split(",", 4);
-                if (tokens.length == 4) {
-                    String sender = tokens[0];
-                    String receiver = tokens[1];
+        synchronized (lock) {
+            try (BufferedReader br = new BufferedReader(new FileReader(MESSAGES_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] tokens = line.split(",", 4);
+                    if (tokens.length == 4) {
+                        String sender = tokens[0];
+                        String receiver = tokens[1];
 
-                    if ((sender.equals(user1) && receiver.equals(user2)) || (sender.equals(user2) && receiver.equals(user1))) {
-                        messages.add(line);
+                        if ((sender.equals(user1) && receiver.equals(user2)) || (sender.equals(user2) && receiver.equals(user1))) {
+                            messages.add(line);
+                        }
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            return messages;
         }
-        return messages;
     }
 }
