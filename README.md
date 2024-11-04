@@ -432,17 +432,18 @@ Constructor
 Defines three types of messages: TEXT, IMAGE, and VIDEO
 
 * Methods added to Database.java
-| Modifier | Function Name                      | Description                                                                                                                                                                                                                                                                                                                                                         |
-|----------|------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| public   | `saveProfilePicture(User user)`    | Saves a user's profile picture data as a file in the specified folder. <br> **Steps**: <br> - Retrieves the picture data as a byte array from the `User` object. <br> - If the data is `null`, it exits early. <br> - Creates a `File` object for the profile picture file, naming it with the user’s name and a `.png` extension. <br> - Writes the byte data to the file using `FileOutputStream`. <br> - Catches and prints any `IOException` if an error occurs. |
-| public   | `loadProfilePicture(User user)`    | Loads a user's profile picture from a file, if it exists, and sets it on the `User` object. <br> **Steps**: <br> - Creates a `File` object pointing to the user’s profile picture file. <br> - Checks if the file exists. <br> - Reads the file contents into a byte array using `FileInputStream.readAllBytes()` and sets it as the user's profile picture. <br> - Catches and prints any `IOException` that occurs. |
-| public   | `deleteProfilePicture(User user)`  | Deletes the user's profile picture file, if it exists. <br> **Steps**: <br> - Creates a `File` object for the user’s profile picture file. <br> - If the file exists, deletes it directly using `delete()`.                                                                                                                                                                                                 |
+| Modifier | Function Name                      | Description                                |
+|----------|------------------------------------|--------------------------------------------|
+| public   | `saveProfilePicture(User user)`    | Saves user's profile picture to a file.    |
+| public   | `loadProfilePicture(User user)`    | Loads profile picture from a file.         |
+| public   | `deleteProfilePicture(User user)`  | Deletes user's profile picture file.       |
+
   
 * Methods addes to User.java
 
 | Modifier | Function Name                | Description                                                                                      |
 |----------|------------------------------|--------------------------------------------------------------------------------------------------|
-| public   | `setDescription(String userDesc)` | Sets the user's description. <br> **Parameters**: `userDesc` - the description to set for the user. |
+| public   | `setDescription(String userDesc)` | Sets the user's description.                                                                |
 | public   | `getProfilePicture()`        | Retrieves the user's profile picture data as a byte array.                                       |
 
 
