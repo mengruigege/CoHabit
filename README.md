@@ -334,7 +334,7 @@ _Constructor Summary_
 
 | Constructor                               | Description                                              |
 |-------------------------------------------|----------------------------------------------------------|
-| UserSearch(Database database)             | Constructs a newly allocated UserSearch object with a reference to the database. |
+| UserSearch()             | Constructs a newly allocated UserSearch object with a reference to the database. |
 
 _Method Summary_
 
