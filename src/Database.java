@@ -123,7 +123,7 @@ public class Database {
         }
     }
 
-    private void saveProfilePicture(User user) {
+    public void saveProfilePicture(User user) {
         byte[] pictureData = user.getProfilePicture();
         if (pictureData == null) {
             return;
@@ -136,7 +136,7 @@ public class Database {
         }
     }
 
-    private void loadProfilePicture(User user) {
+    public void loadProfilePicture(User user) {
         File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
         if (pictureFile.exists()) {
             try (FileInputStream fis = new FileInputStream(pictureFile)) {
@@ -148,7 +148,7 @@ public class Database {
         }
     }
 
-    private void deleteProfilePicture(User user) {
+    public void deleteProfilePicture(User user) {
         File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
         if (pictureFile.exists()) {
             pictureFile.delete();

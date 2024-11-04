@@ -108,4 +108,17 @@ public class TestChat {
 
         assertTrue(chat.getMessages().isEmpty());  // Should remain empty
     }
+
+    // Additional test for getMessages method directly
+    @Test
+    public void testGetMessagesDirectly() {
+        Chat chat = new Chat(user1, user2, messages);
+        chat.sendMessage(user1, user2, "message1");
+        chat.sendMessage(user2, user1, "message2");
+
+        ArrayList<String> retrievedMessages = chat.getMessages();
+        assertEquals(2, retrievedMessages.size());
+        assertEquals("message1", retrievedMessages.get(0));
+        assertEquals("message2", retrievedMessages.get(1));
+    }
 }

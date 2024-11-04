@@ -147,6 +147,36 @@ public class TestUser {
         assertEquals(null, user3.getPhoneNumber());  // Assuming null phone number defaults to empty string
     }
 
+    // Test cases for setProfilePicture and getProfilePicture methods
+    @Test
+    public void testSetAndGetProfilePicture() {
+        byte[] samplePicture = {1, 2, 3};  // Simple mock data for profile picture
+        user1.setProfilePicture(samplePicture);
+        assertArrayEquals("Profile picture should match the data set", samplePicture, user1.getProfilePicture());
+    }
+
+    @Test
+    public void testSetProfilePictureWithNull() {
+        user2.setProfilePicture(null);  // Set null as profile picture
+        assertNull("Profile picture should be null when set to null", user2.getProfilePicture());
+    }
+
+    @Test
+    public void testSetProfilePictureWithEmptyArray() {
+        byte[] emptyPicture = {};  // Empty byte array
+        user3.setProfilePicture(emptyPicture);
+        assertArrayEquals("Profile picture should be an empty array when set with an empty array", emptyPicture, user3.getProfilePicture());
+    }
+
+    @Test
+    public void testOverwriteProfilePicture() {
+        byte[] initialPicture = {4, 5, 6};  // Initial profile picture data
+        byte[] newPicture = {7, 8, 9};      // New profile picture data to overwrite
+        user1.setProfilePicture(initialPicture);
+        user1.setProfilePicture(newPicture);  // Overwrite with new data
+        assertArrayEquals("Profile picture should match the latest data set", newPicture, user1.getProfilePicture());
+    }
+
     @Test
     public void testSetPhoneNumberUser4() {
         user4.setPhoneNumber(null);

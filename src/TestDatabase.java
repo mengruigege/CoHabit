@@ -3,6 +3,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class TestDatabase {
@@ -18,6 +19,7 @@ public class TestDatabase {
         user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
         user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
         user3 = new User("Alice", "password345", "alice@gmail.com", "3456789012", "person3", "purdue3");
+        new File("profile_pictures").mkdir();
     }
 
     // Tests for addUser method
@@ -162,5 +164,94 @@ public class TestDatabase {
         assertTrue(0 < conversation.size());
         assertTrue(conversation.get(0).contains("Hello, Jim!"));
         assertTrue(conversation.get(1).contains("Hi, Bob!"));
+    }
+
+    // Tests for saveProfilePicture method
+    @Test
+    public void testSaveProfilePictureForUser1() {
+        byte[] samplePicture = {1, 2, 3};  // Mock data for profile picture
+        user1.setProfilePicture(samplePicture);
+        database.saveProfilePicture(user1);
+
+        File pictureFile = new File("profile_pictures/Bob.png");
+        assertTrue("Profile picture file should exist for user1", pictureFile.exists());
+    }
+
+    @Test
+    public void testSaveProfilePictureForUser2WithNoData() {
+        user2.setProfilePicture(null);  // No picture data
+        database.saveProfilePicture(user2);
+
+        File pictureFile = new File("profile_pictures/Jim.png");
+        assertFalse("No file should be created if profile picture is null for user2", pictureFile.exists());
+    }
+
+    @Test
+    public void testSaveProfilePictureForUser3OverwritesExistingFile() {
+        byte[] initialPicture = {1, 2};  // Initial picture data
+        byte[] newPicture = {3, 4, 5};  // New picture data to overwrite
+
+        user3.setProfilePicture(initialPicture);
+        database.saveProfilePicture(user3);
+        user3.setProfilePicture(newPicture);
+        database.saveProfilePicture(user3);
+
+        File pictureFile = new File("profile_pictures/Alice.png");
+        assertTrue("Profile picture file should exist after overwriting for user3", pictureFile.exists());
+    }
+
+    // Tests for loadProfilePicture method
+    @Test
+    public void testLoadProfilePictureForUser1() throws UsernameTakenException {
+        byte[] samplePicture = {4, 5, 6};
+        user1.setProfilePicture(samplePicture);
+        database.saveProfilePicture(user1);
+
+        User newUser1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
+        database.loadProfilePicture(newUser1);
+
+        assertArrayEquals("Loaded profile picture should match saved data for user1", samplePicture, newUser1.getProfilePicture());
+    }
+
+    @Test
+    public void testLoadProfilePictureForNonexistentUser() throws UsernameTakenException {
+        User newUser = new User("NonexistentUser", "password", "nonexistent@gmail.com", "0000000000", "none", "none");
+        database.loadProfilePicture(newUser);
+
+        assertNull("Profile picture should remain null if no file exists for nonexistent user", newUser.getProfilePicture());
+    }
+
+    @Test
+    public void testLoadProfilePictureForUser2WhenFileExists() throws UsernameTakenException {
+        byte[] pictureData = {7, 8, 9};
+        user2.setProfilePicture(pictureData);
+        database.saveProfilePicture(user2);
+
+        User loadedUser2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
+        database.loadProfilePicture(loadedUser2);
+        assertArrayEquals("Profile picture loaded from file should match saved data for user2", pictureData, loadedUser2.getProfilePicture());
+    }
+
+    // Tests for deleteProfilePicture method
+    @Test
+    public void testDeleteProfilePictureForUser1() {
+        byte[] pictureData = {10, 11, 12};
+        user1.setProfilePicture(pictureData);
+        database.saveProfilePicture(user1);
+
+        File pictureFile = new File("profile_pictures/Bob.png");
+        assertTrue("File should exist before deletion for user1", pictureFile.exists());
+
+        database.deleteProfilePicture(user1);
+        assertFalse("File should not exist after deletion for user1", pictureFile.exists());
+    }
+
+    @Test
+    public void testDeleteProfilePictureForUser2WithoutSettingPicture() {
+        // No profile picture is set for user2, so no file should be created or deleted
+        database.deleteProfilePicture(user2);
+
+        File pictureFile = new File("profile_pictures/Jim.png");
+        assertFalse("File should not exist if profile picture was never set for user2", pictureFile.exists());
     }
 }
