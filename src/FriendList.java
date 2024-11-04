@@ -14,6 +14,12 @@ public class FriendList implements FriendManageable, Blockable {
         this.blocked = new ArrayList<>(database.loadBlockedFromFile());
     }
 
+    public FriendList() {
+        this.database = new Database();
+        this.friends = new ArrayList<>();
+        this.blocked = new ArrayList<>();
+    }
+
     public synchronized boolean addFriend(User user) {
         if (user != null && !friends.contains(user)) {
             friends.add(user);

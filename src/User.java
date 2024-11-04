@@ -16,8 +16,8 @@ public class User implements Profile, FriendManageable, Blockable {
     private int tidy;
     private int roomHours;
 
-    private FriendList friendUsers;
-    private FriendList blockedUsers;
+    private FriendList friendUsers = new FriendList();
+    private FriendList blockedUsers = new FriendList();
 
     public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
         this.name = name;
