@@ -42,7 +42,21 @@ public class Database {
 
     public boolean addFriend(User user1, User user2) {
         synchronized (lock) {
-            if (user1.addFriend(user2) && user2.addFriend(user1)) {
+            boolean isFriend1 = false;
+            boolean isFriend2 = false;
+            for (User user : user1.getFriendList()) {
+                if (user1.getName().equals(user2.getName())) {
+                    isFriend1 = true;
+                    break;
+                }
+            }
+            for (User user : user2.getFriendList()) {
+                if (user1.getName().equals(user.getName())) {
+                    isFriend2 = true;
+                    break;
+                }
+            }
+            if (isFriend1 && isFriend2) {
                 saveFriendsToFile();
                 return true;
             }
