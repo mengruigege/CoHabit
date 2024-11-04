@@ -13,7 +13,8 @@ public class Chat implements Sendable {
         this.messages = messages;
     }
 
-    //Synchronized method to make sure only one thread can send a message at a time
+    //Adds a message to the messages list, returns true if added successfully
+    //Synchronized to ensure a thread-safe environment
     public synchronized boolean sendMessage(User sender, User receiver, String message) {
         if(message != null) {
             messages.add(message);
@@ -23,7 +24,8 @@ public class Chat implements Sendable {
         return true;
     }
 
-    //Synchronized method to make sure only one thread can get a message at a time
+    //Returns an ArrayList containing all messages in the chat.
+    //Synchronized to ensure a thread-safe environment
     public synchronized ArrayList<String> getMessages() {
         ArrayList<String> nullList = new ArrayList<>();
         if(messages != null) {
@@ -33,7 +35,8 @@ public class Chat implements Sendable {
         }
     }
 
-    //Synchronized method to make sure only one thread can delete a message at a time
+    //Deletes a message from the messages list, returns true if removed successfully.
+    //Synchronized to ensure a thread-safe environment
     public synchronized boolean deleteMessage(User sender, User receiver, String message) {
         return messages.remove(message);
     }
@@ -50,7 +53,7 @@ public class Chat implements Sendable {
                 this.message = message;
             }
 
-            public void run() {
+            public void run() { //Adds a message to the messages list within a synchronized block.
                 synchronized (Chat.this) {
                     messages.add(message);
                     System.out.println("Message sent: " + message);
@@ -70,7 +73,7 @@ public class Chat implements Sendable {
             this.message = message;
         }
 
-        public void run() {
+        public void run() { //Deletes a message from the messages list within a synchronized block.
             synchronized (Chat.this) {
                 if (messages.remove(message)) {
                     System.out.println("Message deleted: " + message);
