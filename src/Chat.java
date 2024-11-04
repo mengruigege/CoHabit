@@ -60,23 +60,23 @@ public class Chat implements Sendable {
 
     //Inner class to implement multi-threading in a thread-safe environment for deleting messages
     private class DeleteMessageTask implements Runnable {
-            private final User sender;
-            private final User receiver;
-            private final String message;
+        private final User sender;
+        private final User receiver;
+        private final String message;
 
-            public DeleteMessageTask(User sender, User receiver, String message) {
-                this.sender = sender;
-                this.receiver = receiver;
-                this.message = message;
-            }
+        public DeleteMessageTask(User sender, User receiver, String message) {
+            this.sender = sender;
+            this.receiver = receiver;
+            this.message = message;
+        }
 
-            public void run() {
-                synchronized (Chat.this) {
-                    if (messages.remove(message)) {
-                        System.out.println("Message deleted: " + message);
-                    }
+        public void run() {
+            synchronized (Chat.this) {
+                if (messages.remove(message)) {
+                    System.out.println("Message deleted: " + message);
                 }
             }
+        }
      }
 }
 
