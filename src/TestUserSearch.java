@@ -11,7 +11,11 @@ public class TestUserSearch {
         try {
             user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
             user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
+            user1.setPreferences("11 PM", false, false, true, 5, 5);
+            user2.setPreferences("12 AM", false, false, true, 3, 5);
         } catch (UsernameTakenException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidInput e) {
             throw new RuntimeException(e);
         }
     }
