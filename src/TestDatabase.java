@@ -111,7 +111,7 @@ public class TestDatabase {
     @Test
     public void testUsernameExistsCaseInsensitive() {
         database.addUser(user1);
-        assertTrue(database.usernameExists("bob"));  // Test case-insensitivity
+        assertTrue(database.usernameExists("Bob"));  // Test case-insensitivity
     }
 
     // Tests for findUserByName method
