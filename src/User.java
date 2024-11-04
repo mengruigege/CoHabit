@@ -17,6 +17,7 @@ public class User implements Profile, FriendManageable, Blockable {
     private String phoneNumber;
     private String description;
     private String university;
+    private byte[] profilePicture;
 
     private String bedTime;
     private boolean alcohol;
