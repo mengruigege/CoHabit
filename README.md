@@ -334,15 +334,15 @@ _Constructor Summary_
 
 | Constructor                               | Description                                              |
 |-------------------------------------------|----------------------------------------------------------|
-| UserSearch(Database database)             | Constructs a newly allocated UserSearch object with a reference to the database. |
+| UserSearch()             | Constructs a newly allocated UserSearch object with a reference to the database. |
 
 _Method Summary_
 
 | Modifier and Type | Method                     | Description                                               |
 |-------------------|---------------------------|-----------------------------------------------------------|
-| ArrayList<User>   | searchByName(String name) | Searches for users by name and returns a list of matching users. |
-| ArrayList<User>   | searchByUniversity(String university) | Searches for users by university and returns a list of matching users. |
-| ArrayList<User>   | searchByPreference(String preference) | Searches for users by preference and returns a list of matching users. |
+| ArrayList<User>   | searchByParameter(String parameter, String value) | Searches for users by parameters such as name, university, etc and returns a list of matching users. |
+| ArrayList<User>   | exactMatch(User mainUser)| Returns ArrayList of all users who are an exact match based on the search |
+| ArrayList<User>   | partialMatch(User mainUser) | Returns ArrayList of all users who are a partial match based on the search |
 
 _Testing_
 UserSearch.java is tested by unit tests included in the class TestUserSearch.java.
@@ -379,48 +379,48 @@ Constructor
 
 1. Blockable.java
 
-1.1 Boolean blockUser()
-1.2 unblockUser()
-1.3 ArrayList<User> getBlockedUsers(); 
+* Boolean blockUser()
+* unblockUser()
+* ArrayList<User> getBlockedUsers(); 
 
 2. FriendManageable.java
 
-2.1 public boolean addFriend(User user)
-2.2 public boolean removeFriend(User user) 
-2.3 public boolean blockUser(User user)
-2.4 public boolean unblockUser(User user) 
-2.5 public ArrayList<User> getFriendList()
-2.6 public void setFriendList(ArrayList<User> friends)
+* public boolean addFriend(User user)
+* public boolean removeFriend(User user) 
+* public boolean blockUser(User user)
+* public boolean unblockUser(User user) 
+* public ArrayList<User> getFriendList()
+* public void setFriendList(ArrayList<User> friends)
 
 3. Message.java
 
-3.1 public boolean addFriend(User user)
-3.2 public boolean removeFriend(User user) 
-3.3 public boolean blockUser(User user)
-3.4 public boolean unblockUser(User user) 
-3.5 public ArrayList<User> getFriendList()
-3.6 public void setFriendList(ArrayList<User> friends)
+* public boolean addFriend(User user)
+* public boolean removeFriend(User user) 
+* public boolean blockUser(User user)
+* public boolean unblockUser(User user) 
+* public ArrayList<User> getFriendList()
+* public void setFriendList(ArrayList<User> friends)
 
 4. Profile.java
 
-4.1 public String getName() 
-4.2 public String getDescription()
-4.3 public String getUniversity()
-4.4 public void setName(String newName) 
-4.5 public void setDescription(String newDesc)
-4.6 public void setUniversity(String newUni)
+* public String getName() 
+* public String getDescription()
+* public String getUniversity()
+* public void setName(String newName) 
+* public void setDescription(String newDesc)
+* public void setUniversity(String newUni)
 
 5. Searchable.java
 
-5.1 ArrayList<User> searchByParameter(String parameter, String value)    
-5.2 ArrayList<User> exactMatch(User user)
-5.3 ArrayList<User> partialMatch(User user)
+* ArrayList<User> searchByParameter(String parameter, String value)    
+* ArrayList<User> exactMatch(User user)
+* ArrayList<User> partialMatch(User user)
 
 6. Sendable.java
 
-6.1 boolean sendMessage(User sender, User receiver, String message)
-6.2 boolean deleteMessage(User sender, User receiver, String message)
-6.3 ArrayList<String> getMessages()
+* boolean sendMessage(User sender, User receiver, String message)
+* boolean deleteMessage(User sender, User receiver, String message)
+* ArrayList<String> getMessages()
 
 ---
 

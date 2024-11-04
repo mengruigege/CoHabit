@@ -4,10 +4,12 @@ public class UserSearch implements Searchable {
 
     private Database db;
 
+    //Constructs a newly allocated UserSearch object with a reference to the database.
     public UserSearch () {
         this.db = new Database();
     }
 
+    //Searches for users by name, university, etc and returns a list of matching users.
     public ArrayList<User> searchByParameter(String parameter, String value) {
         ArrayList<User> matchingUsers = new ArrayList<>();
 
@@ -43,6 +45,7 @@ public class UserSearch implements Searchable {
         return matchingUsers;
     }
 
+    //Returns ArrayList of all users who are an exact match based on the search
     public ArrayList<User> exactMatch(User mainUser) {
         ArrayList<User> results = new ArrayList<>();
         for (int i = 0; i < db.getAllUsers().size(); i++) {
@@ -52,7 +55,8 @@ public class UserSearch implements Searchable {
         }
         return results;
     }
-    
+
+    //Returns ArrayList of all users who are a partial match based on the search
     public ArrayList<User> partialMatch(User mainUser) {
         ArrayList<User> results = new ArrayList<>();
         for (int i = 5; i > 0 ; i--) {
