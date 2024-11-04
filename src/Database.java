@@ -8,15 +8,20 @@ public class Database {
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
     private static final String BLOCKED_FILE = "blocked.txt";
+    private static final Object lock = new Object();
 
     public Database() {
-        this.allUsers = new ArrayList<>();
+        synchronized (lock) {
+            this.allUsers = new ArrayList<>();
+        }
         loadUsersFromFile();
     }
 
     public boolean addUser(User user) {
         if (user != null && !usernameExists(user.getName())) {
-            allUsers.add(user);
+            synchronized (lock) {
+                allUsers.add(user);
+            }
             saveUsersToFile();
             return true;
         }
@@ -24,7 +29,10 @@ public class Database {
     }
 
     public boolean deleteUser(User user) {
-        boolean removed = allUsers.remove(user);
+        boolean removed;
+        synchronized (lock) {
+            removed = allUsers.remove(user);
+        }
         if (removed) {
             saveUsersToFile();
             return true;
@@ -33,9 +41,11 @@ public class Database {
     }
 
     public boolean addFriend(User user1, User user2) {
-        if (user1.addFriend(user2) && user2.addFriend(user1)) {
-            saveFriendsToFile();
-            return true;
+        synchronized (lock) {
+            if (user1.addFriend(user2) && user2.addFriend(user1)) {
+                saveFriendsToFile();
+                return true;
+            }
         }
         return false;
     }
@@ -59,7 +69,9 @@ public class Database {
     }
 
     public ArrayList<User> getAllUsers() {
+        synchronized (lock) {
         return new ArrayList<>(allUsers);
+        }
     }
 
     public void loadUsersFromFile() {
@@ -76,7 +88,9 @@ public class Database {
                     String university = tokens[5];
 
                     User user = new User(name, password, email, phoneNumber, description, university);
-                    allUsers.add(user);
+                    synchronized (lock) {
+                        allUsers.add(user);
+                    }
                 }
             }
         } catch (IOException e) {
