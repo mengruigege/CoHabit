@@ -27,7 +27,6 @@ public class Database {
         synchronized (lock) {
             this.allUsers = new ArrayList<>();
         }
-        loadUsersFromFile();
     }
 
     public synchronized boolean addUser(User user) {
@@ -102,7 +101,7 @@ public class Database {
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",");
-                if (data.length == 6) {
+                if (data.length >= 6) {
                     String name = data[0];
                     String password = data[1];
                     String email = data[2];
