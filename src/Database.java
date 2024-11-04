@@ -237,8 +237,9 @@ public class Database {
                     String sender = tokens[0];
                     String receiver = tokens[1];
 
-                    if ((sender.equals(user1) && receiver.equals(user2)) || (sender.equals(user2) && receiver.equals(user1))) {
-                        messages.add(line);
+                    if ((sender.equals(user1) && receiver.equals(user2))
+                            || (sender.equals(user2) && receiver.equals(user1))) {
+                        messages.add(tokens[3]);
                     }
                 }
             }
