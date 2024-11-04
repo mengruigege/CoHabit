@@ -35,7 +35,6 @@ public class Database {
     public synchronized boolean addUser(User user) {
         if (user != null && !usernameExists(user.getName())) {
             allUsers.add(user);
-            saveUsersToFile();
             return true;
         }
         return false; // User is null or username is taken
@@ -95,7 +94,7 @@ public class Database {
 
     public ArrayList<User> getAllUsers() {
         synchronized (lock) {
-            return new ArrayList<>(allUsers);
+            return allUsers;
         }
     }
 
@@ -103,14 +102,15 @@ public class Database {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] tokens = line.split(",");
-                if (tokens.length == 6) {
-                    String name = tokens[0];
-                    String password = tokens[1];
-                    String email = tokens[2];
-                    String phoneNumber = tokens[3];
-                    String description = tokens[4];
-                    String university = tokens[5];
+
+                String[] data = line.split(",");
+                if(data.length == 6){
+                    String name = data[0];
+                    String password = data[1];
+                    String email = data[2];
+                    String phoneNumber = data[3];
+                    String description = data[4];
+                    String university = data[5];
 
                     User user = new User(name, password, email, phoneNumber, description, university);
                     allUsers.add(user);
