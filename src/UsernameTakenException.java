@@ -1,5 +1,7 @@
 public class UsernameTakenException extends Exception {
-    public UsernameTakenException(String message) {
+
+    //Constructs a new exception indicating a taken username.
+    public UsernameTakenException(String message) { 
         super(message); 
     }
 }
