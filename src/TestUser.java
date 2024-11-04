@@ -178,6 +178,54 @@ public class TestUser {
     }
 
     @Test
+    public void testAddFriend() {
+        assertTrue(user1.addFriend(user2));
+        assertTrue(user1.getFriendList().contains(user2));
+    }
+
+    @Test
+    public void testRemoveFriend() {
+        user1.addFriend(user2);
+        assertTrue(user1.removeFriend(user2));
+        assertFalse(user1.getFriendList().contains(user2));
+    }
+
+    @Test
+    public void testUnblockUser() {
+        user1.blockUser(user2);
+        assertTrue(user1.unblockUser(user2));
+        assertFalse(user1.getBlockedUsers().contains(user2));
+    }
+
+    @Test
+    public void testPerfectMatch() throws InvalidInput {
+        user1.setPreferences("11 PM", false, false, true, 5, 5);
+        user2.setPreferences("11 PM", false, false, true, 5, 5);
+        assertTrue(user1.perfectMatch(user2));
+    }
+
+    @Test
+    public void testNotPerfectMatch() throws InvalidInput {
+        user1.setPreferences("11 PM", false, false, true, 5, 5);
+        user2.setPreferences("10 PM", true, false, true, 5, 5);
+        assertFalse(user1.perfectMatch(user2));
+    }
+
+    @Test
+    public void testPartialMatch() throws InvalidInput {
+        user1.setPreferences("11 PM", false, false, true, 5, 5);
+        user2.setPreferences("11 PM", true, false, true, 4, 3);
+        assertEquals(3, user1.partialMatch(user2));  // Expecting 3 matching preferences
+    }
+
+    @Test
+    public void testNoPartialMatch() throws InvalidInput {
+        user1.setPreferences("11 PM", false, false, true, 5, 5);
+        user2.setPreferences("10 PM", true, true, false, 1, 2);
+        assertEquals(0, user1.partialMatch(user2));  // Expecting 0 matches
+    }
+
+    @Test
     public void testSetPhoneNumberUser4() {
         user4.setPhoneNumber(null);
         assertEquals(null, user4.getPhoneNumber());  // Assuming null phone number defaults to empty string
