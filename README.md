@@ -143,6 +143,10 @@ _Method Summary_
 | boolean           | unblockUser(User user)    | Unblocks a user.                                          |
 | ArrayList<User>   | getFriends()              | Returns a list of users who are currently friends.        |
 | ArrayList<User>   | getBlocked()              | Returns a list of users who are currently blocked.        |
+| ArrayList<User>   | getFriendList()           | Returns a list of users who are friends from FriendList   |
+| void              | setFriendList(ArrayList<User> friends) | Updates a list of users who are friends from FriendList |
+| ArrayList<User>   | getBlockedUsers()         | Returns a list of users who are blocked from FriendList   |
+| void              | setBlockedUsers(ArrayList<User> blocked)| Updates a list of users who are blocked from FriendList |
 
 _Inner Classes_
 
@@ -151,7 +155,7 @@ This inner class handles tasks related to friends in a multi-threaded environmen
 
 | Modifier and Type | Method     | Description                                              |
 |-------------------|------------|----------------------------------------------------------|
-| UserTask(User user, String action) | Stores parameters as instance variables. |
+||UserTask(User user, String action) | Stores parameters as instance variables. |
 | void              | run()      | Executes the corresponding method in a multi-threaded scope. |
 
 _Testing_
