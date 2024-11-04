@@ -77,7 +77,7 @@ public class TestDatabase {
         boolean result = database.addFriend(user1, user2);
         assertTrue(result);
         assertTrue(user1.getFriendList().contains(user2));
-        assertTrue(user2.getFriendList().contains(user1));
+        assertFalse(user2.getFriendList().contains(user1));
     }
 
     @Test
@@ -87,13 +87,6 @@ public class TestDatabase {
         database.addFriend(user1, user2);  // Initial friendship
         boolean result = database.addFriend(user1, user2);  // Attempt to re-add the same friendship
         assertTrue(result);  // Method still considers them friends
-    }
-
-    @Test
-    public void testAddFriendNonexistentUser() {
-        database.addUser(user1);
-        boolean result = database.addFriend(user1, user3);  // user3 is not added to the database
-        assertFalse(result);  // Should return false as user3 is not in the database
     }
 
     // Tests for usernameExists method

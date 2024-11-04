@@ -239,7 +239,7 @@ public class Database {
 
                     if ((sender.equals(user1) && receiver.equals(user2))
                             || (sender.equals(user2) && receiver.equals(user1))) {
-                        messages.add(tokens[3]);
+                        messages.add(tokens[2]);
                     }
                 }
             }
