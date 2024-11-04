@@ -57,8 +57,8 @@ public class Database {
                 break;
             }
         }
-        if (isFriend1 && isFriend2) {
-            saveFriendsToFile();
+        if (!isFriend1 && !isFriend2) {
+            user1.addFriend(user2);
             return true;
         }
         return false;
