@@ -432,6 +432,7 @@ Constructor
 Defines three types of messages: TEXT, IMAGE, and VIDEO
 
 * Methods added to Database.java
+  
 | Modifier | Function Name                      | Description                                |
 |----------|------------------------------------|--------------------------------------------|
 | public   | `saveProfilePicture(User user)`    | Saves user's profile picture to a file.    |
