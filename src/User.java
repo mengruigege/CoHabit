@@ -19,6 +19,7 @@ public class User implements Profile, FriendManageable, Blockable {
     private FriendList friendUsers = new FriendList();
     private FriendList blockedUsers = new FriendList();
 
+    //Constructs a newly allocated User object with the specified field values.
     public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
         this.name = name;
         this.password = password;
@@ -29,29 +30,46 @@ public class User implements Profile, FriendManageable, Blockable {
 
     }
 
+    //Retrieves the list of friends.
     public ArrayList<User> getFriendList() {
         return friendUsers.getFriends();
     }
+    //Retrieves the list of blocked users.
     public ArrayList<User> getBlockedUsers() {
         return blockedUsers.getBlocked();
     }
+
+    //Sets the friends list.
     public void setFriendList(ArrayList<User> friends) {
         friendUsers.setFriendList(friends);
     }
+
+    //Sets the blocked users list.
     public void setBlockedUsers(ArrayList<User> blocked) {
         blockedUsers.setBlockedUsers(blocked);
     }
-    public boolean removeFriend(User user) {return friendUsers.removeFriend(user);}
+
+    //Removes a user from the friends list.
+    public boolean removeFriend(User user) {
+        return friendUsers.removeFriend(user);
+    }
+
+    //Adds a user to the friends list if not already a friend.
     public boolean addFriend(User user) {
         return friendUsers.addFriend(user);
     }
+
+    //Blocks a user and removes them from the friends list.
     public boolean blockUser(User user) {
         return friendUsers.blockUser(user);
     }
+
+    //Unblocks a user.
     public boolean unblockUser(User user) {
         return friendUsers.unblockUser(user);
     }
 
+    //getters and setters for user personal details such as name, password, contact details, and so on
     public String getName() { return name; }
     public String getPassword() { return password; }
     public String getEmail() { return email; }
@@ -82,7 +100,7 @@ public class User implements Profile, FriendManageable, Blockable {
             }
     }
 
-    // Equals method that determines if two users have all the same preferences.
+    // Method that determines if two users have all the exact same preferences.
     public boolean perfectMatch(User user) {
         return this.bedTime.equals(user.bedTime) &&
                 this.alcohol == user.alcohol &&
@@ -92,6 +110,7 @@ public class User implements Profile, FriendManageable, Blockable {
                 this.roomHours == user.roomHours;
     }
 
+    // Method that determines if 2 users have some matched preferences and checks the count of matched preferences
     public int partialMatch(User user) {
         int count = 0;
         if (this.bedTime.equals(user.bedTime)) {
@@ -116,6 +135,7 @@ public class User implements Profile, FriendManageable, Blockable {
 
     }
 
+    //Returns a string representation of the user object
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name,
                 this.password, this.email, this.phoneNumber, this.description,
