@@ -424,6 +424,6 @@ Constructor
 
 ---
 
-### **Extra Credit - Images as Profile Pictures**
+### **Extra Credit - Images**
 
 
