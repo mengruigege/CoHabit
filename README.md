@@ -340,9 +340,9 @@ _Method Summary_
 
 | Modifier and Type | Method                     | Description                                               |
 |-------------------|---------------------------|-----------------------------------------------------------|
-| ArrayList<User>   | searchByName(String name) | Searches for users by name and returns a list of matching users. |
-| ArrayList<User>   | searchByUniversity(String university) | Searches for users by university and returns a list of matching users. |
-| ArrayList<User>   | searchByPreference(String preference) | Searches for users by preference and returns a list of matching users. |
+| ArrayList<User>   | searchByParameter(String parameter, String value) | Searches for users by parameters such as name, university, etc and returns a list of matching users. |
+| ArrayList<User>   | exactMatch(User mainUser)| Returns ArrayList of all users who are an exact match based on the search |
+| ArrayList<User>   | partialMatch(User mainUser) | Returns ArrayList of all users who are a partial match based on the search |
 
 _Testing_
 UserSearch.java is tested by unit tests included in the class TestUserSearch.java.
