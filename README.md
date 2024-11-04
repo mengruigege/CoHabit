@@ -132,6 +132,7 @@ _Constructor Summary_
 | Constructor                               | Description                                              |
 |-------------------------------------------|----------------------------------------------------------|
 | FriendList(User user, Database database) | Constructs a newly allocated FriendList object with the specified field values. |
+| FriendList()                             | Helps deal with null values in UserSearch.java and FriendList.java|
 
 _Method Summary_
 
