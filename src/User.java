@@ -2,13 +2,11 @@ import java.util.ArrayList;
 
 /**
  * Team Project Phase 1 - CoHabit
- *
+ * <p>
  * This program works to implement a roommate search algorithm
  *
- * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng 
- *
+ * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng
  * @version November 3rd, 2024
- *
  */
 
 public class User implements Profile, FriendManageable, Blockable {
@@ -45,6 +43,7 @@ public class User implements Profile, FriendManageable, Blockable {
     public ArrayList<User> getFriendList() {
         return friendUsers.getFriends();
     }
+
     //Retrieves the list of blocked users.
     public ArrayList<User> getBlockedUsers() {
         return blockedUsers.getBlocked();
@@ -81,34 +80,70 @@ public class User implements Profile, FriendManageable, Blockable {
     }
 
     //getters and setters for user personal details such as name, password, contact details, and so on
-    public String getName() { return name; }
-    public String getPassword() { return password; }
-    public String getEmail() { return email; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public String getUniversity() { return university; }
-    public String getDescription() { return description; }
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getUniversity() {
+        return university;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public String getPreferences() {
         return String.format("%s, %b, %b, %b, %d, %d",
                 this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
 
-    public void setName(String name) { this.name = name; }
-    public void setPassword(String pwd) { this.password = pwd; }
-    public void setEmail(String email) { this.email = email; }
-    public void setPhoneNumber(String phoneNum) { this.phoneNumber = phoneNum; }
-    public void setUniversity(String university) { this.university = university; }
-    public void setDescription(String userDesc) { this.description = userDesc; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPassword(String pwd) {
+        this.password = pwd;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(String phoneNum) {
+        this.phoneNumber = phoneNum;
+    }
+
+    public void setUniversity(String university) {
+        this.university = university;
+    }
+
+    public void setDescription(String userDesc) {
+        this.description = userDesc;
+    }
+
     public void setPreferences(String bedTime, boolean alcohol, boolean smoke,
                                boolean guests, int tidy, int roomHours) throws InvalidInput {
-            this.bedTime = bedTime;
-            this.alcohol = alcohol;
-            this.smoke = smoke;
-            this.guests = guests;
-            this.tidy = tidy;
-            this.roomHours = roomHours;
-            if (bedTime == null || tidy <=0 || tidy > 10 || roomHours < 0) {
-                throw new InvalidInput("Invalid Input");
-            }
+        this.bedTime = bedTime;
+        this.alcohol = alcohol;
+        this.smoke = smoke;
+        this.guests = guests;
+        this.tidy = tidy;
+        this.roomHours = roomHours;
+        if (bedTime == null || tidy <= 0 || tidy > 10 || roomHours < 0) {
+            throw new InvalidInput("Invalid Input");
+        }
     }
 
     // Method that determines if two users have all the exact same preferences.

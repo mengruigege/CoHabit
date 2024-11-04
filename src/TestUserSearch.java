@@ -1,5 +1,7 @@
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 
 public class TestUserSearch {
@@ -19,27 +21,31 @@ public class TestUserSearch {
             throw new RuntimeException(e);
         }
     }
+
     static {
         Database users = new Database();
         users.addUser(user1);
         users.addUser(user2);
     }
+
     @Test
-    public void testsearchParamter(){
-        ArrayList<User> search = userSearch.searchByParameter("name","Bob");
+    public void testsearchParamter() {
+        ArrayList<User> search = userSearch.searchByParameter("name", "Bob");
         assertTrue(search.contains(user1));
-        search = userSearch.searchByParameter("email","bob@gmail.com");
+        search = userSearch.searchByParameter("email", "bob@gmail.com");
         assertTrue(search.contains(user1));
-        search = userSearch.searchByParameter("phone","1234567890");
+        search = userSearch.searchByParameter("phone", "1234567890");
         assertTrue(search.contains(user1));
-        search = userSearch.searchByParameter("university","purdue");
+        search = userSearch.searchByParameter("university", "purdue");
         assertTrue(search.contains(user1));
     }
+
     @Test
     public void testExactMatch() {
         ArrayList<User> exact = userSearch.exactMatch(user1);
         assertTrue(exact.contains(user1));
     }
+
     @Test
     public void testPartialMatch() {
         ArrayList<User> partial = userSearch.partialMatch(user1);

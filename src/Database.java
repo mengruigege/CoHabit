@@ -4,13 +4,11 @@ import java.io.*;
 
 /**
  * Team Project Phase 1 - CoHabit
- *
+ * <p>
  * This program works to implement a roommate search algorithm
  *
- * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng 
- *
+ * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng
  * @version November 3rd, 2024
- *
  */
 
 public class Database {
@@ -25,7 +23,7 @@ public class Database {
     private static final String BLOCKED_FILE = "blocked.txt";
     private static final Object lock = new Object();
 
-    public  Database() {
+    public Database() {
         synchronized (lock) {
             this.allUsers = new ArrayList<>();
         }
@@ -104,7 +102,7 @@ public class Database {
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",");
-                if(data.length == 6) {
+                if (data.length == 6) {
                     String name = data[0];
                     String password = data[1];
                     String email = data[2];

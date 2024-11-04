@@ -2,13 +2,11 @@ import java.util.ArrayList;
 
 /**
  * Team Project Phase 1 - CoHabit
- *
+ * <p>
  * This program works to implement a roommate search algorithm
  *
- * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng 
- *
+ * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng
  * @version November 3rd, 2024
- *
  */
 
 public class Chat implements Sendable {
@@ -26,7 +24,7 @@ public class Chat implements Sendable {
     //Adds a message to the messages list, returns true if added successfully
     //Synchronized to ensure a thread-safe environment
     public synchronized boolean sendMessage(User sender, User receiver, String message) {
-        if(message != null) {
+        if (message != null) {
             messages.add(message);
         } else {
             return false;
@@ -38,7 +36,7 @@ public class Chat implements Sendable {
     //Synchronized to ensure a thread-safe environment
     public synchronized ArrayList<String> getMessages() {
         ArrayList<String> nullList = new ArrayList<>();
-        if(messages != null) {
+        if (messages != null) {
             return messages;
         } else {
             return nullList;
@@ -53,23 +51,23 @@ public class Chat implements Sendable {
 
     //Inner class to implement multi-threading in a thread-safe environment for sending messages
     private class SendMessageTask implements Runnable {
-            private final User sender;
-            private final User receiver;
-            private final String message;
+        private final User sender;
+        private final User receiver;
+        private final String message;
 
-            public SendMessageTask(User sender, User receiver, String message) {
-                this.sender = sender;
-                this.receiver = receiver;
-                this.message = message;
-            }
+        public SendMessageTask(User sender, User receiver, String message) {
+            this.sender = sender;
+            this.receiver = receiver;
+            this.message = message;
+        }
 
-            public void run() { //Adds a message to the messages list within a synchronized block.
-                synchronized (Chat.this) {
-                    messages.add(message);
-                    System.out.println("Message sent: " + message);
-                }
+        public void run() { //Adds a message to the messages list within a synchronized block.
+            synchronized (Chat.this) {
+                messages.add(message);
+                System.out.println("Message sent: " + message);
             }
         }
+    }
 
     //Inner class to implement multi-threading in a thread-safe environment for deleting messages
     private class DeleteMessageTask implements Runnable {
@@ -90,6 +88,6 @@ public class Chat implements Sendable {
                 }
             }
         }
-     }
+    }
 }
 

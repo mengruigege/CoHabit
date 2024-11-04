@@ -2,13 +2,11 @@ import java.util.ArrayList;
 
 /**
  * Team Project Phase 1 - CoHabit
- *
+ * <p>
  * This program works to implement a roommate search algorithm
  *
- * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng 
- *
+ * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng
  * @version November 3rd, 2024
- *
  */
 
 public class FriendList implements FriendManageable, Blockable {
@@ -38,7 +36,7 @@ public class FriendList implements FriendManageable, Blockable {
         if (user != null && !friends.contains(user)) {
             friends.add(user);
             if (blocked.contains(user)) {
-                unblockUser(user); 
+                unblockUser(user);
             }
             return true;
         }
@@ -127,7 +125,7 @@ public class FriendList implements FriendManageable, Blockable {
                     System.out.println("Unknown action: " + action);
                     return;
             }
-            
+
             if (result) { //Prints the result
                 System.out.println(user.getName() + " successfully " + action.toLowerCase().replace("_", " ") + ".");
             } else {
