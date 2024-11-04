@@ -447,5 +447,5 @@ Constructor
 | public   | `setDescription(String userDesc)` | Sets the user's description.                                                                |
 | public   | `getProfilePicture()`        | Retrieves the user's profile picture data as a byte array.                                       |
 
-
+---
 
