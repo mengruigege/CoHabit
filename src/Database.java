@@ -10,18 +10,16 @@ public class Database {
     private static final String BLOCKED_FILE = "blocked.txt";
     private static final Object lock = new Object();
 
-    public Database() {
+    public  Database() {
         synchronized (lock) {
             this.allUsers = new ArrayList<>();
         }
         loadUsersFromFile();
     }
 
-    public boolean addUser(User user) {
+    public synchronized boolean addUser(User user) {
         if (user != null && !usernameExists(user.getName())) {
-            synchronized (lock) {
-                allUsers.add(user);
-            }
+            allUsers.add(user);
             saveUsersToFile();
             return true;
         }
@@ -100,9 +98,7 @@ public class Database {
                     String university = tokens[5];
 
                     User user = new User(name, password, email, phoneNumber, description, university);
-                    synchronized (lock) {
-                        allUsers.add(user);
-                    }
+                    allUsers.add(user);
                 }
             }
         } catch (IOException e) {
@@ -227,26 +223,24 @@ public class Database {
         }
     }
 
-    public ArrayList<String> loadConversation(String user1, String user2) {
+    public synchronized ArrayList<String> loadConversation(String user1, String user2) {
         ArrayList<String> messages = new ArrayList<>();
-        synchronized (lock) {
-            try (BufferedReader br = new BufferedReader(new FileReader(MESSAGES_FILE))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] tokens = line.split(",", 4);
-                    if (tokens.length == 4) {
-                        String sender = tokens[0];
-                        String receiver = tokens[1];
+        try (BufferedReader br = new BufferedReader(new FileReader(MESSAGES_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(",", 4);
+                if (tokens.length == 4) {
+                    String sender = tokens[0];
+                    String receiver = tokens[1];
 
-                        if ((sender.equals(user1) && receiver.equals(user2)) || (sender.equals(user2) && receiver.equals(user1))) {
-                            messages.add(line);
-                        }
+                    if ((sender.equals(user1) && receiver.equals(user2)) || (sender.equals(user2) && receiver.equals(user1))) {
+                        messages.add(line);
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-            return messages;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return messages;
     }
 }
