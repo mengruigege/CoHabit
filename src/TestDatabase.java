@@ -139,6 +139,8 @@ public class TestDatabase {
         ArrayList<User> users = database.getAllUsers();
 
         assertTrue(0 < users.size());
+        assertEquals("Bob", users.get(0).getName());
+        assertEquals("Jim", users.get(1).getName());
     }
 
     @Test

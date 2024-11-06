@@ -13,7 +13,7 @@ import java.io.*;
  */
 
 public class Database {
-    private static ArrayList<User> allUsers;
+    private static ArrayList<User> allUsers = new ArrayList<>();
     File usersFile = new File("users.txt");
     File friendsFile = new File("friends.txt");
     File messagesFile = new File("messages.txt");
@@ -100,22 +100,22 @@ public class Database {
     public synchronized void loadUsersFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
+            ArrayList<User> users = new ArrayList<>();
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",");
-                if (data.length >= 6) {
-                    String name = data[0];
-                    String password = data[1];
-                    String email = data[2];
-                    String phoneNumber = data[3];
-                    String description = data[4];
-                    String university = data[5];
+                String name = data[0];
+                String password = data[1];
+                String email = data[2];
+                String phoneNumber = data[3];
+                String description = data[4];
+                String university = data[5];
 
-                    User user = new User(name, password, email, phoneNumber, description, university);
-                    loadProfilePicture(user);
-                    allUsers.add(user);
-                }
+                User user = new User(name, password, email, phoneNumber, description, university);
+                loadProfilePicture(user);
+                users.add(user);
             }
+            allUsers = users;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (UsernameTakenException e) {
