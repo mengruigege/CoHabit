@@ -117,7 +117,6 @@ public class Client implements ClientService {
     // Establish connection to the server
     public boolean connect(String serverAddress, int port) {
         try {
-            // Create socket and connect to server
             socket = new Socket(serverAddress, port);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
@@ -153,9 +152,9 @@ public class Client implements ClientService {
         }
 
         try {
-            out.writeObject("LOGIN");
-            out.writeObject(username);
-            out.writeObject(password);
+            // "LOGIN,username,password"
+            String command = "LOGIN," + username + "," + password;
+            out.writeObject(command);
 
             String response = (String) in.readObject();
             if ("OK".equals(response)) {
@@ -180,8 +179,9 @@ public class Client implements ClientService {
         }
 
         try {
-            out.writeObject("REGISTER");
-            out.writeObject(user);
+            // "REGISTER,username,password"
+            String command = "REGISTER," + user.getName() + "," + user.getPassword();
+            out.writeObject(command);
 
             String response = (String) in.readObject();
             if ("OK".equals(response)) {
@@ -206,9 +206,9 @@ public class Client implements ClientService {
         }
 
         try {
-            out.writeObject("SEND_MESSAGE");
-            out.writeObject(receiver);
-            out.writeObject(message);
+            // "SEND_MESSAGE,receiver,message"
+            String command = "SEND_MESSAGE," + receiver + "," + message;
+            out.writeObject(command);
 
             String response = (String) in.readObject();
             if ("OK".equals(response)) {
@@ -233,8 +233,9 @@ public class Client implements ClientService {
         }
 
         try {
-            out.writeObject("FETCH_MESSAGES");
-            out.writeObject(user);
+            // "FETCH_MESSAGES,username"
+            String command = "FETCH_MESSAGES," + user;
+            out.writeObject(command);
 
             messages = (ArrayList<String>) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -251,8 +252,9 @@ public class Client implements ClientService {
         }
 
         try {
-            out.writeObject("ADD_FRIEND");
-            out.writeObject(username);
+            // "ADD_FRIEND,username"
+            String command = "ADD_FRIEND," + username;
+            out.writeObject(command);
 
             String response = (String) in.readObject();
             if ("OK".equals(response)) {
@@ -276,8 +278,9 @@ public class Client implements ClientService {
         }
 
         try {
-            out.writeObject("VIEW_PROFILE");
-            out.writeObject(username);
+            // "VIEW_PROFILE,username"
+            String command = "VIEW_PROFILE," + username;
+            out.writeObject(command);
 
             User user = (User) in.readObject();
             System.out.println("User profile: " + user.toString());
@@ -296,8 +299,9 @@ public class Client implements ClientService {
         }
 
         try {
-            out.writeObject("UPDATE_PROFILE");
-            out.writeObject(updatedProfile);
+            // "UPDATE_PROFILE,username,password"
+            String command = "UPDATE_PROFILE," + updatedProfile.getName() + "," + updatedProfile.getPassword();
+            out.writeObject(command);
 
             String response = (String) in.readObject();
             if ("OK".equals(response)) {
@@ -314,3 +318,4 @@ public class Client implements ClientService {
         }
     }
 }
+

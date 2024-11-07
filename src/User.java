@@ -35,7 +35,7 @@ public class User implements Profile, FriendManageable, Blockable {
         this.password = this.password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.description = userDescription == null ? "" : userDescription;
+        this.description = description;
         this.university = university;
 
     }

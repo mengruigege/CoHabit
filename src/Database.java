@@ -109,7 +109,8 @@ public class Database {
                 String description = data[4];
                 String university = data[5];
 
-                User user = new User(username, password);
+
+                User user = new User(name, password);
                 loadProfilePicture(user);
                 users.add(user);
             }
