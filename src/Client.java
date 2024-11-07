@@ -13,10 +13,10 @@ public class Client implements ClientService {
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
     private Chat chat;
-    private FriendList friendList;
+    private Relationships friendList;
 
     // Constructor
-    public Client(User user, FriendList friendList, Chat chat) {
+    public Client(User user, Relationships friendList, Chat chat) {
         this.currentUser = user;
         this.friendList = friendList;
         this.chat = chat;
@@ -26,7 +26,7 @@ public class Client implements ClientService {
         String username = null;
         String password = null;
         User user = new User(username, password);
-        FriendList friendList = new FriendList();
+        Relationships friendList = new Relationships();
         Chat chat = new Chat();
         Client client = new Client(user, friendList, chat);
 
