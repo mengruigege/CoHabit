@@ -1,6 +1,4 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.nio.file.*;
 import java.io.*;
 
 /**
@@ -111,7 +109,7 @@ public class Database {
                 String description = data[4];
                 String university = data[5];
 
-                User user = new User(name, password, email, phoneNumber, description, university);
+                User user = new User(username, password);
                 loadProfilePicture(user);
                 users.add(user);
             }

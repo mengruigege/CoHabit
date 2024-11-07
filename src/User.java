@@ -30,9 +30,9 @@ public class User implements Profile, FriendManageable, Blockable {
     private FriendList blockedUsers = new FriendList();
 
     //Constructs a newly allocated User object with the specified field values.
-    public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
+    public User(String username, String password) throws UsernameTakenException {
         this.name = name;
-        this.password = password;
+        this.password = this.password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.description = userDescription == null ? "" : userDescription;

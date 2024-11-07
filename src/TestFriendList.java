@@ -16,10 +16,10 @@ public class TestFriendList {
     @Before
     public void setUp() throws UsernameTakenException {
         database = new Database(); // Initialize with mock or empty database
-        user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
-        user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "person2", "purdue2");
-        user3 = new User("Alice", "password345", "alice@gmail.com", "3456789012", "person3", "purdue3");
-        user4 = new User("David", "password456", "david@gmail.com", "4567890123", "person4", "purdue4");
+        user1 = new User(username, password);
+        user2 = new User(username, password);
+        user3 = new User(username, password);
+        user4 = new User(username, password);
         friendList = new FriendList(user1, database);
     }
 

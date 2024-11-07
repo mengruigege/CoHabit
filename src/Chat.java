@@ -15,7 +15,7 @@ public class Chat implements Sendable {
     private ArrayList<String> messages;
 
     //Constructor to initialize all variables with their respective objects
-    public Chat(User sender, User receiver, ArrayList<String> messages) {
+    public Chat() {
         this.sender = sender;
         this.receiver = receiver;
         this.messages = messages;

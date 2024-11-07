@@ -14,8 +14,8 @@ public class TestChat {
 
     @Before
     public void setUp() throws UsernameTakenException {
-        user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "sender", "purdue");
-        user2 = new User("Joe", "password234", "joe@gmail.com", "2345678901", "receiver", "purdue2");
+        user1 = new User(username, password);
+        user2 = new User(username, password);
         messages = new ArrayList<>();
     }
 
@@ -24,7 +24,7 @@ public class TestChat {
     public void testConstructorWithInitialMessages() {
         messages.add("hello");
         messages.add("goodbye");
-        Chat chat = new Chat(user1, user2, messages);
+        Chat chat = new Chat();
 
         ArrayList<String> retrievedMessages = chat.getMessages();
         assertEquals(2, retrievedMessages.size());
@@ -34,20 +34,20 @@ public class TestChat {
 
     @Test
     public void testConstructorEmptyMessages() {
-        Chat chat = new Chat(user1, user2, new ArrayList<>());
+        Chat chat = new Chat();
         assertTrue(chat.getMessages().isEmpty());  // Chat should start with no messages
     }
 
     @Test
     public void testConstructorNullMessages() {
-        Chat chat = new Chat(user1, user2, null);
+        Chat chat = new Chat();
         assertTrue(chat.getMessages().isEmpty());  // Chat should handle null by initializing an empty list
     }
 
     // Tests for sendMessage method
     @Test
     public void testSendMessageSuccessfully() {
-        Chat chat = new Chat(user1, user2, new ArrayList<>());
+        Chat chat = new Chat();
         chat.sendMessage(user1, user2, "hello");
 
         ArrayList<String> messages = chat.getMessages();
@@ -57,7 +57,7 @@ public class TestChat {
 
     @Test
     public void testSendMultipleMessages() {
-        Chat chat = new Chat(user1, user2, new ArrayList<>());
+        Chat chat = new Chat();
         chat.sendMessage(user1, user2, "hi");
         chat.sendMessage(user2, user1, "hello back");
         chat.sendMessage(user1, user2, "how are you?");
@@ -71,7 +71,7 @@ public class TestChat {
 
     @Test
     public void testSendMessageNullContent() {
-        Chat chat = new Chat(user1, user2, new ArrayList<>());
+        Chat chat = new Chat();
         chat.sendMessage(user1, user2, null);
 
         assertTrue(chat.getMessages().isEmpty());  // Null message should not be added
@@ -80,7 +80,7 @@ public class TestChat {
     // Tests for deleteMessage(User sender, User receiver, String message) method
     @Test
     public void testDeleteMessageSuccessfully() {
-        Chat chat = new Chat(user1, user2, new ArrayList<>());
+        Chat chat = new Chat();
         chat.sendMessage(user1, user2, "hello from user1");
         chat.sendMessage(user2, user1, "reply from user2");
 
@@ -92,7 +92,7 @@ public class TestChat {
 
     @Test
     public void testDeleteMessageNoMatch() {
-        Chat chat = new Chat(user1, user2, new ArrayList<>());
+        Chat chat = new Chat();
         chat.sendMessage(user1, user2, "message from user1");
 
         assertFalse(chat.deleteMessage(user1, user2, "nonexistent message"));  // Message doesn't exist
@@ -103,7 +103,7 @@ public class TestChat {
 
     @Test
     public void testDeleteMessageFromEmptyChat() {
-        Chat chat = new Chat(user1, user2, new ArrayList<>());
+        Chat chat = new Chat();
         assertFalse(chat.deleteMessage(user1, user2, "any message"));  // Attempt to delete from empty chat
 
         assertTrue(chat.getMessages().isEmpty());  // Should remain empty
@@ -112,7 +112,7 @@ public class TestChat {
     // Additional test for getMessages method directly
     @Test
     public void testGetMessagesDirectly() {
-        Chat chat = new Chat(user1, user2, messages);
+        Chat chat = new Chat();
         chat.sendMessage(user1, user2, "message1");
         chat.sendMessage(user2, user1, "message2");
 

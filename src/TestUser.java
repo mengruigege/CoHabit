@@ -11,10 +11,10 @@ public class TestUser {
 
     @Before
     public void setUp() throws UsernameTakenException {
-        user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "person", "purdue");
-        user2 = new User("Joe", "password234", "joe@gmail.com", "2234567890", "person2", "purdue2");
-        user3 = new User(null, "password345", "jim@gmail.com", "3334567890", "person3", "purdue3");
-        user4 = new User("James", null, null, "4567890123", "person4", "purdue4");
+        user1 = new User(username, password);
+        user2 = new User(username, password);
+        user3 = new User(username, password);
+        user4 = new User(username, password);
     }
 
     @Test
