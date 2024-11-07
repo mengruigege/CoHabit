@@ -18,7 +18,7 @@ public class Client implements ClientService {
     // Constructor
     public Client(User user, FriendList friendList, Chat chat) {
         this.currentUser = user;
-        this.FriendList = friendList;
+        this.friendList = friendList;
         this.chat = chat;
     }
 
@@ -239,10 +239,10 @@ public class Client implements ClientService {
             scanner.nextLine(); // Consume newline
 
             switch (choice) {
-                case 1 -> loginPrompt(scanner);
-                case 2 -> registerPrompt(scanner);
-                case 3 -> messagePrompt(scanner);
-                case 4 -> profilePrompt(scanner);
+                case 1 -> login(scanner);
+                case 2 -> register(scanner);
+                case 3 -> msg(scanner);
+                case 4 -> profile(scanner);
                 case 5 -> {
                     disconnect();
                     scanner.close();
