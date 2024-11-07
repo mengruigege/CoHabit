@@ -63,7 +63,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("LOGIN " + username + " " + password);  // Send login request to the server
+        System.out.println("LOGIN " + username + " " + password);  // Send login request to the server
         try {
             String response = in.readLine();
             if ("OK".equals(response)) {
@@ -88,7 +88,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("REGISTER " + user.getName() + " " + user.getPassword() + " " + user.getEmail());  // Send register request
+        System.out.println("REGISTER " + user.getName() + " " + user.getPassword() + " " + user.getEmail());  // Send register request
         try {
             String response = in.readLine();
             if ("OK".equals(response)) {

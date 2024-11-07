@@ -5,8 +5,11 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server  {
-    private static Database database = new Database(); 
+public class Server {
+    private static Database database = new Database();
+    database.loadUsersFromFile();
+
+
 
 // method to check if the login was successful or not
     public static boolean login(String username, String password) {
