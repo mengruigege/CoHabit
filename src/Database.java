@@ -14,14 +14,11 @@ import java.io.*;
 
 public class Database {
     private static ArrayList<User> allUsers = new ArrayList<>();
-    File usersFile = new File("users.txt");
-    File friendsFile = new File("friends.txt");
-    File messagesFile = new File("messages.txt");
-    File blockedFile = new File("blocked.txt");
     private static final String USERS_FILE = "users.txt";
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
     private static final String BLOCKED_FILE = "blocked.txt";
+    private static final String FRIEND_REQUESTS_FILE = "friend_requests.txt";
     private static final String PROFILE_PICTURE_FOLDER = "profile_pictures";
     private static final Object lock = new Object();
 
@@ -154,7 +151,7 @@ public class Database {
             pictureFile.delete();
         }
     }
-    
+
     public synchronized void saveUsersToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE))) {
             for (User user : allUsers) {
@@ -259,6 +256,62 @@ public class Database {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public synchronized void addFriendRequest(User sender, User receiver) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE, true))) {
+            pw.println(sender.getName() + ":" + receiver.getName() + ":PENDING");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Updates the status of a friend request (ACCEPTED or DECLINED)
+    public synchronized void updateFriendRequestStatus(User sender, User receiver, String status) {
+        ArrayList<String> requests = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(":");
+                if (tokens.length == 3) {
+                    String currentSender = tokens[0];
+                    String currentReceiver = tokens[1];
+                    String currentStatus = tokens[2];
+
+                    if (currentSender.equals(sender.getName()) && currentReceiver.equals(receiver.getName())) {
+                        requests.add(currentSender + ":" + currentReceiver + ":" + status); // Update the status
+                    } else {
+                        requests.add(line); // Keep the original line if no match
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Write the updated requests back to the file
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
+            for (String request : requests) {
+                pw.println(request);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Loads all pending friend requests from the file
+    public synchronized ArrayList<String> loadFriendRequestsFromFile() {
+        ArrayList<String> friendRequests = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                friendRequests.add(line); // Load each request as a line in the list
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return friendRequests;
     }
 
     public synchronized void recordMessages(String sender, String receiver, String message) {

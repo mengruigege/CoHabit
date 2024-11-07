@@ -29,6 +29,13 @@ public class Relationships implements FriendManageable, Blockable {
         this.outgoingRequests = new ArrayList<>();
     }
 
+    //Helps deal with null values in UserSearch.java and Relationships.java
+    public Relationships() {
+        this.database = new Database();
+        this.friends = new ArrayList<>();
+        this.blocked = new ArrayList<>();
+    }
+
     // Sends a friend request to another user
     public boolean sendFriendRequest(User receiver) {
         if (receiver != null && !isFriend(receiver) && !hasPendingOutgoingRequest(receiver)) {
@@ -40,14 +47,14 @@ public class Relationships implements FriendManageable, Blockable {
     }
 
     // Receives a friend request from another user
-    public void receiveFriendRequest(User sender) {
+    public synchronized void receiveFriendRequest(User sender) {
         if (!incomingRequests.contains(sender) && !isFriend(sender)) {
             incomingRequests.add(sender);
         }
     }
 
     // Accepts a friend request from a specified user
-    public boolean acceptFriendRequest(User sender) {
+    public synchronized boolean acceptFriendRequest(User sender) {
         if (incomingRequests.contains(sender)) {
             incomingRequests.remove(sender);
             addFriend(sender);
@@ -58,35 +65,28 @@ public class Relationships implements FriendManageable, Blockable {
     }
 
     // Declines a friend request from a specified user
-    public boolean declineFriendRequest(User sender) {
+    public synchronized boolean declineFriendRequest(User sender) {
         return incomingRequests.remove(sender);
     }
 
     // Helper method to check if a user is already a friend
-    public boolean isFriend(User user) {
+    public synchronized boolean isFriend(User user) {
         return friends.contains(user);
     }
 
     // Helper method to check for a pending outgoing request
-    public boolean hasPendingOutgoingRequest(User user) {
+    public synchronized boolean hasPendingOutgoingRequest(User user) {
         return outgoingRequests.contains(user);
     }
 
     // Returns a list of incoming friend requests
-    public ArrayList<User> getIncomingRequests() {
+    public synchronized ArrayList<User> getIncomingRequests() {
         return new ArrayList<>(incomingRequests);
     }
 
     // Returns a list of outgoing friend requests
-    public ArrayList<User> getOutgoingRequests() {
+    public synchronized ArrayList<User> getOutgoingRequests() {
         return new ArrayList<>(outgoingRequests);
-    }
-
-    //Helps deal with null values in UserSearch.java and Relationships.java
-    public Relationships() {
-        this.database = new Database();
-        this.friends = new ArrayList<>();
-        this.blocked = new ArrayList<>();
     }
 
     //Adds a user to the friends list if not already a friend.
@@ -102,22 +102,22 @@ public class Relationships implements FriendManageable, Blockable {
     }
 
     //Returns a list of users who are friends from Relationships
-    public ArrayList<User> getFriendList() {
+    public synchronized ArrayList<User> getFriendList() {
         return friends;
     }
 
     //Updates a list of users who are friends from Relationships
-    public void setFriendList(ArrayList<User> friends) {
+    public synchronized void setFriendList(ArrayList<User> friends) {
         this.friends = friends;
     }
 
     //Returns a list of users who are blocked from Relationships
-    public ArrayList<User> getBlockedUsers() {
+    public synchronized ArrayList<User> getBlockedUsers() {
         return blocked;
     }
 
     //Updates a list of users who are blocked from Relationships
-    public void setBlockedUsers(ArrayList<User> blocked) {
+    public synchronized void setBlockedUsers(ArrayList<User> blocked) {
         this.blocked = blocked;
     }
 

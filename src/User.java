@@ -154,8 +154,6 @@ public class User implements Profile, FriendManageable, Blockable {
         }
     }
 
-
-
     // Method that determines if two users have all the exact same preferences.
     public boolean perfectMatch(User user) {
         return this.bedTime.equals(user.bedTime) &&
