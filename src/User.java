@@ -26,8 +26,7 @@ public class User implements Profile, FriendManageable, Blockable {
     private int tidy;
     private int roomHours;
 
-    private FriendList friendUsers = new FriendList();
-    private FriendList blockedUsers = new FriendList();
+    private Relationships relationships = new Relationships();
 
     //Constructs a newly allocated User object with the specified field values.
     public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
@@ -42,42 +41,42 @@ public class User implements Profile, FriendManageable, Blockable {
 
     //Retrieves the list of friends.
     public ArrayList<User> getFriendList() {
-        return friendUsers.getFriends();
+        return relationships.getFriends();
     }
 
     //Retrieves the list of blocked users.
     public ArrayList<User> getBlockedUsers() {
-        return blockedUsers.getBlocked();
+        return relationships.getBlocked();
     }
 
     //Sets the friends list.
     public void setFriendList(ArrayList<User> friends) {
-        friendUsers.setFriendList(friends);
+        relationships.setFriendList(friends);
     }
 
     //Sets the blocked users list.
     public void setBlockedUsers(ArrayList<User> blocked) {
-        blockedUsers.setBlockedUsers(blocked);
+        relationships.setBlockedUsers(blocked);
     }
 
     //Removes a user from the friends list.
     public boolean removeFriend(User user) {
-        return friendUsers.removeFriend(user);
+        return relationships.removeFriend(user);
     }
 
     //Adds a user to the friends list if not already a friend.
     public boolean addFriend(User user) {
-        return friendUsers.addFriend(user);
+        return relationships.addFriend(user);
     }
 
     //Blocks a user and removes them from the friends list.
     public boolean blockUser(User user) {
-        return friendUsers.blockUser(user);
+        return relationships.blockUser(user);
     }
 
     //Unblocks a user.
     public boolean unblockUser(User user) {
-        return friendUsers.unblockUser(user);
+        return relationships.unblockUser(user);
     }
 
     //getters and setters for user personal details such as name, password, contact details, and so on
@@ -154,6 +153,8 @@ public class User implements Profile, FriendManageable, Blockable {
             throw new InvalidInput("Invalid Input");
         }
     }
+
+
 
     // Method that determines if two users have all the exact same preferences.
     public boolean perfectMatch(User user) {
