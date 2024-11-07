@@ -200,6 +200,8 @@ public class Client implements ClientService {
         } catch (IOException e) {
             System.out.println("Error viewing profile: " + e.getMessage());
             return null;
+        } catch (UsernameTakenException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -229,7 +231,7 @@ public class Client implements ClientService {
     }
 
     
-    public void start() {
+    public void start() throws UsernameTakenException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the Chat Application!");
 
@@ -262,7 +264,7 @@ public class Client implements ClientService {
         login(username, password);
     }
 
-    private void register(Scanner scanner) {
+    private void register(Scanner scanner) throws UsernameTakenException {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
