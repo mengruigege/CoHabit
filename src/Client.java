@@ -10,6 +10,8 @@ public class Client implements ClientService {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private final String serverAddress = "localhost";
+    private final int serverPort = 1102;
 
     // Constructor
     public Client(User user, FriendList friendList, Chat chat) {
