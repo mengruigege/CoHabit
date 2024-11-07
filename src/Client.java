@@ -12,6 +12,8 @@ public class Client implements ClientService {
     private BufferedReader in;
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
+    private Chat chat;
+    private FriendList friendList;
 
     // Constructor
     public Client(User user, FriendList friendList, Chat chat) {
