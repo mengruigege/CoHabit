@@ -236,7 +236,7 @@ public class Client implements ClientService {
         while (isConnected) {
             System.out.println("Choose an action: 1) Login 2) Register 3) Send Message 4) View Profile 5) Exit");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> loginPrompt(scanner);
