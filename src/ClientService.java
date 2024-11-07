@@ -11,9 +11,9 @@ public interface ClientService {
     ArrayList<String> fetchMessages(String user);             // Fetch message history
 
     boolean addFriend(String username);                       // Add friend directly
-    boolean sendFriendRequest(String username);               // Send friend request
-    boolean respondToFriendRequest(String sender, boolean accept); // Respond to friend request
-    ArrayList<String> getFriendRequests();                    // Retrieve pending friend requests
+//    boolean sendFriendRequest(String username);               // Send friend request
+//    boolean respondToFriendRequest(String sender, boolean accept); // Respond to friend request
+//    ArrayList<String> getFriendRequests();                    // Retrieve pending friend requests
 
     User viewProfile(String username);                        // View user profile
     boolean updateProfile(User updatedProfile);               // Update profile
