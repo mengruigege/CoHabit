@@ -75,18 +75,19 @@ public class Database {
         boolean isFriend2 = false;
         for (User user : user1.getFriendList()) {
             if (user2.getName().equals(user.getName())) {
-                isFriend1 = false;
+                isFriend1 = true;
                 break;
             }
         }
         for (User user : user2.getFriendList()) {
             if (user1.getName().equals(user.getName())) {
-                isFriend2 = false;
+                isFriend2 = true;
                 break;
             }
         }
-        if (!isFriend1 && !isFriend2) {
+        if (isFriend1 && isFriend2) {
             user1.removeFriend(user2);
+            user2.removeFriend(user1);
             return true;
         }
         return false;
