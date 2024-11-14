@@ -132,15 +132,15 @@ public class User implements Profile, FriendManageable, Blockable {
     public void setDescription(String userDesc) {
         this.description = userDesc;
     }
-    
+
     public byte[] getProfilePicture() {
         return profilePicture;
     }
-    
+
     public void setProfilePicture(byte[] pictureData) {
         this.profilePicture = pictureData;
     }
-    
+
     public void setPreferences(String bedTime, boolean alcohol, boolean smoke,
                                boolean guests, int tidy, int roomHours) throws InvalidInput {
         this.bedTime = bedTime;

@@ -25,7 +25,36 @@ public class Chat implements Sendable {
     //Synchronized to ensure a thread-safe environment
     public synchronized boolean sendMessage(User sender, User receiver, String message) {
         if (message != null) {
-            messages.add(message);
+            boolean isBlocked = false;
+            boolean isFriend1 = false;
+            boolean isFriend2 = false;
+            for (User user : sender.getBlockedUsers()) {
+                if (receiver.getName().equals(user.getName())) {
+                    isBlocked = true;
+                    break;
+                }
+            }
+            for (User user : receiver.getBlockedUsers()) {
+                if (sender.getName().equals(user.getName())) {
+                    isBlocked = true;
+                    break;
+                }
+            }
+            for (User user : sender.getFriendList()) {
+                if (receiver.getName().equals(user.getName())) {
+                    isFriend1 = true;
+                    break;
+                }
+            }
+            for (User user : receiver.getFriendList()) {
+                if (sender.getName().equals(user.getName())) {
+                    isFriend2 = true;
+                    break;
+                }
+            }
+            if (!isBlocked && isFriend1 && isFriend2) {
+                messages.add(message);
+            }
         } else {
             return false;
         }
