@@ -12,7 +12,7 @@ import java.io.*;
  * @version November 3rd, 2024
  */
 
-public class Database {
+public class Database implements DatabaseInterface {
     private static ArrayList<User> allUsers = new ArrayList<>();
     private static final String USERS_FILE = "users.txt";
     private static final String FRIENDS_FILE = "friends.txt";
