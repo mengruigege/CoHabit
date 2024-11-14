@@ -37,6 +37,8 @@ public class Server {
         database.recordMessages(senderName, recieverName, message);
         return true;
     }
+    //loadMessages()
+
     public static boolean sendFriendRequest(User user, User potentialFriend) {
         database.loadUsersFromFile();
         if (potentialFriend == null) {
@@ -53,6 +55,13 @@ public class Server {
         database.loadFriendRequestsFromFile();
         return user.getFriendList();
     }
+    public static boolean declineFriendRequest(User user, User declinedUser) {
+        database.loadUsersFromFile();
+        database.loadFriendRequestsFromFile();
+        database.
+
+    }
+    //addFreind is what happens when you accept a friend request
     public static boolean addFriend(User user, User friend) {
         database.loadUsersFromFile();
 
@@ -60,6 +69,8 @@ public class Server {
             database.loadFriendsFromFile();
             database.addFriend(user, friend);
             database.addFriend(friend, user);
+            database.removeFriendRequest(user, friend);
+            //saveFriendRequestFile
             // remove the Friend from FriendRequestList
             return true;
         }
@@ -85,6 +96,10 @@ public class Server {
         }
         return false;
     }
+    //remove from blocklist
+    //view blocklist
+    //veiwfriendlist
+
     
     public static String viewProfile(String username) {
         database.loadUsersFromFile();
@@ -152,7 +167,7 @@ public class Server {
                             if (Server.viewFriendRequests(user) == null) {
                                 writer.println("Friend requests are empty");
                             } else {
-                                writer.println(viewFriendRequests(user).toString()); // do we have a toString for this
+                                writer.println(viewFriendRequests(user).toString()); // do not use toSting();
                                 }
                         }
 

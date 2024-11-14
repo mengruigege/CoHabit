@@ -17,6 +17,8 @@ public class TestChat {
         user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "sender", "purdue");
         user2 = new User("Joe", "password234", "joe@gmail.com", "2345678901", "receiver", "purdue2");
         messages = new ArrayList<>();
+        user1.addFriend(user2);
+        user2.addFriend(user1);
     }
 
     // Tests for Chat constructor
