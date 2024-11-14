@@ -113,7 +113,7 @@ Empty Chat Deletion: Verifies that attempting to delete from an empty chat retur
 
 ---
 
-**FriendList.java**
+**Relationships.java**
 
 _All Implemented Interfaces:_
 FriendManageable, Blockable
@@ -129,10 +129,10 @@ _Field Summary_
 
 _Constructor Summary_
 
-| Constructor                               | Description                                              |
-|-------------------------------------------|----------------------------------------------------------|
-| FriendList(User user, Database database) | Constructs a newly allocated FriendList object with the specified field values. |
-| FriendList()                             | Helps deal with null values in UserSearch.java and FriendList.java|
+| Constructor                                 | Description                                              |
+|---------------------------------------------|----------------------------------------------------------|
+| Relationships(User user, Database database) | Constructs a newly allocated FriendList object with the specified field values. |
+| Relationships()                             | Helps deal with null values in UserSearch.java and FriendList.java|
 
 _Method Summary_
 

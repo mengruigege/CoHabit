@@ -1,6 +1,4 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.nio.file.*;
 import java.io.*;
 
 /**
@@ -171,7 +169,7 @@ public class Database implements DatabaseInterface {
                 String description = data[4];
                 String university = data[5];
 
-                User user = new User(name, password, email, phoneNumber, description, university);
+                User user = new User(name, password);
                 loadProfilePicture(user);
                 users.add(user);
             }
@@ -329,9 +327,8 @@ public class Database implements DatabaseInterface {
         }
     }
 
-    // Updates the status of a friend request (ACCEPTED or DECLINED)
-    public synchronized void updateFriendRequestStatus(User sender, User receiver, String status) {
-        ArrayList<String> requests = new ArrayList<>();
+    public synchronized void removeFriendRequest(User sender, User receiver) {
+        ArrayList<String> friendRequests = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
             String line;
@@ -340,12 +337,10 @@ public class Database implements DatabaseInterface {
                 if (tokens.length == 3) {
                     String currentSender = tokens[0];
                     String currentReceiver = tokens[1];
-                    String currentStatus = tokens[2];
 
-                    if (currentSender.equals(sender.getName()) && currentReceiver.equals(receiver.getName())) {
-                        requests.add(currentSender + ":" + currentReceiver + ":" + status); // Update the status
-                    } else {
-                        requests.add(line); // Keep the original line if no match
+                    // Only keep the request if it doesn't match the sender and receiver
+                    if (!(currentSender.equals(sender.getName()) && currentReceiver.equals(receiver.getName()))) {
+                        friendRequests.add(line);
                     }
                 }
             }
@@ -353,9 +348,9 @@ public class Database implements DatabaseInterface {
             e.printStackTrace();
         }
 
-        // Write the updated requests back to the file
+        // Rewrite the file with the updated list of friendRequests
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
-            for (String request : requests) {
+            for (String request : friendRequests) {
                 pw.println(request);
             }
         } catch (IOException e) {
