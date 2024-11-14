@@ -3,40 +3,35 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Client implements ClientService {
+public class Client {
 
     private User currentUser;
     private boolean isConnected;
     private Socket socket;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    private PrintWriter out;
+    private BufferedReader in;
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
-    private Chat chat;
-    private Relationships friendList;
 
-    // Constructor
-    public Client(User user, Relationships friendList, Chat chat) {
+    public Client(User user) {
         this.currentUser = user;
-        this.friendList = friendList;
-        this.chat = chat;
     }
 
     public static void main(String[] args) throws UsernameTakenException {
-        String username = null;
-        String password = null;
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
         User user = new User(username, password);
-        Relationships friendList = new Relationships();
-        Chat chat = new Chat();
-        Client client = new Client(user, friendList, chat);
+        Client client = new Client(user);
 
         if (!client.connect(client.serverAddress, client.serverPort)) {
             System.out.println("Failed to connect to the server. Exiting.");
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
-        String choice;
         boolean exit = false;
 
         while (!exit) {
@@ -44,29 +39,22 @@ public class Client implements ClientService {
             System.out.println("1. Login");
             System.out.println("2. Register");
             System.out.println("3. Send Message");
-            System.out.println("4. Fetch Messages");
-            System.out.println("5. Add Friend");
-            System.out.println("6. View Profile");
-            System.out.println("7. Update Profile");
-            System.out.println("8. Disconnect and Exit");
+            System.out.println("4. View Friend Requests");
+            System.out.println("5. Send Friend Request");
+            System.out.println("6. Add Friend");
+            System.out.println("7. Remove Friend");
+            System.out.println("8. Block User");
+            System.out.println("9. View Profile");
+            System.out.println("10. Disconnect and Exit");
 
-            choice = scanner.nextLine();
+            String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    System.out.print("Enter username: ");
-                    username = scanner.nextLine();
-                    System.out.print("Enter password: ");
-                    password = scanner.nextLine();
                     client.login(username, password);
                     break;
                 case "2":
-                    System.out.print("Enter username: ");
-                    username = scanner.nextLine();
-                    System.out.print("Enter password: ");
-                    password = scanner.nextLine();
-                    User newUser = new User(username, password);
-                    client.register(newUser);
+                    client.register(new User(username, password));
                     break;
                 case "3":
                     System.out.print("Enter receiver's username: ");
@@ -76,32 +64,32 @@ public class Client implements ClientService {
                     client.sendMessage(receiver, message);
                     break;
                 case "4":
-                    System.out.print("Enter username to fetch messages: ");
-                    username = scanner.nextLine();
-                    client.fetchMessages(username).forEach(System.out::println);
+                    client.viewFriendRequests(username);
                     break;
                 case "5":
-                    System.out.print("Enter username to add as friend: ");
-                    String friendUsername = scanner.nextLine();
-                    client.addFriend(friendUsername);
+                    System.out.print("Enter username to send friend request: ");
+                    String friendRequestUsername = scanner.nextLine();
+                    client.sendFriendRequest(username, friendRequestUsername);
                     break;
                 case "6":
-                    System.out.print("Enter username to view profile: ");
-                    username = scanner.nextLine();
-                    User profile = client.viewProfile(username);
-                    if (profile != null) {
-                        System.out.println("Profile: " + profile);
-                    }
+                    System.out.print("Enter username to add as friend: ");
+                    String friendUsername = scanner.nextLine();
+                    client.addFriend(username, friendUsername);
                     break;
                 case "7":
-                    System.out.print("Enter new username: ");
-                    String newUsername = scanner.nextLine();
-                    System.out.print("Enter new password: ");
-                    String newPassword = scanner.nextLine();
-                    User updatedProfile = new User(newUsername, newPassword);
-                    client.updateProfile(updatedProfile);
+                    System.out.print("Enter username to remove as friend: ");
+                    String removedFriend = scanner.nextLine();
+                    client.removeFriend(username, removedFriend);
                     break;
                 case "8":
+                    System.out.print("Enter username to block: ");
+                    String blockedUser = scanner.nextLine();
+                    client.blockUser(username, blockedUser);
+                    break;
+                case "9":
+                    client.viewProfile(username);
+                    break;
+                case "10":
                     client.disconnect();
                     exit = true;
                     break;
@@ -109,7 +97,6 @@ public class Client implements ClientService {
                     System.out.println("Invalid choice. Please try again.");
             }
         }
-
         scanner.close();
         System.out.println("Client exited.");
     }
@@ -118,8 +105,8 @@ public class Client implements ClientService {
     public boolean connect(String serverAddress, int port) {
         try {
             socket = new Socket(serverAddress, port);
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             isConnected = true;
             System.out.println("Connected to the server at " + serverAddress + ":" + port);
             return true;
@@ -151,21 +138,18 @@ public class Client implements ClientService {
             return false;
         }
 
-        try {
-            // "LOGIN,username,password"
-            String command = "LOGIN," + username + "," + password;
-            out.writeObject(command);
+        out.println("login," + username + "," + password);
 
-            String response = (String) in.readObject();
-            if ("OK".equals(response)) {
-                currentUser.setName(username);
+        try {
+            String response = in.readLine();
+            if ("Successful login".equals(response)) {
                 System.out.println("Login successful.");
                 return true;
             } else {
-                System.out.println("Login failed.");
+                System.out.println("Login failed: " + response);
                 return false;
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Error during login: " + e.getMessage());
             return false;
         }
@@ -178,21 +162,18 @@ public class Client implements ClientService {
             return false;
         }
 
-        try {
-            // "REGISTER,username,password"
-            String command = "REGISTER," + user.getName() + "," + user.getPassword();
-            out.writeObject(command);
+        out.println("register," + user.getName() + "," + user.getPassword());
 
-            String response = (String) in.readObject();
-            if ("OK".equals(response)) {
-                this.currentUser = user;
+        try {
+            String response = in.readLine();
+            if ("User registered".equals(response)) {
                 System.out.println("User registered: " + user.getName());
                 return true;
             } else {
-                System.out.println("Registration failed.");
+                System.out.println("Registration failed: " + response);
                 return false;
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Error during registration: " + e.getMessage());
             return false;
         }
@@ -205,117 +186,150 @@ public class Client implements ClientService {
             return false;
         }
 
-        try {
-            // "SEND_MESSAGE,receiver,message"
-            String command = "SEND_MESSAGE," + receiver + "," + message;
-            out.writeObject(command);
+        out.println("sendMessage," + currentUser.getName() + "," + receiver + "," + message);
 
-            String response = (String) in.readObject();
-            if ("OK".equals(response)) {
+        try {
+            String response = in.readLine();
+            if ("Successfully sent message".equals(response)) {
                 System.out.println("Message sent to " + receiver);
                 return true;
             } else {
                 System.out.println("Failed to send message.");
                 return false;
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Error sending message: " + e.getMessage());
             return false;
         }
     }
 
-    // Fetch all messages
-    public ArrayList<String> fetchMessages(String user) {
-        ArrayList<String> messages = new ArrayList<>();
-        if (!isConnected) {
-            System.out.println("Not connected to server.");
-            return messages;
-        }
-
-        try {
-            // "FETCH_MESSAGES,username"
-            String command = "FETCH_MESSAGES," + user;
-            out.writeObject(command);
-
-            messages = (ArrayList<String>) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error fetching messages: " + e.getMessage());
-        }
-        return messages;
-    }
-
-    // Add a friend
-    public boolean addFriend(String username) {
+    // Send a friend request
+    public boolean sendFriendRequest(String user, String potentialFriend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        try {
-            // "ADD_FRIEND,username"
-            String command = "ADD_FRIEND," + username;
-            out.writeObject(command);
+        out.println("sendFriendRequest," + user + "," + potentialFriend);
 
-            String response = (String) in.readObject();
-            if ("OK".equals(response)) {
-                System.out.println("Friend added: " + username);
+        try {
+            String response = in.readLine();
+            if ("Successfully sent friend request".equals(response)) {
+                System.out.println("Friend request sent to " + potentialFriend);
+                return true;
+            } else {
+                System.out.println("Friend request failed.");
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error sending friend request: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // View friend requests
+    public void viewFriendRequests(String user) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        out.println("viewFriendRequests," + user);
+
+        try {
+            String response = in.readLine();
+            System.out.println(response);
+        } catch (IOException e) {
+            System.out.println("Error viewing friend requests: " + e.getMessage());
+        }
+    }
+
+    // Add a friend
+    public boolean addFriend(String user, String friend) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        out.println("addFriend," + user + "," + friend);
+
+        try {
+            String response = in.readLine();
+            if ("Successfully added friend".equals(response)) {
+                System.out.println("Friend added: " + friend);
                 return true;
             } else {
                 System.out.println("Failed to add friend.");
                 return false;
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Error adding friend: " + e.getMessage());
             return false;
         }
     }
 
-    // View a user's profile
-    public User viewProfile(String username) {
+    // Remove a friend
+    public boolean removeFriend(String user, String removedFriend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
-            return null;
+            return false;
         }
 
-        try {
-            // "VIEW_PROFILE,username"
-            String command = "VIEW_PROFILE," + username;
-            out.writeObject(command);
+        out.println("removeFriend," + user + "," + removedFriend);
 
-            User user = (User) in.readObject();
-            System.out.println("User profile: " + user.toString());
-            return user;
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error viewing profile: " + e.getMessage());
-            return null;
+        try {
+            String response = in.readLine();
+            if ("Successfully removed friend".equals(response)) {
+                System.out.println("Friend removed: " + removedFriend);
+                return true;
+            } else {
+                System.out.println("Failed to remove friend.");
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error removing friend: " + e.getMessage());
+            return false;
         }
     }
 
-    // Update user profile
-    public boolean updateProfile(User updatedProfile) {
+    // Block a user
+    public boolean blockUser(String user, String blockedUser) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        try {
-            // "UPDATE_PROFILE,username,password"
-            String command = "UPDATE_PROFILE," + updatedProfile.getName() + "," + updatedProfile.getPassword();
-            out.writeObject(command);
+        out.println("blockUser," + user + "," + blockedUser);
 
-            String response = (String) in.readObject();
-            if ("OK".equals(response)) {
-                this.currentUser = updatedProfile;
-                System.out.println("Profile updated: " + updatedProfile.getName());
+        try {
+            String response = in.readLine();
+            if ("Successfully blocked user".equals(response)) {
+                System.out.println("User blocked: " + blockedUser);
                 return true;
             } else {
-                System.out.println("Profile update failed.");
+                System.out.println("Failed to block user.");
                 return false;
             }
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error updating profile: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Error blocking user: " + e.getMessage());
             return false;
+        }
+    }
+
+    // View profile information
+    public void viewProfile(String username) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        out.println("viewProfile," + username);
+
+        try {
+            String response = in.readLine();
+            System.out.println("Profile info for " + username + ": " + response);
+        } catch (IOException e) {
+            System.out.println("Error viewing profile: " + e.getMessage());
         }
     }
 }
-
