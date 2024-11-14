@@ -58,7 +58,7 @@ public class Server {
     public static boolean declineFriendRequest(User user, User declinedUser) {
         database.loadUsersFromFile();
         database.loadFriendRequestsFromFile();
-        database.
+
 
     }
     //addFreind is what happens when you accept a friend request
