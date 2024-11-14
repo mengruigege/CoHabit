@@ -40,7 +40,7 @@ public class Client implements ClientService {
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("\nSelect an action:");
+            System.out.println("\nSelect an option:");
             System.out.println("1. Login");
             System.out.println("2. Register");
             System.out.println("3. Send Message");
