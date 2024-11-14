@@ -378,7 +378,7 @@ public class Database implements DatabaseInterface {
                 String line = user.getName() + ":";
 
                 for (User friend : user.getFriendList()) {
-                    line += friendgetName() + ",";
+                    line += friend.getName() + ",";
                 }
 
                 if (line.endsWith(",")) {
