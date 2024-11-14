@@ -93,6 +93,46 @@ public class Database implements DatabaseInterface {
         return false;
     }
 
+    public synchronized boolean blockUser(User user1, User user2) {
+        boolean isBlocked = false;
+        boolean isFriend = false;
+        for (User user : user1.getBlockedUsers()) {
+            if (user2.getName().equals(user.getName())) {
+                isBlocked = true;
+                break;
+            }
+        }
+        for (User user : user1.getFriendList()) {
+            if (user2.getName().equals(user.getName())) {
+                isFriend = true;
+                break;
+            }
+        }
+        if (!isBlocked) {
+            user1.blockUser(user2);
+            if (isFriend) {
+                user1.removeFriend(user2);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized boolean unblockUser(User user1, User user2) {
+        boolean isBlocked = false;
+        for (User user : user1.getBlockedUsers()) {
+            if (user2.getName().equals(user.getName())) {
+                isBlocked = true;
+                break;
+            }
+        }
+        if (isBlocked) {
+            user1.unblockUser(user2);
+            return true;
+        }
+        return false;
+    }
+
     public synchronized boolean usernameExists(String username) {
         for (User user : allUsers) {
             if (user.getName().equals(username)) {
