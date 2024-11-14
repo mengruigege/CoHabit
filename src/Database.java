@@ -70,6 +70,29 @@ public class Database {
         return false;
     }
 
+    public synchronized boolean removeFriend(User user1, User user2) {
+        boolean isFriend1 = false;
+        boolean isFriend2 = false;
+        for (User user : user1.getFriendList()) {
+            if (user2.getName().equals(user.getName())) {
+                isFriend1 = true;
+                break;
+            }
+        }
+        for (User user : user2.getFriendList()) {
+            if (user1.getName().equals(user.getName())) {
+                isFriend2 = true;
+                break;
+            }
+        }
+        if (isFriend1 && isFriend2) {
+            user1.removeFriend(user2);
+            user2.removeFriend(user1);
+            return true;
+        }
+        return false;
+    }
+
     public synchronized boolean usernameExists(String username) {
         for (User user : allUsers) {
             if (user.getName().equals(username)) {
