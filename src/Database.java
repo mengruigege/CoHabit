@@ -169,7 +169,7 @@ public class Database implements DatabaseInterface {
                 String description = data[4];
                 String university = data[5];
 
-                User user = new User(name, password);
+                User user = new User(name, password, email, phoneNumber, description, university);
                 loadProfilePicture(user);
                 users.add(user);
             }
@@ -371,6 +371,26 @@ public class Database implements DatabaseInterface {
         }
         return friendRequests;
     }
+
+    public synchronized void saveFriendRequestsToFile() {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
+            for (User user : allUsers) {
+                String line = user.getName() + ":";
+
+                for (User friend : user.getFriendList()) {
+                    line += friendgetName() + ",";
+                }
+
+                if (line.endsWith(",")) {
+                    line = line.substring(0, line.length() - 1);
+                }
+                pw.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public synchronized void recordMessages(String sender, String receiver, String message) {
         String log = String.format("%s,%s,%s", sender, receiver, message);
