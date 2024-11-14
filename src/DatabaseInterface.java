@@ -21,7 +21,6 @@ public interface DatabaseInterface {
 
     // Friend requests
     void addFriendRequest(User sender, User receiver);
-    void updateFriendRequestStatus(User sender, User receiver, String status);
     ArrayList<String> loadFriendRequestsFromFile();
 
     // Profile picture management
