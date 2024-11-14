@@ -21,6 +21,6 @@ public interface Profile { //boolean return type to check for success
     public void setUniversity(String newUni);
 
     public byte[] getProfilePicture();
-    
+
     public void setProfilePicture(byte[] pictureData);
 }

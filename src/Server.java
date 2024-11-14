@@ -5,10 +5,10 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server  {
-    private static Database database = new Database(); 
+public class Server {
+    private static Database database = new Database();
 
-// method to check if the login was successful or not
+    // method to check if the login was successful or not
     public static boolean login(String username, String password) {
         //might have to make getAllUsers in database static
         User user;
@@ -18,11 +18,13 @@ public class Server  {
         }
         return false;
     }
+
     // method used to add the new register user to the database and return true if successful
     public boolean register(User user) {
         database.addUser(user);
         return true;
     }
+
     public static boolean sendMessage(User sender, User reciever, String message) {
         String senderName = sender.getName();
         if (reciever == null) {
@@ -32,6 +34,7 @@ public class Server  {
         database.recordMessages(senderName, recieverName, message);
         return true;
     }
+
     public static boolean addFriend(User user, User friend) {
         if (friend == null) {
             return false;
@@ -39,7 +42,7 @@ public class Server  {
         database.addFriend(user, friend);   //methods have same name might want to change
         return true;
     }
-    
+
     public static String viewProfile(String username) {
         User user = database.findUserByName(username);
         return user.toString();
@@ -51,11 +54,11 @@ public class Server  {
         User currentUser;
         // some way to read all data that already exists in the database
         //open the ServerSocket and use the specific port
-        try ( ServerSocket serverSocket = new ServerSocket(1102)) {
-            while (true) { 
-                try ( Socket socket = serverSocket.accept();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+        try (ServerSocket serverSocket = new ServerSocket(1102)) {
+            while (true) {
+                try (Socket socket = serverSocket.accept();
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                     PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                     while (true) {
                         String line = reader.readLine();
                         String[] parts = line.split(",");
@@ -76,8 +79,7 @@ public class Server  {
                             String message = parts[3];
                             if (Server.sendMessage(sender, receiver, message)) {
                                 writer.println("Successfully sent message"); //not sure what the output is here
-                            }
-                            else {
+                            } else {
                                 writer.println("Something went wrong");
                             }
                         }
@@ -85,19 +87,18 @@ public class Server  {
                         if (line.contains("addFriend")) {
                             User user = database.findUserByName(parts[1]);
                             User friend = database.findUserByName(parts[2]);
-                            if (Server.addFriend(user,friend)) {
+                            if (Server.addFriend(user, friend)) {
                                 writer.println("Successfully added friend");
-                            }
-                            else {
+                            } else {
                                 writer.println("Entered a nonexistent friend");
                             }
                         }
 
-                        
+
                         // format is viewProfile,username
                         if (line.contains("viewProfile")) {
                             String username = parts[1];
-                            writer.println( Server.viewProfile(username));
+                            writer.println(Server.viewProfile(username));
                         }
 
                     }
@@ -108,7 +109,7 @@ public class Server  {
                 }
 
             }
-        }   catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
