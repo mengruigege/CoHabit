@@ -58,10 +58,12 @@ public class Server {
     public static boolean declineFriendRequest(User user, User declinedUser) {
         database.loadUsersFromFile();
         database.loadFriendRequestsFromFile();
-        database.
+        database.removeFriendRequest(user,declinedUser);
+        //saveFriendRequestFile
+        return true;
 
     }
-    //addFreind is what happens when you accept a friend request
+    //addFriend is what happens when you accept a friend request
     public static boolean addFriend(User user, User friend) {
         database.loadUsersFromFile();
 
@@ -71,7 +73,6 @@ public class Server {
             database.addFriend(friend, user);
             database.removeFriendRequest(user, friend);
             //saveFriendRequestFile
-            // remove the Friend from FriendRequestList
             return true;
         }
 
@@ -91,7 +92,7 @@ public class Server {
         database.loadUsersFromFile();
         database.loadBlockedFromFile();
         if (!(user.getBlockedUsers().contains(blockedUser))) {
-            database.blockUser(user,blockedUser); //we might need blockUser method in database
+            database.blockUser(user,blockedUser);
             return true;
         }
         return false;
@@ -169,6 +170,18 @@ public class Server {
                             } else {
                                 writer.println(viewFriendRequests(user).toString()); // do not use toSting();
                                 }
+                        }
+                        // format should be declineFriendRequest,user,declinedUser
+                        if (line.contains("declineFriendRequest")) {
+                            database.loadUsersFromFile();
+                            User user = database.findUserByName(parts[1]);
+                            User declinedUser = database.findUserByName(parts[2]);
+                            if (Server.declineFriendRequest(user, declinedUser)) {
+                                writer.println("You declined friend request declined");
+                            } else {
+                                writer.println("Could not decline friend request sucessfully");
+                            }
+
                         }
 
                         // should be in format addFriend,user,friend
