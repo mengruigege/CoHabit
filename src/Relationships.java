@@ -9,26 +9,84 @@ import java.util.ArrayList;
  * @version November 3rd, 2024
  */
 
-public class FriendList implements FriendManageable, Blockable {
+public class Relationships implements FriendManageable, Blockable {
     private ArrayList<User> friends;
     private ArrayList<User> blocked;
+    private ArrayList<User> incomingRequests;
+    private ArrayList<User> outgoingRequests;
     private User user;
     private Database database;
 
-    //Constructs a newly allocated FriendList object with the specified field values.
-    public FriendList(User user, Database database) {
+    //Constructs a newly allocated Relationships object with the specified field values.
+    public Relationships(User user, Database database) {
         this.user = user;
         this.database = database;
 
         this.friends = new ArrayList<>(database.loadFriendsFromFile());
         this.blocked = new ArrayList<>(database.loadBlockedFromFile());
+
+        this.incomingRequests = new ArrayList<>();
+        this.outgoingRequests = new ArrayList<>();
     }
 
-    //Helps deal with null values in UserSearch.java and FriendList.java
-    public FriendList() {
+    //Helps deal with null values in UserSearch.java and Relationships.java
+    public Relationships() {
         this.database = new Database();
         this.friends = new ArrayList<>();
         this.blocked = new ArrayList<>();
+    }
+
+    // Sends a friend request to another user
+    public boolean sendFriendRequest(User receiver) {
+        if (receiver != null && !isFriend(receiver) && !hasPendingOutgoingRequest(receiver)) {
+            outgoingRequests.add(receiver);
+            receiver.addFriend(user);
+            return true;
+        }
+        return false;
+    }
+
+    // Receives a friend request from another user
+    public synchronized void receiveFriendRequest(User sender) {
+        if (!incomingRequests.contains(sender) && !isFriend(sender)) {
+            incomingRequests.add(sender);
+        }
+    }
+
+    // Accepts a friend request from a specified user
+    public synchronized boolean acceptFriendRequest(User sender) {
+        if (incomingRequests.contains(sender)) {
+            incomingRequests.remove(sender);
+            addFriend(sender);
+            sender.addFriend(user); // Mutual friendship
+            return true;
+        }
+        return false;
+    }
+
+    // Declines a friend request from a specified user
+    public synchronized boolean declineFriendRequest(User sender) {
+        return incomingRequests.remove(sender);
+    }
+
+    // Helper method to check if a user is already a friend
+    public synchronized boolean isFriend(User user) {
+        return friends.contains(user);
+    }
+
+    // Helper method to check for a pending outgoing request
+    public synchronized boolean hasPendingOutgoingRequest(User user) {
+        return outgoingRequests.contains(user);
+    }
+
+    // Returns a list of incoming friend requests
+    public synchronized ArrayList<User> getIncomingRequests() {
+        return new ArrayList<>(incomingRequests);
+    }
+
+    // Returns a list of outgoing friend requests
+    public synchronized ArrayList<User> getOutgoingRequests() {
+        return new ArrayList<>(outgoingRequests);
     }
 
     //Adds a user to the friends list if not already a friend.
@@ -43,23 +101,23 @@ public class FriendList implements FriendManageable, Blockable {
         return false;
     }
 
-    //Returns a list of users who are friends from FriendList
-    public ArrayList<User> getFriendList() {
+    //Returns a list of users who are friends from Relationships
+    public synchronized ArrayList<User> getFriendList() {
         return friends;
     }
 
-    //Updates a list of users who are friends from FriendList
-    public void setFriendList(ArrayList<User> friends) {
+    //Updates a list of users who are friends from Relationships
+    public synchronized void setFriendList(ArrayList<User> friends) {
         this.friends = friends;
     }
 
-    //Returns a list of users who are blocked from FriendList
-    public ArrayList<User> getBlockedUsers() {
+    //Returns a list of users who are blocked from Relationships
+    public synchronized ArrayList<User> getBlockedUsers() {
         return blocked;
     }
 
-    //Updates a list of users who are blocked from FriendList
-    public void setBlockedUsers(ArrayList<User> blocked) {
+    //Updates a list of users who are blocked from Relationships
+    public synchronized void setBlockedUsers(ArrayList<User> blocked) {
         this.blocked = blocked;
     }
 
