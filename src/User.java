@@ -29,7 +29,7 @@ public class User implements Profile, FriendManageable, Blockable {
     private Relationships relationships = new Relationships();
 
     //Constructs a newly allocated User object with the specified field values.
-    public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
+    public User(String name, String password) throws UsernameTakenException {
         this.name = name;
         this.password = password;
         this.email = email;
