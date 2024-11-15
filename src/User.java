@@ -29,7 +29,7 @@ public class User implements Profile, FriendManageable, Blockable {
     private Relationships relationships = new Relationships();
 
     //Constructs a newly allocated User object with the specified field values.
-    public User(String name, String password) throws UsernameTakenException {
+    public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
         this.name = name;
         this.password = password;
         this.email = email;
@@ -77,6 +77,36 @@ public class User implements Profile, FriendManageable, Blockable {
     //Unblocks a user.
     public boolean unblockUser(User user) {
         return relationships.unblockUser(user);
+    }
+
+    // Adds a friend request to incoming requests
+    public void addIncomingRequest(User sender) {
+        relationships.receiveFriendRequest(sender);
+    }
+
+    // Adds a friend request to outgoing requests
+    public void addOutgoingRequest(User receiver) {
+        relationships.sendFriendRequest(receiver);
+    }
+
+    // Removes a friend request from incoming requests
+    public void removeIncomingRequest(User sender) {
+        relationships.declineFriendRequest(sender);
+    }
+
+    // Removes a friend request from outgoing requests
+    public void removeOutgoingRequest(User receiver) {
+        relationships.getOutgoingRequests().remove(receiver);
+    }
+
+    // Accepts a friend request and adds the sender to the friends list
+    public boolean acceptFriendRequest(User sender) {
+        return relationships.acceptFriendRequest(sender);
+    }
+
+    // Declines a friend request and removes it from incoming requests
+    public boolean declineFriendRequest(User sender) {
+        return relationships.declineFriendRequest(sender);
     }
 
     //getters and setters for user personal details such as name, password, contact details, and so on
