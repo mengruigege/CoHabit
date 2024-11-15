@@ -378,14 +378,12 @@ public class Database implements DatabaseInterface {
                 if (user.getOutgoingFriendRequest() != null) {
                     for (User userRequested : user.getOutgoingFriendRequest()) {
                         pw.println(user.getName() + ":" + userRequested.getName());
-                        pw.flush();
                     }
                 }
 
                 if (user.getIncomingFriendRequest() != null) {
                     for (User requestSender : user.getIncomingFriendRequest()) {
                         pw.println(requestSender.getName() + ":" + user.getName());
-                        pw.flush();
                     }
                 }
             }
