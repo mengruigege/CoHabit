@@ -49,6 +49,14 @@ public class User implements Profile, FriendManageable, Blockable {
         return relationships.getBlocked();
     }
 
+    public ArrayList<User> getOutgoingFriendRequest() {
+        return relationships.getOutgoingRequests();
+    }
+
+    public ArrayList<User> getIncomingFriendRequest() {
+        return relationships.getIncomingRequests();
+    }
+
     //Sets the friends list.
     public void setFriendList(ArrayList<User> friends) {
         relationships.setFriendList(friends);
@@ -85,7 +93,7 @@ public class User implements Profile, FriendManageable, Blockable {
     }
 
     // Adds a friend request to outgoing requests
-    public void addOutgoingRequest(User receiver) {
+    public void sendFriendRequest(User receiver) {
         relationships.sendFriendRequest(receiver);
     }
 

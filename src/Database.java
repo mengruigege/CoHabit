@@ -321,7 +321,7 @@ public class Database implements DatabaseInterface {
 
     public synchronized void addFriendRequest(User sender, User receiver) {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE, true))) {
-            pw.println(sender.getName() + ":" + receiver.getName() + ":PENDING");
+            pw.println(sender.getName() + ":" + receiver.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -372,22 +372,27 @@ public class Database implements DatabaseInterface {
         return friendRequests;
     }
 
-    public synchronized void saveFriendRequestsToFile() {
+    public synchronized boolean saveFriendRequest() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
             for (User user : allUsers) {
-                String line = user.getName() + ":";
-
-                for (User friend : user.getFriendList()) {
-                    line += friend.getName() + ",";
+                if (user.getOutgoingFriendRequest() != null) {
+                    for (User userRequested : user.getOutgoingFriendRequest()) {
+                        pw.println(user.getName() + ":" + userRequested.getName());
+                        pw.flush();
+                    }
                 }
 
-                if (line.endsWith(",")) {
-                    line = line.substring(0, line.length() - 1);
+                if (user.getIncomingFriendRequest() != null) {
+                    for (User requestSender : user.getIncomingFriendRequest()) {
+                        pw.println(requestSender.getName() + ":" + user.getName());
+                        pw.flush();
+                    }
                 }
-                pw.println(line);
             }
-        } catch (IOException e) {
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
