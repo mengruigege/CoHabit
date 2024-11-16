@@ -22,11 +22,11 @@ public class Client implements ClientService {
         User user = null;
         Client client = new Client(user);
         String username = "";
-        String password;
-        String email;
-        String phoneNumber;
-        String userDescription;
-        String university;
+        String password = "";
+        String email = "";
+        String phoneNumber = "";
+        String userDescription = "";
+        String university = "";
 
         if (!client.connect(client.serverAddress, client.serverPort)) {
             System.out.println("Failed to connect to the server. Exiting.");
@@ -264,7 +264,7 @@ public class Client implements ClientService {
             System.out.println("5. Remove Friend");
             System.out.println("6. Block User");
             System.out.println("7. View Profile");
-            System.out.println("8. Edit Profile");
+            System.out.println("8. Update Profile");
             System.out.println("9. Disconnect and Exit");
 
             String choice2 = scanner.nextLine();
@@ -306,6 +306,214 @@ public class Client implements ClientService {
                     String profile = scanner.nextLine();
                     client.viewProfile(profile);
                     break;
+                case "8":
+                    System.out.println("\nChoose a parameter to update:");
+                    System.out.println("1. Username");
+                    System.out.println("2. Password");
+                    System.out.println("3. Email");
+                    System.out.println("4. Phone Number");
+                    System.out.println("5. Description");
+                    System.out.println("6. University");
+                    System.out.println("7. Preferences");
+
+                    String selection = scanner.nextLine();
+
+                    switch (selection) {
+                        case "1":
+                            while (true) {
+                                System.out.println("Create a username:");
+                                username = scanner.nextLine();
+
+                                if (username == null) {
+                                    throw new InvalidInput("Username is invalid");
+                                } else if (username.contains("#*")) {
+                                    throw new InvalidInput("'#*' is not allowed");
+                                } else {
+                                    user.setName(username);
+                                    break;
+                                }
+                            }
+                        case "2":
+                            while (true) {
+                                System.out.println("Create a password: ");
+                                password = scanner.nextLine();
+
+                                if (password == null) {
+                                    throw new InvalidInput("Password is invalid");
+                                } else if (password.contains("#*")) {
+                                    throw new InvalidInput("'#*' is not allowed");
+                                } else {
+                                    user.setPassword(password);
+                                    break;
+                                }
+                            }
+                        case "3":
+                            while (true) {
+                                System.out.println("Enter your email:");
+                                email = scanner.nextLine();
+
+                                if (email == null || !email.contains("@") || !email.contains(".")) {
+                                    throw new InvalidInput("email is invalid");
+                                } else if (email.contains("#*")) {
+                                    throw new InvalidInput("'#*' is not allowed");
+                                } else {
+                                    user.setEmail(email);
+                                    break;
+                                }
+                            }
+                        case "4":
+                            while (true) {
+                                System.out.println("Enter your phone number: ");
+                                phoneNumber = scanner.nextLine();
+                                boolean notInt = false;
+                                try {
+                                    int number = Integer.parseInt(phoneNumber);
+                                } catch (Exception e) {
+                                    notInt = true;
+                                }
+
+                                if (phoneNumber == null) {
+                                    throw new InvalidInput("Phone number is invalid");
+                                } else if (phoneNumber.contains("#*")) {
+                                    throw new InvalidInput("'#*' is not allowed");
+                                } else if (phoneNumber.length() != 10) {
+                                    throw new InvalidInput("Phone number is invalid");
+                                } else if (notInt) {
+                                    throw new InvalidInput("Not a number");
+                                } else {
+                                    user.setPhoneNumber(phoneNumber);
+                                    break;
+                                }
+                            }
+                        case "5":
+                            while (true) {
+                                System.out.println("Create a description:");
+                                userDescription = scanner.nextLine();
+
+                                if (userDescription == null) {
+                                    throw new InvalidInput("Description is invalid");
+                                } else if (userDescription.contains("#*")) {
+                                    throw new InvalidInput("'#*' is not allowed");
+                                } else {
+                                    user.setDescription(userDescription);
+                                    break;
+                                }
+                            }
+                        case "6":
+                            while (true) {
+                                System.out.println("Create a university: ");
+                                university = scanner.nextLine();
+
+                                if (university == null) {
+                                    throw new InvalidInput("University is invalid");
+                                } else if (password.contains("#*")) {
+                                    throw new InvalidInput("'#*' is not allowed");
+                                } else {
+                                    user.setUniversity(university);
+                                    break;
+                                }
+                            }
+                        case "7":
+                            String bedTime;
+                            while (true) {
+                                System.out.println("What is your average bed time?");
+                                bedTime = scanner.nextLine();
+                                boolean nan = false;
+
+                                try {
+                                    int time = Integer.parseInt(bedTime);
+                                } catch (Exception e) {
+                                    nan = true;
+                                }
+
+                                if (bedTime == null) {
+                                    throw new InvalidInput("Bed time is invalid");
+                                } else if (!bedTime.contains(":")) {
+                                    throw new InvalidInput("Bed time is invalid");
+                                } else if (nan) {
+                                    throw new InvalidInput("Not a number");
+                                } else {
+                                    break;
+                                }
+                            }
+                            boolean alcohol;
+                            String answer;
+                            while (true) {
+                                System.out.println("Do you drink alcohol? (y/n)");
+                                answer = scanner.nextLine();
+
+                                if (answer.equals("y")) {
+                                    alcohol = true;
+                                    break;
+                                } else if (answer.equals("n")) {
+                                    alcohol = false;
+                                    break;
+                                } else {
+                                    throw new InvalidInput("Invalid Input");
+                                }
+                            }
+                            boolean smoking;
+                            while (true) {
+                                System.out.println("Do you smoke? (y/n)");
+                                answer = scanner.nextLine();
+
+                                if (answer.equals("y")) {
+                                    smoking = true;
+                                    break;
+                                } else if (answer.equals("n")) {
+                                    smoking = false;
+                                    break;
+                                } else {
+                                    throw new InvalidInput("Invalid Input");
+                                }
+                            }
+                            boolean guests;
+                            while (true) {
+                                System.out.println("Are you comfortable with guests? (y/n)");
+                                answer = scanner.nextLine();
+
+                                if (answer.equals("y")) {
+                                    guests = true;
+                                    break;
+                                } else if (answer.equals("n")) {
+                                    guests = false;
+                                    break;
+                                } else {
+                                    throw new InvalidInput("Invalid Input");
+                                }
+                            }
+                            int tidy;
+                            while (true) {
+                                System.out.println("How tidy are you? (1-10)");
+                                try {
+                                    tidy = scanner.nextInt();
+                                    if (tidy <= 10 && tidy >= 1) {
+                                        break;
+                                    } else {
+                                        throw new InvalidInput("Outside of range");
+                                    }
+                                } catch (Exception e) {
+                                    throw new InvalidInput("Invalid Input");
+                                }
+                            }
+                            int roomHours;
+                            while (true) {
+                                System.out.println("How many hours per day on average do you spend in your room?");
+                                try {
+                                    roomHours = scanner.nextInt();
+                                    if (roomHours >= 1 && roomHours <= 24) {
+                                        break;
+                                    } else {
+                                        throw new InvalidInput("Outside of Range");
+                                    }
+                                } catch (Exception e) {
+                                    throw new InvalidInput("Invalid Input");
+                                }
+                            }
+                            user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
+                            break;
+                    }
+                    client.updateProfile(user);
                 case "9":
                     client.disconnect();
                     exit = true;
