@@ -37,20 +37,7 @@ public class Server {
         database.recordMessages(senderName, recieverName, message);
         return true;
     }
-    public static String loadMessages(User user, User reciever) {
-        if (reciever == null) {
-            return null;
-        }
-        ArrayList<String> messages = database.loadConversation(user.getName(), reciever.getName());
-        String result = "";
-
-        for (String s : messages) {
-             result += s + "\n";
-        }
-        return result;
-
-    }
-
+    //loadMessages()
 
     public static boolean sendFriendRequest(User user, User potentialFriend) {
         database.loadUsersFromFile();
@@ -71,12 +58,10 @@ public class Server {
     public static boolean declineFriendRequest(User user, User declinedUser) {
         database.loadUsersFromFile();
         database.loadFriendRequestsFromFile();
-        database.removeFriendRequest(user,declinedUser);
-        //saveFriendRequestFile
-        return true;
+
 
     }
-    //addFriend is what happens when you accept a friend request
+    //addFreind is what happens when you accept a friend request
     public static boolean addFriend(User user, User friend) {
         database.loadUsersFromFile();
 
@@ -86,6 +71,7 @@ public class Server {
             database.addFriend(friend, user);
             database.removeFriendRequest(user, friend);
             //saveFriendRequestFile
+            // remove the Friend from FriendRequestList
             return true;
         }
 
@@ -95,7 +81,7 @@ public class Server {
         database.loadUsersFromFile();
         database.loadFriendsFromFile();
         if (user.getFriendList().contains(removedFriend)) {
-            database.removeFriend(user, removedFriend);
+            database.removeFriend(user, removedFriend); //we need database method that does this
             database.removeFriend(removedFriend,user); //not sure that we need this
             return true;
         }
@@ -105,31 +91,14 @@ public class Server {
         database.loadUsersFromFile();
         database.loadBlockedFromFile();
         if (!(user.getBlockedUsers().contains(blockedUser))) {
-            database.blockUser(user,blockedUser);
+            database.blockUser(user,blockedUser); //we might need blockUser method in database
             return true;
         }
         return false;
     }
-    public static boolean removeBlockedUser(User user, User blockedUser) {
-        database.loadBlockedFromFile();
-        database.loadBlockedFromFile();
-        if (user.getBlockedUsers().contains(blockedUser)) {
-            database.removeblockedUser(user, blockedUser);  //need to add method in database
-            return true;
-        }
-        return false;
-    }
-    public static ArrayList<User> viewBlockedUsers(User user) {
-        database.loadBlockedFromFile();
-        database.loadBlockedFromFile();
-        return user.getBlockedUsers();
-    }
-    public static ArrayList<User> viewFriendsList(User user) {
-        database.loadFriendsFromFile();
-        database.loadFriendsFromFile();
-        return user.getFriendList();
-    }
-
+    //remove from blocklist
+    //view blocklist
+    //veiwfriendlist
 
     
     public static String viewProfile(String username) {
@@ -201,18 +170,6 @@ public class Server {
                                 writer.println(viewFriendRequests(user).toString()); // do not use toSting();
                                 }
                         }
-                        // format should be declineFriendRequest,user,declinedUser
-                        if (line.contains("declineFriendRequest")) {
-                            database.loadUsersFromFile();
-                            User user = database.findUserByName(parts[1]);
-                            User declinedUser = database.findUserByName(parts[2]);
-                            if (Server.declineFriendRequest(user, declinedUser)) {
-                                writer.println("You declined friend request declined");
-                            } else {
-                                writer.println("Could not decline friend request sucessfully");
-                            }
-
-                        }
 
                         // should be in format addFriend,user,friend
                         if (line.contains("addFriend")) {
@@ -238,27 +195,6 @@ public class Server {
                                 writer.println("Something went wrong");
                             }
                         }
-                        // format should be viewFriendsList,user
-                        if (line.contains("viewFriendsList")) {
-                            database.loadUsersFromFile();
-                            User user = database.findUserByName(parts[1]);
-                            if (Server.viewFriendsList(user) == null) {
-                                writer.println("Friend list is empty");
-                            } else {
-                                writer.println(viewFriendsList(user).toString()); //do not use toSting() here
-                            }
-                        }
-                        //  should be in format loadMessages,user,reciever
-                        if (line.contains("loadMessages")) {
-                            User user = database.findUserByName(parts[1]);
-                            User reciever = database.findUserByName(parts[2]);
-                            if (Server.loadMessages(user, reciever) == null) {
-                                writer.println("Message list is empty");
-                            } else {
-                                writer.println(loadMessages(user, reciever));
-                            }
-
-                        }
                         // format should be blockUser,user,blockedUser
                         if (line.contains("blockUser")) {
                             database.loadUsersFromFile();
@@ -269,27 +205,6 @@ public class Server {
                             }
                             else {
                                 writer.println("Something went wrong");
-                            }
-                        }
-                        // format should be removeBlockedUser,user,blockedUser
-                        if (line.contains("removeBlockedUser")) {
-                            database.loadUsersFromFile();
-                            User user = database.findUserByName(parts[1]);
-                            User blockedUser = database.findUserByName(parts[2]);
-                            if (Server.removeBlockedUser(user,blockedUser)) {
-                                writer.println("Successfully removed from blocked list");
-                            } else {
-                                writer.println("Something went wrong");
-                            }
-
-                        }
-                        // format should be viewBlockedUsers,user
-                        if (line.contains("viewBlockedUsers")) {
-                            User user = database.findUserByName(parts[1]);
-                            if (Server.viewBlockedUsers(user) == null) {
-                                writer.println("Blocked list is empty");
-                            } else {
-                                writer.println(viewBlockedUsers(user).toString()); //do not use toString
                             }
                         }
 

@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
@@ -101,7 +100,6 @@ public class Client {
         System.out.println("Client exited.");
     }
 
-    // Establish connection to the server
     public boolean connect(String serverAddress, int port) {
         try {
             socket = new Socket(serverAddress, port);
@@ -116,7 +114,6 @@ public class Client {
         }
     }
 
-    // Disconnect from the server
     public void disconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
@@ -131,7 +128,6 @@ public class Client {
         }
     }
 
-    // Login method
     public boolean login(String username, String password) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -155,7 +151,6 @@ public class Client {
         }
     }
 
-    // Register a new user
     public boolean register(User user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -179,7 +174,6 @@ public class Client {
         }
     }
 
-    // Send a message to a specific user
     public boolean sendMessage(String receiver, String message) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -203,7 +197,6 @@ public class Client {
         }
     }
 
-    // Send a friend request
     public boolean sendFriendRequest(String user, String potentialFriend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -227,7 +220,6 @@ public class Client {
         }
     }
 
-    // View friend requests
     public void viewFriendRequests(String user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -238,13 +230,77 @@ public class Client {
 
         try {
             String response = in.readLine();
-            System.out.println(response);
+            if (response == null || response.isEmpty() || "No friend requests".equals(response)) {
+                System.out.println("You have no pending friend requests.");
+                return;
+            }
+
+            String[] friendRequests = response.split(",");
+            Scanner scanner = new Scanner(System.in);
+
+            for (String requester : friendRequests) {
+                System.out.println("Friend request from: " + requester);
+                System.out.println("Do you want to (1) Accept or (2) Decline?");
+                String choice = scanner.nextLine();
+
+                switch (choice) {
+                    case "1":
+                        if (acceptFriendRequest(requester)) {
+                            System.out.println("You accepted the friend request from: " + requester);
+                        } else {
+                            System.out.println("Failed to accept friend request from: " + requester);
+                        }
+                        break;
+                    case "2":
+                        if (declineFriendRequest(requester)) {
+                            System.out.println("You declined the friend request from: " + requester);
+                        } else {
+                            System.out.println("Failed to decline friend request from: " + requester);
+                        }
+                        break;
+                    default:
+                        System.out.println("Invalid option. Skipping request from: " + requester);
+                }
+            }
         } catch (IOException e) {
             System.out.println("Error viewing friend requests: " + e.getMessage());
         }
     }
 
-    // Add a friend
+    public boolean acceptFriendRequest(String username) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        out.println("acceptFriendRequest," + username);
+
+        try {
+            String response = in.readLine();
+            return "Successfully accepted friend request".equals(response);
+        } catch (IOException e) {
+            System.out.println("Error accepting friend request: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean declineFriendRequest(String username) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        out.println("declineFriendRequest," + username);
+
+        try {
+            String response = in.readLine();
+            return "Successfully declined friend request".equals(response);
+        } catch (IOException e) {
+            System.out.println("Error declining friend request: " + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean addFriend(String user, String friend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -256,7 +312,7 @@ public class Client {
         try {
             String response = in.readLine();
             if ("Successfully added friend".equals(response)) {
-                System.out.println("Friend added: " + friend);
+                System.out.println(friend + " is now your friend.");
                 return true;
             } else {
                 System.out.println("Failed to add friend.");
@@ -268,19 +324,18 @@ public class Client {
         }
     }
 
-    // Remove a friend
-    public boolean removeFriend(String user, String removedFriend) {
+    public boolean removeFriend(String user, String friend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("removeFriend," + user + "," + removedFriend);
+        out.println("removeFriend," + user + "," + friend);
 
         try {
             String response = in.readLine();
             if ("Successfully removed friend".equals(response)) {
-                System.out.println("Friend removed: " + removedFriend);
+                System.out.println(friend + " has been removed from your friend list.");
                 return true;
             } else {
                 System.out.println("Failed to remove friend.");
@@ -292,7 +347,6 @@ public class Client {
         }
     }
 
-    // Block a user
     public boolean blockUser(String user, String blockedUser) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -304,7 +358,7 @@ public class Client {
         try {
             String response = in.readLine();
             if ("Successfully blocked user".equals(response)) {
-                System.out.println("User blocked: " + blockedUser);
+                System.out.println(blockedUser + " has been blocked.");
                 return true;
             } else {
                 System.out.println("Failed to block user.");
@@ -316,7 +370,6 @@ public class Client {
         }
     }
 
-    // View profile information
     public void viewProfile(String username) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -327,7 +380,7 @@ public class Client {
 
         try {
             String response = in.readLine();
-            System.out.println("Profile info for " + username + ": " + response);
+            System.out.println("Profile data: " + response);
         } catch (IOException e) {
             System.out.println("Error viewing profile: " + e.getMessage());
         }
