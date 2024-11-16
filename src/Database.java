@@ -169,7 +169,7 @@ public class Database implements DatabaseFramework {
                 String description = data[4];
                 String university = data[5];
 
-                User user = new User(name, password, email, phoneNumber, description, university);
+                User user = new User(name, password);
                 loadProfilePicture(user);
                 users.add(user);
             }

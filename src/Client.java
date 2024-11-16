@@ -157,9 +157,7 @@ public class Client {
             return false;
         }
 
-        out.println("register#*" + user.getName() + "#*" + user.getPassword() + "#*"
-                + user.getEmail() + "#*" + user.getPhoneNumber() + "#*"
-                + user.getDescription() + "#*" + user.getUniversity());
+        out.println("register," + user.getName() + "," + user.getPassword());
 
         try {
             String response = in.readLine();
@@ -175,7 +173,6 @@ public class Client {
             return false;
         }
     }
-
 
     public boolean sendMessage(String receiver, String message) {
         if (!isConnected) {
@@ -388,5 +385,4 @@ public class Client {
             System.out.println("Error viewing profile: " + e.getMessage());
         }
     }
-
 }
