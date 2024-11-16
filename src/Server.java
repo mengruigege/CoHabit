@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class Server {
     private static Database database = new Database();
 
+
+
 // method to check if the login was successful or not
     public static boolean login(String username, String password) {
         //might have to make getAllUsers in database static
@@ -152,6 +154,8 @@ public class Server {
 
 
 
+
+
     public static String viewProfile(String username) {
         database.loadUsersFromFile();
         User user = database.findUserByName(username);
@@ -160,6 +164,41 @@ public class Server {
         } else {
             return null;
         }
+    }
+    public static String partialMatch(User user) {
+        database.loadUsersFromFile();
+        UserSearch userSearch = new UserSearch();
+        ArrayList<User> partialmatches = userSearch.partialMatch(user);
+        String result = "";
+        for (User users : partialmatches) {
+            String username = users.getName();
+            result += username + "\n";
+        }
+        return result;
+
+    }
+    public static String exactMatch(User user) {
+        database.loadUsersFromFile();
+        UserSearch userSearch = new UserSearch();
+        ArrayList<User> exactmatches = userSearch.exactMatch(user);
+
+        String result = "";
+        for (User users : exactmatches) {
+            String username = users.getName();
+            result += username + "\n";
+        }
+        return result;
+    }
+    public static String searchByParameter(String parameter, String value) {
+        database.loadUsersFromFile();
+        UserSearch userSearch = new UserSearch();
+        ArrayList<User> matches = userSearch.searchByParameter(parameter, value);
+        String result = "";
+        for (User users : matches) {
+            String username = users.getName();
+            result += username + "\n";
+        }
+        return result;
     }
 
     public static void main(String[] args) {
@@ -204,9 +243,9 @@ public class Server {
 
                         }
 
-                        // should be in format sendMessage,sender,reciever,message
+                        // should be in format sendMessage#*sender#*reciever#*message
                         if (line.contains("sendMessage")) {
-                            String[] parts = line.split(",");
+                            String[] parts = line.split("#*");
                             database.loadUsersFromFile();
                             User sender = database.findUserByName(parts[1]);
                             User receiver = database.findUserByName(parts[2]);
@@ -354,6 +393,38 @@ public class Server {
                                 writer.println(viewProfile);
                             } else {
                                 writer.println("Something went wrong");
+                            }
+                        }
+                        // format should be partialMatch,user
+                        if (line.contains("partialMatch")) {
+                            String[] parts = line.split(",");
+                            User user = database.findUserByName(parts[1]);
+                            if (Server.partialMatch(user) == null) {
+                                writer.println("No partial matches found");
+                            } else {
+                                writer.println(partialMatch(user));
+                            }
+
+                        }
+                        // format should be exactMatch,user
+                        if (line.contains("exactMatch")) {
+                            String[] parts = line.split(",");
+                            User user = database.findUserByName(parts[1]);
+                            if (Server.exactMatch(user) == null) {
+                                writer.println("No exact matches found");
+                            } else {
+                                writer.println(exactMatch(user));
+                            }
+                        }
+                        // format should be searchByParameter,parameter,value
+                        if (line.contains("searchByParameter")) {
+                            String[] parts = line.split(",");
+                            String parameter = parts[1];
+                            String value = parts[2];
+                            if (Server.searchByParameter(parameter, value) == null) {
+                                writer.println("No matches found");
+                            } else {
+                                writer.println(searchByParameter(parameter, value));
                             }
                         }
 
