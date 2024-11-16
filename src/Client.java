@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-public class Client {
+public class Client implements ClientService {
 
     private User currentUser;
     private boolean isConnected;
@@ -16,15 +16,16 @@ public class Client {
         this.currentUser = user;
     }
 
-    public static void main(String[] args) throws UsernameTakenException {
+    public static void main(String[] args) throws UsernameTakenException, InvalidInput {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        User user = new User(username, password);
+        User user = null;
         Client client = new Client(user);
+        String username = "";
+        String password;
+        String email;
+        String phoneNumber;
+        String userDescription;
+        String university;
 
         if (!client.connect(client.serverAddress, client.serverPort)) {
             System.out.println("Failed to connect to the server. Exiting.");
@@ -37,58 +38,165 @@ public class Client {
             System.out.println("\nSelect an option:");
             System.out.println("1. Login");
             System.out.println("2. Register");
-            System.out.println("3. Send Message");
-            System.out.println("4. View Friend Requests");
-            System.out.println("5. Send Friend Request");
-            System.out.println("6. Add Friend");
-            System.out.println("7. Remove Friend");
-            System.out.println("8. Block User");
-            System.out.println("9. View Profile");
-            System.out.println("10. Disconnect and Exit");
 
-            String choice = scanner.nextLine();
+            boolean loggedIn = false;
 
-            switch (choice) {
+            String choice1 = scanner.nextLine();
+
+            while (!loggedIn) {
+                switch (choice1) {
+                    case "1":
+                        while (true) {
+                            System.out.println("Enter your username:");
+                            username = scanner.nextLine();
+
+                            if (username == null) {
+                                throw new InvalidInput("Username is invalid");
+                            } else {
+                                break;
+                            }
+                        }
+                        while (true) {
+                            System.out.println("Enter your password:");
+                            password = scanner.nextLine();
+
+                            if (password == null) {
+                                throw new InvalidInput("Password is invalid");
+                            } else {
+                                break;
+                            }
+                        }
+                        client.login(username, password);
+                        break;
+                    case "2":
+                        while (true) {
+                            System.out.println("Create a username:");
+                            username = scanner.nextLine();
+
+                            if (username == null) {
+                                throw new InvalidInput("Username is invalid");
+                            } else if (username.contains("#*")) {
+                                throw new InvalidInput("'#*' is not allowed");
+                            } else {
+                                break;
+                            }
+                        }
+                        while (true) {
+                            System.out.println("Create a password: ");
+                            password = scanner.nextLine();
+
+                            if (password == null) {
+                                throw new InvalidInput("Password is invalid");
+                            } else if (password.contains("#*")) {
+                                throw new InvalidInput("'#*' is not allowed");
+                            } else {
+                                break;
+                            }
+                        }
+                        while (true) {
+                            System.out.println("Enter your email:");
+                            email = scanner.nextLine();
+
+                            if (email == null || !email.contains("@") || !email.contains(".")) {
+                                throw new InvalidInput("email is invalid");
+                            } else if (email.contains("#*")) {
+                                throw new InvalidInput("'#*' is not allowed");
+                            } else {
+                                break;
+                            }
+                        }
+                        while (true) {
+                            System.out.println("Enter your phone number: ");
+                            phoneNumber = scanner.nextLine();
+
+                            if (phoneNumber == null) {
+                                throw new InvalidInput("Phone number is invalid");
+                            } else if (phoneNumber.contains("#*")) {
+                                throw new InvalidInput("'#*' is not allowed");
+                            } else if (phoneNumber.length() != 10) {
+                                throw new InvalidInput("Phone number is invalid");
+                            } else {
+                                break;
+                            }
+                        }
+                        while (true) {
+                            System.out.println("Create a description:");
+                            userDescription = scanner.nextLine();
+
+                            if (userDescription == null) {
+                                throw new InvalidInput("Description is invalid");
+                            } else if (userDescription.contains("#*")) {
+                                throw new InvalidInput("'#*' is not allowed");
+                            } else {
+                                break;
+                            }
+                        }
+                        while (true) {
+                            System.out.println("Create a university: ");
+                            university = scanner.nextLine();
+
+                            if (university == null) {
+                                throw new InvalidInput("University is invalid");
+                            } else if (password.contains("#*")) {
+                                throw new InvalidInput("'#*' is not allowed");
+                            } else {
+                                break;
+                            }
+                        }
+
+                        client.register(new User(username, password, email, phoneNumber, userDescription, university));
+                        break;
+                }
+            }
+
+            System.out.println("1. Send Message");
+            System.out.println("2. View Friend Requests");
+            System.out.println("3. Send Friend Request");
+            System.out.println("4. Add Friend");
+            System.out.println("5. Remove Friend");
+            System.out.println("6. Block User");
+            System.out.println("7. View Profile");
+            System.out.println("8. Disconnect and Exit");
+
+            String choice2 = scanner.nextLine();
+
+            switch (choice2) {
                 case "1":
-                    client.login(username, password);
-                    break;
-                case "2":
-                    client.register(new User(username, password));
-                    break;
-                case "3":
                     System.out.print("Enter receiver's username: ");
                     String receiver = scanner.nextLine();
                     System.out.print("Enter message: ");
                     String message = scanner.nextLine();
                     client.sendMessage(receiver, message);
                     break;
-                case "4":
+                case "2":
                     client.viewFriendRequests(username);
                     break;
-                case "5":
+                case "3":
                     System.out.print("Enter username to send friend request: ");
                     String friendRequestUsername = scanner.nextLine();
                     client.sendFriendRequest(username, friendRequestUsername);
                     break;
-                case "6":
+                case "4":
                     System.out.print("Enter username to add as friend: ");
                     String friendUsername = scanner.nextLine();
                     client.addFriend(username, friendUsername);
                     break;
-                case "7":
+                case "5":
                     System.out.print("Enter username to remove as friend: ");
                     String removedFriend = scanner.nextLine();
                     client.removeFriend(username, removedFriend);
                     break;
-                case "8":
+                case "6":
                     System.out.print("Enter username to block: ");
                     String blockedUser = scanner.nextLine();
                     client.blockUser(username, blockedUser);
                     break;
-                case "9":
-                    client.viewProfile(username);
+                case "7":
+                    System.out.print("Enter a profile to view: ");
+                    String profile = scanner.nextLine();
+                    client.viewProfile(profile);
                     break;
-                case "10":
+                case "8":
                     client.disconnect();
                     exit = true;
                     break;

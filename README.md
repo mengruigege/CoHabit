@@ -1,11 +1,11 @@
-﻿# Phase 1 - L11, Team 02 - CoHabit
+﻿# Phase 2 - L11, Team 02 - CoHabit
 
 **Submitted On Vocareum By
 Rui Meng**
 
 ## _**Introduction**_
 
-For this project, we have created several classes for the first phase of the creation of our very own social media app - CoHabit. CoHabit is an app that eases the roommate search issue through matching various preferences of users. We have also implemented a direct messaging service for communication amongst app users.
+For this project, we have created a few additional classes for the second phase of the creation of our very own social media app - CoHabit. CoHabit is an app that eases the roommate search issue through matching various preferences of users. We have also implemented a direct messaging service for communication amongst app users.
 
 For the implementation of the database side of the app, we have created the necessary classes and interfaces to include all the information about the user information, preferences, and so on as listed below:
 
@@ -14,19 +14,25 @@ For the implementation of the database side of the app, we have created the nece
 3. User.java
 4. UserDatabase.java
 5. UserSearch.java
-6. UsernameTakenException.java
-7. InvalidInputException.java
-8. Blockable.java
-9. FriendManageable.java
-10. Message.java
-11. Profile.java
-12. Searchable.java
-13. Sendable.java
-14. TestChat.java
-15. TestUser.java
-16. TestUserSearch.java
-17. TestDatabase.java
-18. TestFriendList.java
+6. Client.java
+7. Server.java
+8. UsernameTakenException.java
+9. InvalidInputException.java
+10. Blockable.java
+11. FriendManageable.java
+12. Message.java
+13. Profile.java
+14. Searchable.java
+15. Sendable.java
+16. ClientService.java
+17. ServerService.java
+18. TestChat.java
+19. TestUser.java
+20. TestUserSearch.java
+21. TestDatabase.java
+22. TestFriendList.java
+23. TestClient.java
+24. TestServer.java
 
 ## _**Description**_
 
@@ -41,6 +47,8 @@ For the implementation of the database side of the app, we have created the nece
 | User.java                  | Enables users to create a profile containing personal details and check compatibility.|
 | Database.java              | Reads and writes data from .txt files, providing a framework for storing user data.  |
 | UserSearch.java            | Allows users to search for other users in the database and apply filters based on preferences. |
+| Client.java                | Allows users to access the features of the application without doing any computation. |
+| Server.java                | Handles the computation of the features that a user wants to access in the app.       |
 
 **Chat.java**
 
@@ -355,6 +363,93 @@ Confirms that the exactMatch method retrieves user1 correctly, verifying that th
 
 3. testPartialMatch:
 Checks the partialMatch method to ensure it can identify user2 as a partial match for user1, indicating that user matching is functioning as expected.
+
+---
+
+**Client.java**
+
+_All Implemented Interfaces_
+ClientService
+
+_Field Summary_
+
+| Modifier and Type          | Field             | Description                                                              |
+|----------------------------|-------------------|---------------------------------------------------------------------------|
+| private User               | currentUser       | Stores the user who is currently accessing the app.                      |
+| private boolean            | isConnected       | Checks if the server and client are connected to each other.             |
+| private Socket             | socket            | Establishes an endpoint for communication between server and client.     |
+| private PrintWriter        | out               | Represents an output stream connected to the network socket.             |
+| private BufferedReader     | in                | Represents an input stream connected to a socket.                        |
+| private final String       | serverAddress     | Stores hostname/IP address of server.                                    |
+| private final int          | serverPort        | Stores the port on which the server is configured.                       |
+
+_Constructor Summary_
+
+| Constructor        | Description                                                                                           |
+|--------------------|-------------------------------------------------------------------------------------------------------|
+| Client(User user) | Constructs a newly allocated Client object and initializes the field values specified by input parameters. |
+
+_Method Summary_
+
+| Modifier and Type          | Method Name               | Description                                                            |
+|----------------------------|---------------------------|------------------------------------------------------------------------|
+| public boolean             | connect                   | To connect the client to the server.                                   |
+| public void                | disconnect                | To disconnect the client from the server.                              |
+| public boolean             | login                     | To allow users to login to their CoHabit account.                      |
+| public boolean             | register                  | To allow users to register or sign up for the app.                     |
+| public boolean             | sendMessage               | To send messages to other users.                                       |
+| public boolean             | sendFriendRequest         | To send friend requests to other users.                                |
+| public void                | viewFriendRequests        | To view all friend requests that a user has.                           |
+| public boolean             | acceptFriendRequest       | To accept a friend request sent by another user.                       |
+| public boolean             | declineFriendRequest      | To decline a friend request sent by another user.                      |
+| public boolean             | addFriend                 | To add another user as a friend.                                       |
+| public boolean             | removeFriend              | To remove another user from the friends list.                          |
+| public boolean             | blockUser                 | To block a user.                                                       |
+| public void                | viewProfile               | To view a user’s profile.                                              |
+| public boolean             | unblockUser               | To unblock a user.                                                     |
+
+
+\\More methods to be addes
+
+_Testing_
+Client.java is tested by unit tests included in the class TestClient.java.
+
+\\ To be added
+
+---
+**Server.java**
+
+_All Implemented Interfaces_
+ServerService
+
+_Field Summary_
+| Modifier and Type          | Field       | Description                     |
+|----------------------------|-------------|---------------------------------|
+| public static Database     | database    | Creates a new database.        |
+
+_Method Summary_
+
+| Modifier and Type          |  Method Name               |  Description                                                             |
+|----------------------------|----------------------------|--------------------------------------------------------------------------|
+| public static boolean    | login(String username, String password)| To allow users to login to their CoHabit account on the server side.   |
+| public static boolean    | register(User user)                    | To allow users to register or sign up for the app to the server side.  |
+| public static boolean    | sendMessage(User sender, User receiver, String message) | To send messages to other users on the server side.   |
+| public static String     | loadMessage(User sender, User receiver)| To load chat history on the server side.                               |
+| public static boolean    | sendFriendRequest                      | To send friend requests to other users on the server side.             |
+| public static ArrayList<User>  | viewFriendRequests(User user)    | To view all friend requests that a user has on the server side.        |
+| public static boolean    | acceptFriendRequest                    | To accept a friend request sent by another user on the server side.    |
+| public static boolean    | declineFriendRequest                   | To decline a friend request sent by another user on the server side.   |
+| public static boolean    | addFriend                              | To add another user as a friend on the server side.                    |
+| public static boolean    | removeFriend                           | To remove another user from the friends list on the server side.       |
+| public static boolean    | blockUser                              | To block a user on the server side.                                    |
+| public static ArrayList<User>  | viewBlockedUsers(User user)      | To view all blocked users on the server side.                          |
+| public static boolean          | removeBlockedUser                | To unblock a user on the server side.                                  |
+| public static void             | viewProfile                      | To view a user’s profile on the server side.                           |
+| public static ArrayList<User>  | viewFriendsList(User user)       | To view the list of friends of a user on the server side.              |
+
+_Testing_
+
+Server.java is tested by unit tests included in the class TestServer.java.
 
 ---
 
