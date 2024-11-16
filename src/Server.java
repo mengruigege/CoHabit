@@ -15,6 +15,9 @@ public class Server {
         database.loadUsersFromFile();
         User user;
         user = database.findUserByName(username);
+        if (user == null) {
+            return false;
+        }
         if (user.getPassword().equals(password)) {
             return true;
         }
