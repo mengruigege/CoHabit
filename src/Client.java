@@ -332,6 +332,10 @@ public class Client implements ClientService {
         }
     }
 
+    public boolean isConnected() {
+        return isConnected;
+    }
+
     public void disconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
