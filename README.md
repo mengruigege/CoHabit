@@ -519,6 +519,22 @@ Constructor
 * boolean deleteMessage(User sender, User receiver, String message)
 * ArrayList<String> getMessages()
 
+7. ClientService.java
+
+* 
+* 
+*
+*
+*
+
+8. ServerService.java
+
+*
+*
+*
+*
+*
+
 ---
 
 ### **Extra Credit - Images**
