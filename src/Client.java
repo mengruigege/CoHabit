@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client implements ClientService {
@@ -35,15 +36,15 @@ public class Client implements ClientService {
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("\nSelect an option:");
-            System.out.println("1. Login");
-            System.out.println("2. Register");
-
             boolean loggedIn = false;
 
-            String choice1 = scanner.nextLine();
-
             while (!loggedIn) {
+                System.out.println("\nSelect an option:");
+                System.out.println("1. Login");
+                System.out.println("2. Register");
+
+                String choice1 = scanner.nextLine();
+
                 switch (choice1) {
                     case "1":
                         while (true) {
@@ -67,6 +68,7 @@ public class Client implements ClientService {
                             }
                         }
                         client.login(username, password);
+                        loggedIn = true;
                         break;
                     case "2":
                         while (true) {
@@ -108,6 +110,12 @@ public class Client implements ClientService {
                         while (true) {
                             System.out.println("Enter your phone number: ");
                             phoneNumber = scanner.nextLine();
+                            boolean notInt = false;
+                            try {
+                                int number = Integer.parseInt(phoneNumber);
+                            } catch (Exception e) {
+                                notInt = true;
+                            }
 
                             if (phoneNumber == null) {
                                 throw new InvalidInput("Phone number is invalid");
@@ -115,6 +123,8 @@ public class Client implements ClientService {
                                 throw new InvalidInput("'#*' is not allowed");
                             } else if (phoneNumber.length() != 10) {
                                 throw new InvalidInput("Phone number is invalid");
+                            } else if (notInt) {
+                                throw new InvalidInput("Not a number");
                             } else {
                                 break;
                             }
@@ -143,12 +153,110 @@ public class Client implements ClientService {
                                 break;
                             }
                         }
+                        String bedTime;
+                        while (true) {
+                            System.out.println("What is your average bed time?");
+                            bedTime = scanner.nextLine();
+                            boolean nan = false;
 
-                        client.register(new User(username, password, email, phoneNumber, userDescription, university));
+                            try {
+                                int time = Integer.parseInt(bedTime);
+                            } catch (Exception e) {
+                                nan = true;
+                            }
+
+                            if (bedTime == null) {
+                                throw new InvalidInput("Bed time is invalid");
+                            } else if (!bedTime.contains(":")) {
+                                throw new InvalidInput("Bed time is invalid");
+                            } else if (nan) {
+                                throw new InvalidInput("Not a number");
+                            } else {
+                                break;
+                            }
+                        }
+                        boolean alcohol;
+                        String answer;
+                        while (true) {
+                            System.out.println("Do you drink alcohol? (y/n)");
+                            answer = scanner.nextLine();
+
+                            if (answer.equals("y")) {
+                                alcohol = true;
+                                break;
+                            } else if (answer.equals("n")) {
+                                alcohol = false;
+                                break;
+                            } else {
+                                throw new InvalidInput("Invalid Input");
+                            }
+                        }
+                        boolean smoking;
+                        while (true) {
+                            System.out.println("Do you smoke? (y/n)");
+                            answer = scanner.nextLine();
+
+                            if (answer.equals("y")) {
+                                smoking = true;
+                                break;
+                            } else if (answer.equals("n")) {
+                                smoking = false;
+                                break;
+                            } else {
+                                throw new InvalidInput("Invalid Input");
+                            }
+                        }
+                        boolean guests;
+                        while (true) {
+                            System.out.println("Are you comfortable with guests? (y/n)");
+                            answer = scanner.nextLine();
+
+                            if (answer.equals("y")) {
+                                guests = true;
+                                break;
+                            } else if (answer.equals("n")) {
+                                guests = false;
+                                break;
+                            } else {
+                                throw new InvalidInput("Invalid Input");
+                            }
+                        }
+                        int tidy;
+                        while (true) {
+                            System.out.println("How tidy are you? (1-10)");
+                            try {
+                                tidy = scanner.nextInt();
+                                if (tidy <= 10 && tidy >= 1) {
+                                    break;
+                                } else {
+                                    throw new InvalidInput("Outside of range");
+                                }
+                            } catch (Exception e) {
+                                throw new InvalidInput("Invalid Input");
+                            }
+                        }
+                        int roomHours;
+                        while (true) {
+                            System.out.println("How many hours per day on average do you spend in your room?");
+                            try {
+                                roomHours = scanner.nextInt();
+                                if (roomHours >= 1 && roomHours <= 24) {
+                                    break;
+                                } else {
+                                    throw new InvalidInput("Outside of Range");
+                                }
+                            } catch (Exception e) {
+                                throw new InvalidInput("Invalid Input");
+                            }
+                        }
+                        user = new User(username, password, email, phoneNumber, userDescription, university);
+                        client.register(user);
+                        user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
                         break;
                 }
             }
 
+            System.out.println("\nSelect and option:");
             System.out.println("1. Send Message");
             System.out.println("2. View Friend Requests");
             System.out.println("3. Send Friend Request");
@@ -156,7 +264,8 @@ public class Client implements ClientService {
             System.out.println("5. Remove Friend");
             System.out.println("6. Block User");
             System.out.println("7. View Profile");
-            System.out.println("8. Disconnect and Exit");
+            System.out.println("8. Edit Profile");
+            System.out.println("9. Disconnect and Exit");
 
             String choice2 = scanner.nextLine();
 
@@ -166,6 +275,7 @@ public class Client implements ClientService {
                     String receiver = scanner.nextLine();
                     System.out.print("Enter message: ");
                     String message = scanner.nextLine();
+                    client.fetchMessages(username, receiver);
                     client.sendMessage(receiver, message);
                     break;
                 case "2":
@@ -196,7 +306,7 @@ public class Client implements ClientService {
                     String profile = scanner.nextLine();
                     client.viewProfile(profile);
                     break;
-                case "8":
+                case "9":
                     client.disconnect();
                     exit = true;
                     break;
@@ -282,13 +392,36 @@ public class Client implements ClientService {
         }
     }
 
+    public boolean setPreferences(User user) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        out.println("setPreferences," + user.getPreferences());
+
+        try {
+            String response = in.readLine();
+            if ("Preferences received".equals(response)) {
+                System.out.println("New Preferences Set: " + user.getPreferences());
+                return true;
+            } else {
+                System.out.println("Editing failed: " + response);
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error during editing: " + e.getMessage());
+            return false;
+        }
+    }
+
     public boolean sendMessage(String receiver, String message) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("sendMessage," + currentUser.getName() + "," + receiver + "," + message);
+        out.println("sendMessage#*" + currentUser.getName() + "#*" + receiver + "#*" + message);
 
         try {
             String response = in.readLine();
@@ -302,6 +435,27 @@ public class Client implements ClientService {
         } catch (IOException e) {
             System.out.println("Error sending message: " + e.getMessage());
             return false;
+        }
+    }
+
+    public String fetchMessages(String user, String receiver) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return null;
+        }
+
+        out.println("loadMessages," + currentUser.getName() + "," + receiver + "," + receiver);
+
+        try {
+            String response = in.readLine();
+            if ("Message List is Empty".equals(response)) {
+                return null;
+            } else {
+                return response;
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading message history");
+            return null;
         }
     }
 
