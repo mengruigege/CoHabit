@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public interface DatabaseInterface {
+public interface DatabaseFramework {
 
     // User management
     boolean addUser(User user);
