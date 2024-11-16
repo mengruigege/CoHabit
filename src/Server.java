@@ -21,7 +21,7 @@ public class Server {
         return false;
     }
     // method used to add the new register user to the database and return true if successful
-    public boolean register(User user) {
+    public static boolean register(User user) {
         database.loadUsersFromFile();
         database.addUser(user);
         return true;
@@ -66,7 +66,7 @@ public class Server {
     public static ArrayList<User> viewFriendRequests(User user) {
         database.loadUsersFromFile();
         database.loadFriendRequestsFromFile();
-        return user.getFriendList();
+        return user.getIncomingFriendRequest();
     }
     public static boolean declineFriendRequest(User user, User declinedUser) {
         database.loadUsersFromFile();
@@ -114,7 +114,7 @@ public class Server {
         database.loadBlockedFromFile();
         database.loadBlockedFromFile();
         if (user.getBlockedUsers().contains(blockedUser)) {
-            database.removeblockedUser(user, blockedUser);  //need to add method in database
+            database.unblockUser(user, blockedUser);
             return true;
         }
         return false;
@@ -162,6 +162,18 @@ public class Server {
                                 writer.println("Sucessful login");
                                 break;
                             } else writer.println("Wrong username or password");
+
+                        }
+                        //format should be register,username,password,email,phoneNumber,desciption,university
+                        if (line.contains("register")) {
+                            try {
+                                User user = new User(parts[1],parts[2],parts[3],parts[4],parts[5],parts[6]);
+                                if (Server.register(user)) {
+                                    writer.println("")
+                                }
+                            } catch (UsernameTakenException e) {
+                                writer.println("Enter a different username");
+                            }
 
                         }
 
