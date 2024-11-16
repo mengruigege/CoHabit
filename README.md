@@ -391,8 +391,8 @@ _Constructor Summary_
 
 _Method Summary_
 
-| Modifier and Type          | Method Name                | Description                                                           |
-|----------------------------|----------------------------|------------------------------------------------------------------------|
+| Modifier and Type          | Method Name               | Description                                                            |
+|----------------------------|---------------------------|------------------------------------------------------------------------|
 | public boolean             | connect                   | To connect the client to the server.                                   |
 | public void                | disconnect                | To disconnect the client from the server.                              |
 | public boolean             | login                     | To allow users to login to their CoHabit account.                      |
@@ -407,6 +407,7 @@ _Method Summary_
 | public boolean             | blockUser                 | To block a user.                                                       |
 | public void                | viewProfile               | To view a user’s profile.                                              |
 | public boolean             | unblockUser               | To unblock a user.                                                     |
+
 
 \\More methods to be addes
 
@@ -428,23 +429,23 @@ _Field Summary_
 
 _Method Summary_
 
-| **Modifier and Type**               | **Method Name**                        | **Description**                                                        |
+| Modifier and Type               | Method Name                        | Description                                                      |
 |-------------------------------------|----------------------------------------|------------------------------------------------------------------------|
-| public static boolean               | login(String username, String password)| To allow users to login to their CoHabit account on the server side.   |
-| public static boolean               | register(User user)                    | To allow users to register or sign up for the app to the server side.  |
-| public static boolean               | sendMessage(User sender, User receiver, String message) | To send messages to other users on the server side.                   |
-| public static String                | loadMessage(User sender, User receiver)| To load chat history on the server side.                               |
-| public static boolean               | sendFriendRequest                     | To send friend requests to other users on the server side.             |
-| public static ArrayList<User>       | viewFriendRequests(User user)          | To view all friend requests that a user has on the server side.        |
-| public static boolean               | acceptFriendRequest                   | To accept a friend request sent by another user on the server side.    |
-| public static boolean               | declineFriendRequest                  | To decline a friend request sent by another user on the server side.   |
-| public static boolean               | addFriend                             | To add another user as a friend on the server side.                    |
-| public static boolean               | removeFriend                          | To remove another user from the friends list on the server side.       |
-| public static boolean               | blockUser                             | To block a user on the server side.                                    |
-| public static ArrayList<User>       | viewBlockedUsers(User user)           | To view all blocked users on the server side.                          |
-| public static boolean               | removeBlockedUser                     | To unblock a user on the server side.                                  |
-| public static void                  | viewProfile                           | To view a user’s profile on the server side.                           |
-| public static ArrayList<User>       | viewFriendsList(User user)            | To view the list of friends of a user on the server side.              |
+| public static boolean    | login(String username, String password)| To allow users to login to their CoHabit account on the server side.   |
+| public static boolean    | register(User user)                    | To allow users to register or sign up for the app to the server side.  |
+| public static boolean    | sendMessage(User sender, User receiver, String message) | To send messages to other users on the server side.   |
+| public static String     | loadMessage(User sender, User receiver)| To load chat history on the server side.                               |
+| public static boolean    | sendFriendRequest                      | To send friend requests to other users on the server side.             |
+| public static ArrayList<User>  | viewFriendRequests(User user)    | To view all friend requests that a user has on the server side.        |
+| public static boolean    | acceptFriendRequest                    | To accept a friend request sent by another user on the server side.    |
+| public static boolean    | declineFriendRequest                   | To decline a friend request sent by another user on the server side.   |
+| public static boolean    | addFriend                              | To add another user as a friend on the server side.                    |
+| public static boolean    | removeFriend                           | To remove another user from the friends list on the server side.       |
+| public static boolean    | blockUser                              | To block a user on the server side.                                    |
+| public static ArrayList<User>  | viewBlockedUsers(User user)      | To view all blocked users on the server side.                          |
+| public static boolean          | removeBlockedUser                | To unblock a user on the server side.                                  |
+| public static void             | viewProfile                      | To view a user’s profile on the server side.                           |
+| public static ArrayList<User>  | viewFriendsList(User user)       | To view the list of friends of a user on the server side.              |
 
 _Testing_
 Server.java is tested by unit tests included in the class TestServer.java.
