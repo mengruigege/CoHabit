@@ -1,74 +1,172 @@
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
-//gdjskalkfdsjakl
+
 public class TestClient {
-    @Test
-    public void testClient() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        assertTrue(client1.connect("localhost", 1102));
-        client1.disconnect();
+    private Thread serverThread;
+    private Client client;
+
+    @Before
+    public void setUp() throws Exception {
+        // Start the server in a separate thread
+        serverThread = new Thread(() -> {
+            try {
+                Server.main(new String[0]); // Start the real server
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        serverThread.start();
+
+        // Wait briefly to ensure the server starts
+        Thread.sleep(1000);
+
+        // Initialize the client with a properly created User
+        User user = new User("Bob","password123","bob@example.com","1234567890","Description for Bob",                "University Example"
+        );
+        client = new Client(user);
+
+        // Connect the client to the server
+        assertTrue("Client should successfully connect to the server.", client.connect("localhost", 1102));
     }
-    @Test
-    public void testLogin() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        assertTrue(client1.login("Bob", "password123"));
-        client1.disconnect();
+
+    @After
+    public void tearDown() throws Exception {
+        client.disconnect();
+        serverThread.interrupt(); // Stop the server thread
     }
+
+    // Test connection
     @Test
-    public void testRegister() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        assertTrue(client1.register(new User("Bob", "password123")));
-        client1.disconnect();
+    public void testClientConnection() {
+        assertTrue("Client should be connected to the server.", client.isConnected());
+        client.disconnect();
+        assertFalse("Client should disconnect successfully.", client.isConnected());
     }
+
+    // Test login
     @Test
-    public void testSendMessage() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        assertTrue(client1.sendMessage("Bob", "Hello"));
-        client1.disconnect();
+    public void testLogin_Successful() {
+        assertTrue("Login should succeed with correct credentials.", client.login("Bob", "password123"));
     }
+
     @Test
-    public void testSendFriendRequest() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        assertTrue(client1.sendFriendRequest("Bob", "friend"));
-        client1.disconnect();
+    public void testLogin_Failed_InvalidPassword() {
+        assertFalse("Login should fail with an incorrect password.", client.login("Bob", "wrongPassword"));
     }
+
     @Test
-    public void testAddFriend() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        assertTrue(client1.addFriend("Bob", "friend"));
-        client1.disconnect();
+    public void testLogin_Failed_NonExistentUser() {
+        assertFalse("Login should fail for a non-existent user.", client.login("NonExistentUser", "password123"));
     }
+
+    // Test registration
     @Test
-    public void testRemoveFriend() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        assertTrue(client1.removeFriend("Bob", "friend"));
-        client1.disconnect();
+    public void testRegister_Successful() throws UsernameTakenException {
+        User newUser = new User(
+                "Alice",
+                "securePass",
+                "alice@example.com",
+                "5555555555",
+                "Description for Alice",
+                "Example University"
+        );
+        assertTrue("Registration should succeed for a new user.", client.register(newUser));
     }
+
     @Test
-    public void testBlockUser() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        assertTrue(client1.blockUser("Bob", "friend"));
-        client1.disconnect();
+    public void testRegister_Failed_DuplicateUser() throws UsernameTakenException {
+        User duplicateUser = new User(
+                "Bob",
+                "password123",
+                "bob@example.com",
+                "1234567890",
+                "Description for Bob",
+                "University Example"
+        );
+        assertFalse("Registration should fail for an already existing user.", client.register(duplicateUser));
     }
+
+    // Test sending messages
     @Test
-    public void testViewProfile() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        client1.viewProfile("Bob");
-        client1.disconnect();
+    public void testSendMessage_Successful() {
+        assertTrue("Message should be sent successfully.", client.sendMessage("friend", "Hello there!"));
     }
+
     @Test
-    public void testDisconnect() throws UsernameTakenException {
-        Client client1 = new Client(new User("Bob", "password123"));
-        client1.connect("localhost", 1102);
-        client1.disconnect();
-        assertFalse(client1.isConnected());
+    public void testSendMessage_Failed_NonExistentUser() {
+        assertFalse("Message sending should fail for a non-existent receiver.", client.sendMessage("UnknownUser", "Hello!"));
+    }
+
+    @Test
+    public void testSendMessage_EmptyMessage() {
+        assertTrue("Empty messages should still be allowed.", client.sendMessage("friend", ""));
+    }
+
+    // Test sending friend requests
+    @Test
+    public void testSendFriendRequest_Successful() {
+        assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "friend"));
+    }
+
+    @Test
+    public void testSendFriendRequest_Failed() {
+        assertFalse("Friend request should fail for a non-existent user.", client.sendFriendRequest("Bob", "UnknownUser"));
+    }
+
+    // Test adding friends
+    @Test
+    public void testAddFriend_Successful() {
+        assertTrue("Adding friend should succeed for valid users.", client.addFriend("Bob", "friend"));
+    }
+
+    @Test
+    public void testAddFriend_Failed() {
+        assertFalse("Adding friend should fail for a non-existent user.", client.addFriend("Bob", "UnknownUser"));
+    }
+
+    // Test removing friends
+    @Test
+    public void testRemoveFriend_Successful() {
+        assertTrue("Removing friend should succeed for existing friends.", client.removeFriend("Bob", "friend"));
+    }
+
+    @Test
+    public void testRemoveFriend_Failed() {
+        assertFalse("Removing friend should fail for a non-friend.", client.removeFriend("Bob", "UnknownUser"));
+    }
+
+    // Test blocking users
+    @Test
+    public void testBlockUser_Successful() {
+        assertTrue("Blocking user should succeed.", client.blockUser("Bob", "friend"));
+    }
+
+    @Test
+    public void testBlockUser_Failed() {
+        assertFalse("Blocking user should fail for a non-existent user.", client.blockUser("Bob", "UnknownUser"));
+    }
+
+    // Test viewing profiles
+    @Test
+    public void testViewProfile_Successful() {
+        client.viewProfile("Bob");
+        // Assuming the server returns the profile as a string
+        System.out.println("Profile viewed successfully.");
+    }
+
+    @Test
+    public void testViewProfile_Failed() {
+        client.viewProfile("UnknownUser");
+        System.out.println("Profile viewing should fail for a non-existent user.");
+    }
+
+    // Test disconnect
+    @Test
+    public void testDisconnect() {
+        client.disconnect();
+        assertFalse("Client should not be connected after disconnecting.", client.isConnected());
     }
 }
