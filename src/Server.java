@@ -41,7 +41,7 @@ public class Server {
         return true;
     }
     public static String loadMessages(User user, User reciever) {
-        if (reciever == null) {
+        if (user == null || reciever == null) {
             return null;
         }
         ArrayList<String> messages = database.loadConversation(user.getName(), reciever.getName());
@@ -57,7 +57,7 @@ public class Server {
 
     public static boolean sendFriendRequest(User user, User potentialFriend) {
         database.loadUsersFromFile();
-        if (potentialFriend == null) {
+        if (user == null || potentialFriend == null) {
             return false;
         }
         database.loadFriendRequestsFromFile();
@@ -72,65 +72,82 @@ public class Server {
         return user.getIncomingFriendRequest();
     }
     public static boolean declineFriendRequest(User user, User declinedUser) {
-        database.loadUsersFromFile();
-        database.loadFriendRequestsFromFile();
-        database.removeFriendRequest(user,declinedUser);
-        //saveFriendRequestFile
-        return true;
-
+        if (user != null && declinedUser != null) {
+            database.loadUsersFromFile();
+            database.loadFriendRequestsFromFile();
+            database.removeFriendRequest(user, declinedUser);
+            //saveFriendRequestFile
+            return true;
+        } else {
+            return false;
+        }
     }
     //addFriend is what happens when you accept a friend request
     public static boolean addFriend(User user, User friend) {
-        database.loadUsersFromFile();
+        if (user != null && friend != null) {
+            database.loadUsersFromFile();
 
-        if (!(user.getFriendList().contains(friend))) {
-            database.loadFriendsFromFile();
-            database.addFriend(user, friend);
-            database.addFriend(friend, user);
-            database.removeFriendRequest(user, friend);
-            //saveFriendRequestFile
-            return true;
+            if (!(user.getFriendList().contains(friend))) {
+                database.loadFriendsFromFile();
+                database.addFriend(user, friend);
+                database.addFriend(friend, user);
+                database.removeFriendRequest(user, friend);
+                //saveFriendRequestFile
+                return true;
+            }
         }
-
         return false;
     }
     public static boolean removeFriend(User user, User removedFriend) {
-        database.loadUsersFromFile();
-        database.loadFriendsFromFile();
-        if (user.getFriendList().contains(removedFriend)) {
-            database.removeFriend(user, removedFriend);
-            database.removeFriend(removedFriend,user); //not sure that we need this
-            return true;
+        if (user != null && removedFriend != null) {
+            database.loadUsersFromFile();
+            database.loadFriendsFromFile();
+            if (user.getFriendList().contains(removedFriend)) {
+                database.removeFriend(user, removedFriend);
+                database.removeFriend(removedFriend, user); //not sure that we need this
+                return true;
+            }
         }
         return false;
     }
     public static boolean blockUser(User user, User blockedUser) {
-        database.loadUsersFromFile();
-        database.loadBlockedFromFile();
-        if (!(user.getBlockedUsers().contains(blockedUser))) {
-            database.blockUser(user,blockedUser);
-            return true;
+        if (user != null || blockedUser != null) {
+            database.loadUsersFromFile();
+            database.loadBlockedFromFile();
+            if (!(user.getBlockedUsers().contains(blockedUser))) {
+                database.blockUser(user, blockedUser);
+                return true;
+            }
         }
         return false;
     }
     public static boolean removeBlockedUser(User user, User blockedUser) {
-        database.loadBlockedFromFile();
-        database.loadBlockedFromFile();
-        if (user.getBlockedUsers().contains(blockedUser)) {
-            database.unblockUser(user, blockedUser);
-            return true;
+        if (user != null || blockedUser != null) {
+            database.loadBlockedFromFile();
+            database.loadBlockedFromFile();
+            if (user.getBlockedUsers().contains(blockedUser)) {
+                database.unblockUser(user, blockedUser);
+                return true;
+            }
         }
         return false;
     }
     public static ArrayList<User> viewBlockedUsers(User user) {
-        database.loadBlockedFromFile();
-        database.loadBlockedFromFile();
-        return user.getBlockedUsers();
+        if (user != null) {
+            database.loadBlockedFromFile();
+            database.loadBlockedFromFile();
+            return user.getBlockedUsers();
+        }
+        return null;
     }
     public static ArrayList<User> viewFriendsList(User user) {
-        database.loadFriendsFromFile();
-        database.loadFriendsFromFile();
-        return user.getFriendList();
+        if (user != null) {
+            database.loadFriendsFromFile();
+            database.loadFriendsFromFile();
+            return user.getFriendList();
+        } else {
+            return null;
+        }
     }
 
 
@@ -138,7 +155,11 @@ public class Server {
     public static String viewProfile(String username) {
         database.loadUsersFromFile();
         User user = database.findUserByName(username);
-        return user.toString();
+        if (user != null) {
+            return user.toString();
+        } else {
+            return null;
+        }
     }
 
     public static void main(String[] args) {
@@ -328,7 +349,12 @@ public class Server {
                         if (line.contains("viewProfile")) {
                             String[] parts = line.split(",");
                             String username = parts[1];
-                            writer.println( Server.viewProfile(username));
+                            String viewProfile = Server.viewProfile(username);
+                            if (viewProfile != null) {
+                                writer.println(viewProfile);
+                            } else {
+                                writer.println("Something went wrong");
+                            }
                         }
 
                     }
