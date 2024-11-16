@@ -16,9 +16,9 @@ public class TestDatabase {
     public void setUp() throws UsernameTakenException {
         // Initialize a fresh database instance for each test
         database = new Database();
-        user1 = new User("Bob", "password123");
-        user2 = new User("Jim", "password234");
-        user3 = new User("Alice", "password345");
+        user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "Test user Bob", "University A");
+        user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
+        user3 = new User("Alice", "password345","alice@gmail.com","3456789012","Test user Alice","University C");
         new File("profile_pictures").mkdir();
     }
 
@@ -209,15 +209,15 @@ public class TestDatabase {
         user1.setProfilePicture(samplePicture);
         database.saveProfilePicture(user1);
 
-        User newUser1 = new User("Bob", "password123");
-        database.loadProfilePicture(newUser1);
+        User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "Test user Bob", "University A");
+        database.loadProfilePicture(user1);
 
-        assertArrayEquals("Loaded profile picture should match saved data for user1", samplePicture, newUser1.getProfilePicture());
+        assertArrayEquals("Loaded profile picture should match saved data for user1", samplePicture, user1.getProfilePicture());
     }
 
     @Test
     public void testLoadProfilePictureForNonexistentUser() throws UsernameTakenException {
-        User newUser = new User("NonexistentUser", "password");
+        User newUser = new User("NonexistentUser", "password","null","null","null","null");
         database.loadProfilePicture(newUser);
 
         assertNull("Profile picture should remain null if no file exists for nonexistent user", newUser.getProfilePicture());
@@ -229,9 +229,10 @@ public class TestDatabase {
         user2.setProfilePicture(pictureData);
         database.saveProfilePicture(user2);
 
-        User loadedUser2 = new User("Jim", "password234");
-        database.loadProfilePicture(loadedUser2);
-        assertArrayEquals("Profile picture loaded from file should match saved data for user2", pictureData, loadedUser2.getProfilePicture());
+        User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
+
+        database.loadProfilePicture(user2);
+        assertArrayEquals("Profile picture loaded from file should match saved data for user2", pictureData, user2.getProfilePicture());
     }
 
     // Tests for deleteProfilePicture method

@@ -14,8 +14,9 @@ public class TestChat {
 
     @Before
     public void setUp() throws UsernameTakenException {
-        user1 = new User("Bob", "password123");
-        user2 = new User("Joe", "password234");
+        user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "Test user Bob", "University A");
+        user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
+
         messages = new ArrayList<>();
         user1.addFriend(user2);
         user2.addFriend(user1);
