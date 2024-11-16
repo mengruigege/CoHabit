@@ -388,4 +388,5 @@ public class Client {
             System.out.println("Error viewing profile: " + e.getMessage());
         }
     }
+
 }

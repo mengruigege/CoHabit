@@ -10,7 +10,7 @@ import java.io.*;
  * @version November 3rd, 2024
  */
 
-public class Database implements DatabaseInterface {
+public class Database implements DatabaseFramework {
     private static ArrayList<User> allUsers = new ArrayList<>();
     private static final String USERS_FILE = "users.txt";
     private static final String FRIENDS_FILE = "friends.txt";
@@ -169,7 +169,7 @@ public class Database implements DatabaseInterface {
                 String description = data[4];
                 String university = data[5];
 
-                User user = new User(name, password);
+                User user = new User(name, password, email, phoneNumber, description, university);
                 loadProfilePicture(user);
                 users.add(user);
             }
