@@ -379,7 +379,8 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("register," + user.getName() + "," + user.getPassword());
+        out.println("register#*" + user.getName() + "#*" + user.getPassword() + "#*" + user.getEmail() + "#*"
+                + user.getPhoneNumber() + "#*" + user.getDescription() + "#*" + user.getUniversity());
 
         try {
             String response = in.readLine();
@@ -396,25 +397,26 @@ public class Client implements ClientService {
         }
     }
 
-    public boolean setPreferences(User user) {
+    public boolean updateProfile(User user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("setPreferences," + user.getPreferences());
+        out.println("updateProfile#*" + user.getName() + "#*" + user.getPassword() + "#*" + user.getEmail() + "#*"
+                + user.getPhoneNumber() + "#*" + user.getDescription() + "#*" + user.getUniversity() + "#*" + user.getPreferences().replace(",", "#*"));
 
         try {
             String response = in.readLine();
-            if ("Preferences received".equals(response)) {
-                System.out.println("New Preferences Set: " + user.getPreferences());
+            if ("Profile Updated".equals(response)) {
+                System.out.println("Profile Updated: " + user.getName());
                 return true;
             } else {
-                System.out.println("Editing failed: " + response);
+                System.out.println("Updating failed: " + response);
                 return false;
             }
         } catch (IOException e) {
-            System.out.println("Error during editing: " + e.getMessage());
+            System.out.println("Error during updating: " + e.getMessage());
             return false;
         }
     }
