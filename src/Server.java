@@ -172,7 +172,7 @@ public class Server {
                             try {
                                 User user = new User(parts[1],parts[2],parts[3],parts[4],parts[5],parts[6]);
                                 if (Server.register(user)) {
-                                    writer.println("")
+                                    writer.println("");
                                 }
                             } catch (UsernameTakenException e) {
                                 writer.println("Enter a different username");
