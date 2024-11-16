@@ -18,7 +18,7 @@ public interface ClientService {
 //    boolean respondToFriendRequest(String sender, boolean accept); // Respond to friend request
 //    ArrayList<String> getFriendRequests();                    // Retrieve pending friend requests
 
-    User viewProfile(String username);                        // View user profile
+    void viewProfile(String username);                        // View user profile
 
     boolean updateProfile(User updatedProfile);               // Update profile
 }
