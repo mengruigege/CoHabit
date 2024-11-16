@@ -429,8 +429,8 @@ _Field Summary_
 
 _Method Summary_
 
-| Modifier and Type               | Method Name                        | Description                                                      |
-|-------------------------------------|----------------------------------------|------------------------------------------------------------------------|
+| Modifier and Type          |  Method Name               |  Description                                                             |
+|----------------------------|----------------------------|--------------------------------------------------------------------------|
 | public static boolean    | login(String username, String password)| To allow users to login to their CoHabit account on the server side.   |
 | public static boolean    | register(User user)                    | To allow users to register or sign up for the app to the server side.  |
 | public static boolean    | sendMessage(User sender, User receiver, String message) | To send messages to other users on the server side.   |
@@ -448,6 +448,7 @@ _Method Summary_
 | public static ArrayList<User>  | viewFriendsList(User user)       | To view the list of friends of a user on the server side.              |
 
 _Testing_
+
 Server.java is tested by unit tests included in the class TestServer.java.
 
 ---
