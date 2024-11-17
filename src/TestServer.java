@@ -51,7 +51,7 @@ public class TestServer {
     // Test register functionality
     @Test
     public void testRegister_NewUser() throws UsernameTakenException {
-        User newUser = new User("Alice", "securePass", "alice@example.com", "5555555555", "Test user Alice", "University C");
+        User newUser = new User("Keya", "securePass", "keya@example.com", "5555555555", "Test user Keya", "University D");
         assertTrue("Register should succeed for a new user.", server.register(newUser));
     }
 
