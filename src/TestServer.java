@@ -137,6 +137,7 @@ public class TestServer {
     public void testExactMatch_Success() throws InvalidInput {
         user1.setPreferences("10:00 PM", false, false, true, 7, 8);
         user2.setPreferences("10:00 PM", false, false, true, 7, 8);
+        database.saveUsersToFile();
 
         String result = server.exactMatch(user1);
         assertTrue("Exact match should include users with identical preferences.", result.contains("Jim"));

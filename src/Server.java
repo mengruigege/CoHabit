@@ -223,9 +223,27 @@ public class Server {
         return result;
     }
 
-    public synchronized void setPreferences() {
+    public synchronized void setPreferences(User user, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
+        if (user == null) {
+            return;
+        }
 
+        try {
+            database.loadUsersFromFile();
+            User existingUser = database.findUserByName(user.getName());
+
+            if (existingUser != null) {
+                existingUser.setPreferences(bedtime, alcohol, smoke, guests, tidy, roomHours);
+                database.saveUsersToFile(); // Save updated user preferences back to the database
+                System.out.println("Preferences successfully updated for user: " + user.getName());
+            } else {
+                System.out.println("User not found in the database.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error updating preferences");
+        }
     }
+
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -478,9 +496,24 @@ public class Server {
                             writer.println(searchByParameter(parameter, value));
                         }
                     }
+
+                    if (line.substring(0, 17).contains("updatePreferences")) {
+                        String[] parts = line.split(",", 3);
+                        User user = database.findUserByName(parts[1]);
+                        if (user == null) {
+                            writer.println("User not found");
+                        }
+                        String[] tokens = parts[2].split("#*");
+                        user.setPreferences(tokens[0], Boolean.parseBoolean(tokens[1]), Boolean.parseBoolean(tokens[2]),
+                                Boolean.parseBoolean(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5]));
+                        database.saveUsersToFile();
+                        writer.println("Preferences updated");
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (InvalidInput e) {
+                throw new RuntimeException(e);
             }
         }
     }
