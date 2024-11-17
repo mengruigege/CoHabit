@@ -1,11 +1,10 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client implements ClientService {
 
-    private User currentUser;
+    private final User currentUser;
     private boolean isConnected;
     private Socket socket;
     private PrintWriter out;
@@ -256,17 +255,17 @@ public class Client implements ClientService {
                 }
             }
 
-            System.out.println("\nSelect and option:");
+            System.out.println("\nSelect an option:");
             System.out.println("1. Send Message");
             System.out.println("2. View Friend Requests");
             System.out.println("3. Send Friend Request");
             System.out.println("4. Add Friend");
             System.out.println("5. Remove Friend");
             System.out.println("6. Block User");
-           // System.out.println("7. View blocked users and unblock User");
-            System.out.println("7. View Profile");
-            System.out.println("8. Update Profile");
-            System.out.println("9. Disconnect and Exit");
+            System.out.println("7. View and Manage Blocked Users");
+            System.out.println("8. View Profile");
+            System.out.println("9. Update Profile");
+            System.out.println("10. Disconnect and Exit");
 
             String choice2 = scanner.nextLine();
 
@@ -303,11 +302,14 @@ public class Client implements ClientService {
                     client.blockUser(username, blockedUser);
                     break;
                 case "7":
+                    client.viewBlockedUsers(username);
+                    break;
+                case "8":
                     System.out.print("Enter a profile to view: ");
                     String profile = scanner.nextLine();
                     client.viewProfile(profile);
                     break;
-                case "8":
+                case "9":
                     System.out.println("\nChoose a parameter to update:");
                     System.out.println("1. Username");
                     System.out.println("2. Password");
@@ -515,7 +517,7 @@ public class Client implements ClientService {
                             break;
                     }
                     client.updateProfile(user);
-                case "9":
+                case "10":
                     client.disconnect();
                     exit = true;
                     break;
@@ -906,68 +908,48 @@ public class Client implements ClientService {
         }
     }
 
+
     public void viewBlockedUsers(String username) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return;
         }
-
         out.println("viewBlockedUsers," + username);
 
         try {
             String response = in.readLine();
-            if (response.equals("Blocked list is empty")) {
+            if (response == null) {
                 System.out.println("You have not blocked anyone.");
-            } else {
-                System.out.println("Blocked Users:\n" + response);
+                return;
+            }
+
+            String[] blockedUsers = response.split(",");
+            Scanner scanner = new Scanner(System.in);
+
+            for (String blockedUser : blockedUsers) {
+                System.out.println("Blocked User: " + blockedUser);
+                System.out.println("Do you want to unblock this user? (1) Yes or (2) No");
+                String choice = scanner.nextLine();
+
+                switch (choice) {
+                    case "1":
+                        if (unblockUser(username, blockedUser)) {
+                            System.out.println("You have unblocked " + blockedUser);
+                        } else {
+                            System.out.println("Failed to unblock " + blockedUser);
+                        }
+                        break;
+                    case "2":
+                        System.out.println("You chose not to unblock " + blockedUser);
+                        break;
+                    default:
+                        System.out.println("Invalid option. Skipping " + blockedUser);
+                }
             }
         } catch (IOException e) {
             System.out.println("Error viewing blocked users: " + e.getMessage());
         }
     }
-
-    //public void viewBlockedUsers(String username) {
-    //    if (!isConnected) {
-    //        System.out.println("Not connected to server.");
-    //        return;
-    //    }
-    //
-    //    out.println("viewBlockedUsers," + username);
-    //
-    //    try {
-    //        String response = in.readLine();
-    //        if (response.equals("Blocked list is empty")) {
-    //            System.out.println("You have not blocked anyone.");
-    //            return;
-    //        }
-    //
-    //        String[] blockedUsers = response.split(",");
-    //        Scanner scanner = new Scanner(System.in);
-    //
-    //        for (String blockedUser : blockedUsers) {
-    //            System.out.println("Blocked User: " + blockedUser);
-    //            System.out.println("Do you want to unblock this user? (1) Yes or (2) No");
-    //            String choice = scanner.nextLine();
-    //
-    //            switch (choice) {
-    //                case "1":
-    //                    if (unblockUser(username, blockedUser)) {
-    //                        System.out.println("You have unblocked " + blockedUser);
-    //                    } else {
-    //                        System.out.println("Failed to unblock " + blockedUser);
-    //                    }
-    //                    break;
-    //                case "2":
-    //                    System.out.println("You chose not to unblock " + blockedUser);
-    //                    break;
-    //                default:
-    //                    System.out.println("Invalid option. Skipping " + blockedUser);
-    //            }
-    //        }
-    //    } catch (IOException e) {
-    //        System.out.println("Error viewing blocked users: " + e.getMessage());
-    //    }
-    //}
 
     public void searchByParameter(String parameter, String value) {
         if (!isConnected) {
@@ -1029,6 +1011,26 @@ public class Client implements ClientService {
         }
     }
 
-    //update preferences
+    public void updatePreferences(User user) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        String preferences = user.getPreferences();
+        out.println("updatePreferences," + user.getName() + "," + preferences.replace(",", "#*"));
+
+        try {
+            String response = in.readLine();
+            if ("Preferences Updated".equals(response)) {
+                System.out.println("Your preferences have been updated.");
+            } else {
+                System.out.println("Failed to update preferences.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating preferences: " + e.getMessage());
+        }
+    }
+
 
 }
