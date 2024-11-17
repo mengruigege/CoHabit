@@ -265,7 +265,8 @@ public class Client implements ClientService {
             System.out.println("7. View and Manage Blocked Users");
             System.out.println("8. View Profile");
             System.out.println("9. Update Profile");
-            System.out.println("10. Disconnect and Exit");
+            System.out.println("10. Search roommates");
+            System.out.println("11. Disconnect and Exit");
 
             String choice2 = scanner.nextLine();
 
@@ -518,6 +519,56 @@ public class Client implements ClientService {
                     }
                     client.updateProfile(user);
                 case "10":
+                    System.out.println("\nHow would you like to search?");
+                    System.out.println("1. By Parameter");
+                    System.out.println("2. Exact Match");
+                    System.out.println("3. Partial Match");
+
+                    String option1 = scanner.nextLine();
+                    String option2;
+                    String parameter;
+                    String value;
+
+                    if (!option1.equals("1") || !option1.equals("2") || !option1.equals("3")) {
+                        throw new InvalidInput("Invalid Input");
+                    }
+
+                    switch (option1) {
+                        case "1":
+                            System.out.println("\nSelect a parameter:");
+                            System.out.println("1. Username");
+                            System.out.println("2. Email");
+                            System.out.println("3. Phone");
+                            System.out.println("4. University");
+
+                            option2 = scanner.nextLine();
+
+                            switch (option2) {
+                                case "1":
+                                    System.out.println("\nEnter the desired value:");
+                                    parameter = scanner.nextLine();
+                                    client.searchByParameter("name", parameter);
+                                case "2":
+                                    System.out.println("\nEnter the desired value:");
+                                    parameter = scanner.nextLine();
+                                    client.searchByParameter("email", parameter);
+                                case "3":
+                                    System.out.println("\nEnter the desired value:");
+                                    parameter = scanner.nextLine();
+                                    client.searchByParameter("phone", parameter);
+                                case "4":
+                                    System.out.println("\nEnter the desired value:");
+                                    parameter = scanner.nextLine();
+                                    client.searchByParameter("university", parameter);
+                            }
+
+                        case "2":
+                            client.exactMatch(user);
+                        case "3":
+                            client.partialMatch(user);
+                    }
+
+                case "11":
                     client.disconnect();
                     exit = true;
                     break;
@@ -1031,6 +1082,4 @@ public class Client implements ClientService {
             System.out.println("Error updating preferences: " + e.getMessage());
         }
     }
-
-
 }
