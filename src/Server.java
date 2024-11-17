@@ -207,9 +207,15 @@ public class Server {
     }
 
     public synchronized String searchByParameter(String parameter, String value) {
+        if (parameter == null || parameter.isEmpty() || value == null || value.isEmpty()) {
+            return "";
+        }
         database.loadUsersFromFile();
         UserSearch userSearch = new UserSearch();
         ArrayList<User> matches = userSearch.searchByParameter(parameter, value);
+        if (matches == null) {
+            return "";
+        }
         String result = "";
         for (User users : matches) {
             String username = users.getName();
@@ -467,7 +473,7 @@ public class Server {
                         String[] parts = line.split(",");
                         String parameter = parts[1];
                         String value = parts[2];
-                        if (searchByParameter(parameter, value) == null) {
+                        if (searchByParameter(parameter, value) == null || searchByParameter(parameter, value).isEmpty()) {
                             writer.println("No matches found");
                         } else {
                             writer.println(searchByParameter(parameter, value));
