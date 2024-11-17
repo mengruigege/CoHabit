@@ -263,6 +263,7 @@ public class Client implements ClientService {
             System.out.println("4. Add Friend");
             System.out.println("5. Remove Friend");
             System.out.println("6. Block User");
+           // System.out.println("7. View blocked users and unblock User");
             System.out.println("7. View Profile");
             System.out.println("8. Update Profile");
             System.out.println("9. Disconnect and Exit");
@@ -861,4 +862,173 @@ public class Client implements ClientService {
             System.out.println("Error viewing profile: " + e.getMessage());
         }
     }
+
+    public void viewFriendsList(String username) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        out.println("viewFriendsList," + username);
+
+        try {
+            String response = in.readLine();
+            if (response.equals("Friend list is empty")) {
+                System.out.println("You have no friends yet.");
+            } else {
+                System.out.println("Your Friends:\n" + response);
+            }
+        } catch (IOException e) {
+            System.out.println("Error viewing friends list: " + e.getMessage());
+        }
+    }
+
+    public boolean unblockUser(String username, String blockedUser) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        out.println("removeBlockedUser," + username + "," + blockedUser);
+
+        try {
+            String response = in.readLine();
+            if ("Successfully removed from blocked list".equals(response)) {
+                System.out.println(blockedUser + " has been unblocked.");
+                return true;
+            } else {
+                System.out.println("Failed to unblock user.");
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error unblocking user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void viewBlockedUsers(String username) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        out.println("viewBlockedUsers," + username);
+
+        try {
+            String response = in.readLine();
+            if (response.equals("Blocked list is empty")) {
+                System.out.println("You have not blocked anyone.");
+            } else {
+                System.out.println("Blocked Users:\n" + response);
+            }
+        } catch (IOException e) {
+            System.out.println("Error viewing blocked users: " + e.getMessage());
+        }
+    }
+
+    //public void viewBlockedUsers(String username) {
+    //    if (!isConnected) {
+    //        System.out.println("Not connected to server.");
+    //        return;
+    //    }
+    //
+    //    out.println("viewBlockedUsers," + username);
+    //
+    //    try {
+    //        String response = in.readLine();
+    //        if (response.equals("Blocked list is empty")) {
+    //            System.out.println("You have not blocked anyone.");
+    //            return;
+    //        }
+    //
+    //        String[] blockedUsers = response.split(",");
+    //        Scanner scanner = new Scanner(System.in);
+    //
+    //        for (String blockedUser : blockedUsers) {
+    //            System.out.println("Blocked User: " + blockedUser);
+    //            System.out.println("Do you want to unblock this user? (1) Yes or (2) No");
+    //            String choice = scanner.nextLine();
+    //
+    //            switch (choice) {
+    //                case "1":
+    //                    if (unblockUser(username, blockedUser)) {
+    //                        System.out.println("You have unblocked " + blockedUser);
+    //                    } else {
+    //                        System.out.println("Failed to unblock " + blockedUser);
+    //                    }
+    //                    break;
+    //                case "2":
+    //                    System.out.println("You chose not to unblock " + blockedUser);
+    //                    break;
+    //                default:
+    //                    System.out.println("Invalid option. Skipping " + blockedUser);
+    //            }
+    //        }
+    //    } catch (IOException e) {
+    //        System.out.println("Error viewing blocked users: " + e.getMessage());
+    //    }
+    //}
+
+    public void searchByParameter(String parameter, String value) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        out.println("searchByParameter," + parameter + "," + value);
+
+        try {
+            String response = in.readLine();
+            if (response.equals("No matches found")) {
+                System.out.println("No users found with " + parameter + ": " + value);
+            } else {
+                System.out.println("Users matching " + parameter + " = " + value + ":\n" + response);
+            }
+        } catch (IOException e) {
+            System.out.println("Error searching users: " + e.getMessage());
+        }
+    }
+
+    public void exactMatch(User user) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        out.println("exactMatch," + user.getName());
+
+        try {
+            String response = in.readLine();
+            if (response.equals("No exact matches found")) {
+                System.out.println("No exact matches found for your preferences.");
+            } else {
+                System.out.println("Exact Matches:\n" + response);
+            }
+        } catch (IOException e) {
+            System.out.println("Error finding exact matches: " + e.getMessage());
+        }
+    }
+
+    public void partialMatch(User user) {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return;
+        }
+
+        out.println("partialMatch," + user.getName());
+
+        try {
+            String response = in.readLine();
+            if (response.equals("No partial matches found")) {
+                System.out.println("No partial matches found for your preferences.");
+            } else {
+                System.out.println("Partial Matches:\n" + response);
+            }
+        } catch (IOException e) {
+            System.out.println("Error finding partial matches: " + e.getMessage());
+        }
+    }
+
+    //update preferences
+
 }
