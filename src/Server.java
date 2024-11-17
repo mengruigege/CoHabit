@@ -53,7 +53,6 @@ public class Server {
              result += s + "\n";
         }
         return result;
-
     }
 
 
@@ -200,6 +199,9 @@ public class Server {
         }
         return result;
     }
+    public static void setPreferences() {
+
+    }
 
     public static void main(String[] args) {
 
@@ -227,11 +229,21 @@ public class Server {
                             } else writer.println("Wrong username or password");
 
                         }
-                        //format should be register#*username#*password#*email#*phoneNumber#*desciption#*university
+                        //format should be register#*username#*password#*email#*phoneNumber#*desciption#*university#*bedTime#*alcohol#*smoke#*guests#*tidy#*roomHours
                         if (line.contains("register")) {
                             String[] parts = line.split("#*");
                             try {
                                 User user = new User(parts[1],parts[2],parts[3],parts[4],parts[5],parts[6]);
+                                boolean alcohol = Boolean.parseBoolean(parts[7]);
+                                boolean smoke = Boolean.parseBoolean(parts[8]);
+                                boolean guests = Boolean.parseBoolean(parts[9]);
+                                int tidy = Integer.parseInt(parts[10]);
+                                int roomHours = Integer.parseInt(parts[11]);
+                                try {
+                                    user.setPreferences(parts[7], alcohol, smoke, guests, tidy, roomHours);
+                                } catch (Exception e) {
+                                    writer.println(e.getMessage()); //not sure what to do here
+                                }
                                 if (Server.register(user)) {
                                     writer.println("successful registration");
                                 } else {
@@ -293,7 +305,6 @@ public class Server {
                             } else {
                                 writer.println("Could not decline friend request sucessfully");
                             }
-
                         }
 
                         // should be in format addFriend,user,friend
