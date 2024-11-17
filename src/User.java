@@ -194,6 +194,9 @@ public class User implements Profile, FriendManageable, Blockable {
 
     // Method that determines if two users have all the exact same preferences.
     public boolean perfectMatch(User user) {
+        if (user == null || bedTime == null) {
+            return false;
+        }
         return this.bedTime.equals(user.bedTime) &&
                 this.alcohol == user.alcohol &&
                 this.smoke == user.smoke &&
@@ -205,7 +208,7 @@ public class User implements Profile, FriendManageable, Blockable {
     // Method that determines if 2 users have some matched preferences and checks the count of matched preferences
     public int partialMatch(User user) {
         int count = 0;
-        if (this.bedTime.equals(user.bedTime)) {
+        if (this.bedTime != null && this.bedTime.equals(user.bedTime)) {
             count++;
         }
         if (this.alcohol == user.alcohol) {

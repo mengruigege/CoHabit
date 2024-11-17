@@ -425,4 +425,8 @@ public class Database implements DatabaseFramework {
         }
         return messages;
     }
+
+    public ArrayList<User> searchByParameter(String parameter, String value) {
+
+    }
 }

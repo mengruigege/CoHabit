@@ -233,7 +233,7 @@ public class Server {
             User existingUser = database.findUserByName(user.getName());
 
             if (existingUser != null) {
-                existingUser.setPreferences(bedtime, alcohol, smoke, guests, tidy, roomHours);
+                user.setPreferences(bedtime, alcohol, smoke, guests, tidy, roomHours);
                 database.saveUsersToFile(); // Save updated user preferences back to the database
                 System.out.println("Preferences successfully updated for user: " + user.getName());
             } else {

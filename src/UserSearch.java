@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class UserSearch implements Searchable {
 
-    private Database db;
+    private static Database db;
 
     //Constructs a newly allocated UserSearch object with a reference to the database.
     public UserSearch() {

@@ -28,8 +28,6 @@ public class TestServer {
         database.addUser(user1);
         database.addUser(user2);
         database.addUser(user3);
-
-        database.saveUsersToFile();
     }
 
     // Test login functionality
@@ -108,9 +106,9 @@ public class TestServer {
     // Test for partialMatch
     @Test
     public void testPartialMatch_Success() throws InvalidInput {
-        user1.setPreferences("11:00 PM", true, false, true, 7, 8);
-        user2.setPreferences("11:00 PM", true, true, true, 5, 8);
-        user3.setPreferences("11:00 PM", true, false, true, 6, 8);
+        server.setPreferences(user1, "11:00 PM", true, false, true, 7, 8);
+        server.setPreferences(user2, "11:00 PM", true, true, true, 5, 8);
+        server.setPreferences(user3,"11:00 PM", true, false, true, 6, 8);
 
         String result = server.partialMatch(user1);
         assertTrue("Partial match should include users with similar preferences.",
@@ -119,9 +117,9 @@ public class TestServer {
 
     @Test
     public void testPartialMatch_NoMatches() throws InvalidInput {
-        user1.setPreferences("10:00 PM", false, false, false, 3, 5);
-        user2.setPreferences("1:00 AM", true, true, true, 9, 10);
-        user3.setPreferences("12:00 PM", true, false, false, 2, 3);
+        server.setPreferences(user1, "10:00 PM", false, false, false, 3, 5);
+        server.setPreferences(user2, "1:00 AM", true, true, true, 9, 10);
+        server.setPreferences(user3, "12:00 PM", true, false, false, 2, 3);
 
         String result = server.partialMatch(user1);
         assertTrue("Partial match should return an empty string if no matches are found.", result.contains("Alice"));
@@ -135,9 +133,8 @@ public class TestServer {
     // Test for exactMatch
     @Test
     public void testExactMatch_Success() throws InvalidInput {
-        user1.setPreferences("10:00 PM", false, false, true, 7, 8);
-        user2.setPreferences("10:00 PM", false, false, true, 7, 8);
-        database.saveUsersToFile();
+        server.setPreferences(user1, "10:00 PM", false, false, true, 7, 8);
+        server.setPreferences(user2,"10:00 PM", false, false, true, 7, 8);
 
         String result = server.exactMatch(user1);
         assertTrue("Exact match should include users with identical preferences.", result.contains("Jim"));
