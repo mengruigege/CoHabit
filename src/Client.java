@@ -16,7 +16,7 @@ public class Client implements ClientService {
         this.currentUser = user;
     }
 
-    public static void main(String[] args) throws UsernameTakenException, InvalidInput {
+    public static void main(String[] args) throws InvalidInput, UsernameTakenException {
         Scanner scanner = new Scanner(System.in);
         User user = null;
         Client client = new Client(user);
@@ -51,7 +51,7 @@ public class Client implements ClientService {
                             username = scanner.nextLine();
 
                             if (username == null) {
-                                throw new InvalidInput("Username is invalid");
+                                System.out.println("Username is invalid");
                             } else {
                                 break;
                             }
@@ -61,7 +61,7 @@ public class Client implements ClientService {
                             password = scanner.nextLine();
 
                             if (password == null) {
-                                throw new InvalidInput("Password is invalid");
+                                System.out.println("Password is invalid");
                             } else {
                                 break;
                             }
@@ -75,9 +75,9 @@ public class Client implements ClientService {
                             username = scanner.nextLine();
 
                             if (username == null) {
-                                throw new InvalidInput("Username is invalid");
+                                System.out.println("Username is invalid");
                             } else if (username.contains("#*")) {
-                                throw new InvalidInput("'#*' is not allowed");
+                                System.out.println("'#*' is not allowed");
                             } else {
                                 break;
                             }
@@ -87,9 +87,9 @@ public class Client implements ClientService {
                             password = scanner.nextLine();
 
                             if (password == null) {
-                                throw new InvalidInput("Password is invalid");
+                                System.out.println("Password is invalid");
                             } else if (password.contains("#*")) {
-                                throw new InvalidInput("'#*' is not allowed");
+                                System.out.println("'#*' is not allowed");
                             } else {
                                 break;
                             }
@@ -99,9 +99,9 @@ public class Client implements ClientService {
                             email = scanner.nextLine();
 
                             if (email == null || !email.contains("@") || !email.contains(".")) {
-                                throw new InvalidInput("email is invalid");
+                                System.out.println("email is invalid");
                             } else if (email.contains("#*")) {
-                                throw new InvalidInput("'#*' is not allowed");
+                                System.out.println("'#*' is not allowed");
                             } else {
                                 break;
                             }
@@ -117,13 +117,13 @@ public class Client implements ClientService {
                             }
 
                             if (phoneNumber == null) {
-                                throw new InvalidInput("Phone number is invalid");
+                                System.out.println("Phone number is invalid");
                             } else if (phoneNumber.contains("#*")) {
-                                throw new InvalidInput("'#*' is not allowed");
+                                System.out.println("'#*' is not allowed");
                             } else if (phoneNumber.length() != 10) {
-                                throw new InvalidInput("Phone number is invalid");
+                                System.out.println("Phone number is invalid");
                             } else if (notInt) {
-                                throw new InvalidInput("Not a number");
+                                System.out.println("Not a number");
                             } else {
                                 break;
                             }
@@ -133,9 +133,9 @@ public class Client implements ClientService {
                             userDescription = scanner.nextLine();
 
                             if (userDescription == null) {
-                                throw new InvalidInput("Description is invalid");
+                                System.out.println("Description is invalid");
                             } else if (userDescription.contains("#*")) {
-                                throw new InvalidInput("'#*' is not allowed");
+                                System.out.println("'#*' is not allowed");
                             } else {
                                 break;
                             }
@@ -145,9 +145,9 @@ public class Client implements ClientService {
                             university = scanner.nextLine();
 
                             if (university == null) {
-                                throw new InvalidInput("University is invalid");
+                                System.out.println("University is invalid");
                             } else if (password.contains("#*")) {
-                                throw new InvalidInput("'#*' is not allowed");
+                                System.out.println("'#*' is not allowed");
                             } else {
                                 break;
                             }
@@ -165,11 +165,11 @@ public class Client implements ClientService {
                             }
 
                             if (bedTime == null) {
-                                throw new InvalidInput("Bed time is invalid");
+                                System.out.println("Bed time is invalid");
                             } else if (!bedTime.contains(":")) {
-                                throw new InvalidInput("Bed time is invalid");
+                                System.out.println("Bed time is invalid");
                             } else if (nan) {
-                                throw new InvalidInput("Not a number");
+                                System.out.println("Not a number");
                             } else {
                                 break;
                             }
@@ -187,7 +187,7 @@ public class Client implements ClientService {
                                 alcohol = false;
                                 break;
                             } else {
-                                throw new InvalidInput("Invalid Input");
+                                System.out.println("Invalid Input");
                             }
                         }
                         boolean smoking;
@@ -202,7 +202,7 @@ public class Client implements ClientService {
                                 smoking = false;
                                 break;
                             } else {
-                                throw new InvalidInput("Invalid Input");
+                                System.out.println("Invalid Input");
                             }
                         }
                         boolean guests;
@@ -217,7 +217,7 @@ public class Client implements ClientService {
                                 guests = false;
                                 break;
                             } else {
-                                throw new InvalidInput("Invalid Input");
+                                System.out.println("Invalid Input");
                             }
                         }
                         int tidy;
@@ -228,10 +228,10 @@ public class Client implements ClientService {
                                 if (tidy <= 10 && tidy >= 1) {
                                     break;
                                 } else {
-                                    throw new InvalidInput("Outside of range");
+                                    System.out.println("Outside of range");
                                 }
                             } catch (Exception e) {
-                                throw new InvalidInput("Invalid Input");
+                                System.out.println("Invalid Input");
                             }
                         }
                         int roomHours;
@@ -242,10 +242,10 @@ public class Client implements ClientService {
                                 if (roomHours >= 1 && roomHours <= 24) {
                                     break;
                                 } else {
-                                    throw new InvalidInput("Outside of Range");
+                                    System.out.println("Outside of Range");
                                 }
                             } catch (Exception e) {
-                                throw new InvalidInput("Invalid Input");
+                                System.out.println("Invalid Input");
                             }
                         }
                         user = new User(username, password, email, phoneNumber, userDescription, university);
@@ -329,9 +329,9 @@ public class Client implements ClientService {
                                 username = scanner.nextLine();
 
                                 if (username == null) {
-                                    throw new InvalidInput("Username is invalid");
+                                    System.out.println("Username is invalid");
                                 } else if (username.contains("#*")) {
-                                    throw new InvalidInput("'#*' is not allowed");
+                                    System.out.println("'#*' is not allowed");
                                 } else {
                                     user.setName(username);
                                     break;
@@ -343,9 +343,9 @@ public class Client implements ClientService {
                                 password = scanner.nextLine();
 
                                 if (password == null) {
-                                    throw new InvalidInput("Password is invalid");
+                                    System.out.println("Password is invalid");
                                 } else if (password.contains("#*")) {
-                                    throw new InvalidInput("'#*' is not allowed");
+                                    System.out.println("'#*' is not allowed");
                                 } else {
                                     user.setPassword(password);
                                     break;
@@ -357,9 +357,9 @@ public class Client implements ClientService {
                                 email = scanner.nextLine();
 
                                 if (email == null || !email.contains("@") || !email.contains(".")) {
-                                    throw new InvalidInput("email is invalid");
+                                    System.out.println("email is invalid");
                                 } else if (email.contains("#*")) {
-                                    throw new InvalidInput("'#*' is not allowed");
+                                    System.out.println("'#*' is not allowed");
                                 } else {
                                     user.setEmail(email);
                                     break;
@@ -377,13 +377,13 @@ public class Client implements ClientService {
                                 }
 
                                 if (phoneNumber == null) {
-                                    throw new InvalidInput("Phone number is invalid");
+                                    System.out.println("Phone number is invalid");
                                 } else if (phoneNumber.contains("#*")) {
-                                    throw new InvalidInput("'#*' is not allowed");
+                                    System.out.println("'#*' is not allowed");
                                 } else if (phoneNumber.length() != 10) {
-                                    throw new InvalidInput("Phone number is invalid");
+                                    System.out.println("Phone number is invalid");
                                 } else if (notInt) {
-                                    throw new InvalidInput("Not a number");
+                                    System.out.println("Not a number");
                                 } else {
                                     user.setPhoneNumber(phoneNumber);
                                     break;
@@ -395,9 +395,9 @@ public class Client implements ClientService {
                                 userDescription = scanner.nextLine();
 
                                 if (userDescription == null) {
-                                    throw new InvalidInput("Description is invalid");
+                                    System.out.println("Description is invalid");
                                 } else if (userDescription.contains("#*")) {
-                                    throw new InvalidInput("'#*' is not allowed");
+                                    System.out.println("'#*' is not allowed");
                                 } else {
                                     user.setDescription(userDescription);
                                     break;
@@ -409,9 +409,9 @@ public class Client implements ClientService {
                                 university = scanner.nextLine();
 
                                 if (university == null) {
-                                    throw new InvalidInput("University is invalid");
+                                    System.out.println("University is invalid");
                                 } else if (password.contains("#*")) {
-                                    throw new InvalidInput("'#*' is not allowed");
+                                    System.out.println("'#*' is not allowed");
                                 } else {
                                     user.setUniversity(university);
                                     break;
@@ -431,11 +431,11 @@ public class Client implements ClientService {
                                 }
 
                                 if (bedTime == null) {
-                                    throw new InvalidInput("Bed time is invalid");
+                                    System.out.println("Bed time is invalid");
                                 } else if (!bedTime.contains(":")) {
-                                    throw new InvalidInput("Bed time is invalid");
+                                    System.out.println("Bed time is invalid");
                                 } else if (nan) {
-                                    throw new InvalidInput("Not a number");
+                                    System.out.println("Not a number");
                                 } else {
                                     break;
                                 }
@@ -453,7 +453,7 @@ public class Client implements ClientService {
                                     alcohol = false;
                                     break;
                                 } else {
-                                    throw new InvalidInput("Invalid Input");
+                                    System.out.println("Invalid Input");
                                 }
                             }
                             boolean smoking;
@@ -468,7 +468,7 @@ public class Client implements ClientService {
                                     smoking = false;
                                     break;
                                 } else {
-                                    throw new InvalidInput("Invalid Input");
+                                    System.out.println("Invalid Input");
                                 }
                             }
                             boolean guests;
@@ -483,7 +483,7 @@ public class Client implements ClientService {
                                     guests = false;
                                     break;
                                 } else {
-                                    throw new InvalidInput("Invalid Input");
+                                    System.out.println("Invalid Input");
                                 }
                             }
                             int tidy;
@@ -494,10 +494,10 @@ public class Client implements ClientService {
                                     if (tidy <= 10 && tidy >= 1) {
                                         break;
                                     } else {
-                                        throw new InvalidInput("Outside of range");
+                                        System.out.println("Outside of range");
                                     }
                                 } catch (Exception e) {
-                                    throw new InvalidInput("Invalid Input");
+                                    System.out.println("Invalid Input");
                                 }
                             }
                             int roomHours;
@@ -508,10 +508,10 @@ public class Client implements ClientService {
                                     if (roomHours >= 1 && roomHours <= 24) {
                                         break;
                                     } else {
-                                        throw new InvalidInput("Outside of Range");
+                                        System.out.println("Outside of Range");
                                     }
                                 } catch (Exception e) {
-                                    throw new InvalidInput("Invalid Input");
+                                    System.out.println("Invalid Input");
                                 }
                             }
                             user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
@@ -530,7 +530,7 @@ public class Client implements ClientService {
                     String value;
 
                     if (!option1.equals("1") || !option1.equals("2") || !option1.equals("3")) {
-                        throw new InvalidInput("Invalid Input");
+                        System.out.println("Invalid Input");
                     }
 
                     switch (option1) {

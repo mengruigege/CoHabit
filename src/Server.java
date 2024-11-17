@@ -280,7 +280,7 @@ public class Server {
                 while (true) {
                     String line = reader.readLine();
                     // this is the main part that help to decide what to do with information of line
-                    //"login, username, password,
+                    //login, username, password,
                     if (line.substring(0, 5).contains("login")) {
                         String[] parts = line.split(",");
                         database.loadUsersFromFile();
