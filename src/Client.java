@@ -265,7 +265,7 @@ public class Client implements ClientService {
             System.out.println("7. View and Manage Blocked Users");
             System.out.println("8. View Profile");
             System.out.println("9. Update Profile");
-            System.out.println("10. Update Profile");
+            System.out.println("10. Search roommates");
             System.out.println("11. Disconnect and Exit");
 
             String choice2 = scanner.nextLine();
