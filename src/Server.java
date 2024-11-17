@@ -23,8 +23,7 @@ public class Server {
     // method used to add the new register user to the database and return true if successful
     public synchronized boolean register(User user) {
         database.loadUsersFromFile();
-        database.addUser(user);
-        return true;
+        return database.addUser(user);
     }
 
     public synchronized boolean sendMessage(User sender, User reciever, String message) {

@@ -28,6 +28,8 @@ public class TestServer {
         database.addUser(user1);
         database.addUser(user2);
         database.addUser(user3);
+
+        database.saveUsersToFile();
     }
 
     // Test login functionality
