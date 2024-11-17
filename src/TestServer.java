@@ -170,7 +170,7 @@ public class TestServer {
 
     @Test
     public void testSearchByParameter_Email() {
-        String result = server.searchByParameter("email", "bob@example.com");
+        String result = server.searchByParameter("email", "bob@gmail.com");
         assertTrue("Search by parameter (email) should find the correct user.", result.contains("Bob"));
         assertFalse("Search by parameter (email) should exclude users with other emails.", result.contains("Alice"));
     }
