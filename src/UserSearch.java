@@ -20,6 +20,7 @@ public class UserSearch implements Searchable {
 
     //Searches for users by name, university, etc and returns a list of matching users.
     public ArrayList<User> searchByParameter(String parameter, String value) {
+        db.loadUsersFromFile();
         ArrayList<User> matchingUsers = new ArrayList<>();
 
 
@@ -56,6 +57,7 @@ public class UserSearch implements Searchable {
 
     //Returns ArrayList of all users who are an exact match based on the search
     public ArrayList<User> exactMatch(User mainUser) {
+        db.loadUsersFromFile();
         ArrayList<User> results = new ArrayList<>();
         for (int i = 0; i < db.getAllUsers().size(); i++) {
             if (mainUser.perfectMatch(db.getAllUsers().get(i))) {
@@ -67,6 +69,7 @@ public class UserSearch implements Searchable {
 
     //Returns ArrayList of all users who are a partial match based on the search
     public ArrayList<User> partialMatch(User mainUser) {
+        db.loadUsersFromFile();
         ArrayList<User> results = new ArrayList<>();
         for (int i = 5; i > 0; i--) {
             for (User user : db.getAllUsers()) {
