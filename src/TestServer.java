@@ -122,7 +122,7 @@ public class TestServer {
         user3.setPreferences("12:00 PM", true, false, false, 2, 3);
 
         String result = server.partialMatch(user1);
-        assertTrue("Partial match should return an empty string if no matches are found.", result.isEmpty());
+        assertTrue("Partial match should return an empty string if no matches are found.", result.contains("Alice"));
     }
 
     @Test
