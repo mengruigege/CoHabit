@@ -167,9 +167,16 @@ public class Server {
     }
 
     public synchronized String partialMatch(User user) {
+        if (user == null) {
+            return "";
+        }
+
         database.loadUsersFromFile();
         UserSearch userSearch = new UserSearch();
         ArrayList<User> partialmatches = userSearch.partialMatch(user);
+        if (partialmatches.isEmpty()) {
+            return "";
+        }
         String result = "";
         for (User users : partialmatches) {
             String username = users.getName();
@@ -180,9 +187,16 @@ public class Server {
     }
 
     public synchronized String exactMatch(User user) {
+        if (user == null) {
+            return "";
+        }
         database.loadUsersFromFile();
         UserSearch userSearch = new UserSearch();
         ArrayList<User> exactmatches = userSearch.exactMatch(user);
+
+        if (exactmatches == null) {
+            return "";
+        }
 
         String result = "";
         for (User users : exactmatches) {
@@ -431,7 +445,7 @@ public class Server {
                     if (line.substring(0, 12).contains("partialMatch")) {
                         String[] parts = line.split(",");
                         User user = database.findUserByName(parts[1]);
-                        if (partialMatch(user) == null) {
+                        if (partialMatch(user) == null || partialMatch(user).isEmpty()) {
                             writer.println("No partial matches found");
                         } else {
                             writer.println(partialMatch(user));
@@ -442,7 +456,7 @@ public class Server {
                     if (line.substring(0, 10).contains("exactMatch")) {
                         String[] parts = line.split(",");
                         User user = database.findUserByName(parts[1]);
-                        if (exactMatch(user) == null) {
+                        if (exactMatch(user) == null || exactMatch(user).isEmpty()) {
                             writer.println("No exact matches found");
                         } else {
                             writer.println(exactMatch(user));
