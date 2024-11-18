@@ -47,6 +47,30 @@ public class Database implements DatabaseFramework {
         return removed;
     }
 
+    public synchronized boolean usernameExists(String username) {
+        for (User user : allUsers) {
+            if (user.getName().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized User findUserByName(String name) {
+        for (User user : allUsers) {
+            if (user.getName().equals(name)) {
+                return user;
+            }
+        }
+        return null; // User not found
+    }
+
+    public ArrayList<User> getAllUsers() {
+        synchronized (lock) {
+            return allUsers;
+        }
+    }
+
     public synchronized boolean addFriend(User user1, User user2) {
         boolean isFriend1 = false;
         boolean isFriend2 = false;
@@ -90,6 +114,45 @@ public class Database implements DatabaseFramework {
             return true;
         }
         return false;
+    }
+
+    public synchronized void addFriendRequest(User sender, User receiver) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE, true))) {
+            pw.println(sender.getName() + ":" + receiver.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void removeFriendRequest(User sender, User receiver) {
+        ArrayList<String> friendRequests = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(":");
+                if (tokens.length == 3) {
+                    String currentSender = tokens[0];
+                    String currentReceiver = tokens[1];
+
+                    // Only keep the request if it doesn't match the sender and receiver
+                    if (!(currentSender.equals(sender.getName()) && currentReceiver.equals(receiver.getName()))) {
+                        friendRequests.add(line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Rewrite the file with the updated list of friendRequests
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
+            for (String request : friendRequests) {
+                pw.println(request);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public synchronized boolean blockUser(User user1, User user2) {
@@ -220,30 +283,6 @@ public class Database implements DatabaseFramework {
         return preferences;
     }
 
-    public synchronized boolean usernameExists(String username) {
-        for (User user : allUsers) {
-            if (user.getName().equals(username)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public synchronized User findUserByName(String name) {
-        for (User user : allUsers) {
-            if (user.getName().equals(name)) {
-                return user;
-            }
-        }
-        return null; // User not found
-    }
-
-    public ArrayList<User> getAllUsers() {
-        synchronized (lock) {
-            return allUsers;
-        }
-    }
-
     public synchronized void loadUsersFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
@@ -267,38 +306,6 @@ public class Database implements DatabaseFramework {
             e.printStackTrace();
         } catch (UsernameTakenException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void saveProfilePicture(User user) {
-        byte[] pictureData = user.getProfilePicture();
-        if (pictureData == null) {
-            return;
-        }
-        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
-        try (FileOutputStream fos = new FileOutputStream(pictureFile)) {
-            fos.write(pictureData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadProfilePicture(User user) {
-        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
-        if (pictureFile.exists()) {
-            try (FileInputStream fis = new FileInputStream(pictureFile)) {
-                byte[] pictureData = fis.readAllBytes();
-                user.setProfilePicture(pictureData);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void deleteProfilePicture(User user) {
-        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
-        if (pictureFile.exists()) {
-            pictureFile.delete();
         }
     }
 
@@ -408,45 +415,6 @@ public class Database implements DatabaseFramework {
         }
     }
 
-    public synchronized void addFriendRequest(User sender, User receiver) {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE, true))) {
-            pw.println(sender.getName() + ":" + receiver.getName());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public synchronized void removeFriendRequest(User sender, User receiver) {
-        ArrayList<String> friendRequests = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] tokens = line.split(":");
-                if (tokens.length == 3) {
-                    String currentSender = tokens[0];
-                    String currentReceiver = tokens[1];
-
-                    // Only keep the request if it doesn't match the sender and receiver
-                    if (!(currentSender.equals(sender.getName()) && currentReceiver.equals(receiver.getName()))) {
-                        friendRequests.add(line);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Rewrite the file with the updated list of friendRequests
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
-            for (String request : friendRequests) {
-                pw.println(request);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     // Loads all pending friend requests from the file
     public synchronized ArrayList<String> loadFriendRequestsFromFile() {
         ArrayList<String> friendRequests = new ArrayList<>();
@@ -483,7 +451,6 @@ public class Database implements DatabaseFramework {
         }
     }
 
-
     public synchronized void recordMessages(String sender, String receiver, String message) {
         String log = String.format("%s,%s,%s", sender, receiver, message);
         try (PrintWriter pr = new PrintWriter(new FileOutputStream(MESSAGES_FILE, true))) {
@@ -513,6 +480,38 @@ public class Database implements DatabaseFramework {
             e.printStackTrace();
         }
         return messages;
+    }
+
+    public void saveProfilePicture(User user) {
+        byte[] pictureData = user.getProfilePicture();
+        if (pictureData == null) {
+            return;
+        }
+        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        try (FileOutputStream fos = new FileOutputStream(pictureFile)) {
+            fos.write(pictureData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadProfilePicture(User user) {
+        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        if (pictureFile.exists()) {
+            try (FileInputStream fis = new FileInputStream(pictureFile)) {
+                byte[] pictureData = fis.readAllBytes();
+                user.setProfilePicture(pictureData);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void deleteProfilePicture(User user) {
+        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        if (pictureFile.exists()) {
+            pictureFile.delete();
+        }
     }
 
     public synchronized ArrayList<User> searchByParameter(String parameter, String value) {
@@ -555,6 +554,7 @@ public class Database implements DatabaseFramework {
 
         return matchingUsers;
     }
+
 
     public synchronized ArrayList<User> exactMatch(User mainUser) {
         if (mainUser == null) {
