@@ -159,7 +159,7 @@ public class Client implements ClientService {
                             boolean nan = false;
 
                             try {
-                                int time = Integer.parseInt(bedTime);
+                                int time = Integer.parseInt(bedTime.replace(":", ""));
                             } catch (Exception e) {
                                 nan = true;
                             }
