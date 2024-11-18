@@ -419,6 +419,26 @@ _Testing_
 
 Client.java is tested by unit tests included in the class TestClient.java.
 
+| **Test Case**                              | **Description**                                                                                  |
+|--------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `testClientConnection`                     | Tests if the client connects and disconnects from the server successfully.                      |
+| `testLogin_Successful`                     | Tests login functionality with valid credentials.                                                |
+| `testLogin_Failed_InvalidPassword`         | Tests login functionality with an incorrect password.                                            |
+| `testLogin_Failed_NonExistentUser`         | Tests login functionality for a non-existent user.                                               |
+| `testRegister_Failed_DuplicateUser`        | Tests user registration with duplicate details.                                                  |
+| `testSendMessage_Failed_NonExistentUser`   | Tests sending a message to a non-existent user.                                                  |
+| `testSendMessage_EmptyMessage`             | Tests sending an empty message to a valid user.                                                  |
+| `testSendFriendRequest_Successful`         | Tests sending a friend request to a valid user.                                                  |
+| `testSendFriendRequest_Failed`             | Tests sending a friend request to a non-existent user.                                           |
+| `testAddFriend_Successful`                 | Tests adding a valid friend.                                                                     |
+| `testAddFriend_Failed`                     | Tests adding a non-existent friend.                                                              |
+| `testRemoveFriend_Successful`              | Tests removing an existing friend.                                                               |
+| `testRemoveFriend_Failed`                  | Tests removing a non-existent friend.                                                            |
+| `testBlockUser_Successful`                 | Tests blocking a valid user.                                                                     |
+| `testBlockUser_Failed`                     | Tests blocking a non-existent user.                                                              |
+| `testViewProfile_Successful`               | Tests viewing the profile of an existing user.                                                   |
+| `testViewProfile_Failed`                   | Tests viewing the profile of a non-existent user.                                                |
+| `testDisconnect`                           | Tests client disconnection from the server.                                                      |
 
 ---
 **Server.java**
@@ -454,6 +474,37 @@ _Method Summary_
 _Testing_
 
 Server.java is tested by unit tests included in the class TestServer.java.
+
+| **Test Case**                              | **Description**                                                                                  |
+|--------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `testLogin_Successful`                     | Tests successful login with valid credentials.                                                  |
+| `testLogin_InvalidPassword`                | Tests login with an incorrect password.                                                         |
+| `testLogin_UserNotFound`                   | Tests login for a non-existent user.                                                            |
+| `testRegister_NewUser`                     | Tests registering a new user.                                                                   |
+| `testRegister_ExistingUser`                | Tests registering an already existing user.                                                     |
+| `testSendMessage_Successful`               | Tests sending a message to a valid user.                                                        |
+| `testSendMessage_ReceiverNull`             | Tests sending a message when the receiver is null.                                              |
+| `testSendMessage_EmptyMessage`             | Tests sending an empty message to a valid user.                                                 |
+| `testAddFriend_Successful`                 | Tests adding a user as a friend successfully.                                                   |
+| `testAddFriend_UserNull`                   | Tests adding a friend when the user is null.                                                    |
+| `testAddFriend_AlreadyFriends`             | Tests adding a user who is already a friend.                                                    |
+| `testViewProfile_ExistingUser`             | Tests viewing the profile of an existing user.                                                  |
+| `testViewProfile_NonExistentUser`          | Tests viewing the profile of a non-existent user.                                               |
+| `testPartialMatch_Success`                 | Tests finding partial matches for a user based on preferences.                                  |
+| `testPartialMatch_NoMatches`              | Tests finding partial matches when no matches exist.                                            |
+| `testPartialMatch_NullUser`                | Tests finding partial matches when the user is null.                                            |
+| `testExactMatch_NoMatches`                 | Tests finding exact matches when no matches exist.                                              |
+| `testExactMatch_NullUser`                  | Tests finding exact matches when the user is null.                                              |
+| `testSearchByParameter_Name`               | Tests searching users by name.                                                                  |
+| `testSearchByParameter_University`         | Tests searching users by university.                                                            |
+| `testSearchByParameter_Email`              | Tests searching users by email.                                                                 |
+| `testSearchByParameter_NoMatch`            | Tests searching users by name when no matches exist.                                             |
+| `testSearchByParameter_InvalidParameter`   | Tests searching users with an invalid parameter.                                                |
+| `testSearchByParameter_EmptyValue`         | Tests searching users with an empty search value.                                               |
+| `testSearchByParameter_NullParameter`      | Tests searching users with a null parameter.                                                    |
+| `testSearchByParameter_NullValue`          | Tests searching users with a null value.                                                        |
+| `testDatabase_UserPersistence`             | Tests that users persist in the database after saving and loading.                              |
+| `testDatabase_MessagePersistence`          | Tests that messages persist in the database after saving and loading.                           |
 
 ---
 
