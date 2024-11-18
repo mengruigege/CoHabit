@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Client implements ClientService {
 
-    private final User currentUser;
+    private User currentUser;
     private boolean isConnected;
     private Socket socket;
     private static PrintWriter out;
@@ -34,7 +34,6 @@ public class Client implements ClientService {
 
         boolean exit = false;
 
-        while (!exit) {
             boolean loggedIn = false;
 
             while (!loggedIn) {
@@ -83,8 +82,8 @@ public class Client implements ClientService {
 
                             if (username == null) {
                                 System.out.println("Username is invalid");
-                            } else if (username.contains("#*")) {
-                                System.out.println("'#*' is not allowed");
+                            } else if (username.contains("###")) {
+                                System.out.println("'###' is not allowed");
                             } else {
                                 break;
                             }
@@ -95,8 +94,8 @@ public class Client implements ClientService {
 
                             if (password == null) {
                                 System.out.println("Password is invalid");
-                            } else if (password.contains("#*")) {
-                                System.out.println("'#*' is not allowed");
+                            } else if (password.contains("###")) {
+                                System.out.println("'###' is not allowed");
                             } else {
                                 break;
                             }
@@ -107,8 +106,8 @@ public class Client implements ClientService {
 
                             if (email == null || !email.contains("@") || !email.contains(".")) {
                                 System.out.println("email is invalid");
-                            } else if (email.contains("#*")) {
-                                System.out.println("'#*' is not allowed");
+                            } else if (email.contains("###")) {
+                                System.out.println("'###' is not allowed");
                             } else {
                                 break;
                             }
@@ -125,8 +124,8 @@ public class Client implements ClientService {
 
                             if (phoneNumber == null) {
                                 System.out.println("Phone number is invalid");
-                            } else if (phoneNumber.contains("#*")) {
-                                System.out.println("'#*' is not allowed");
+                            } else if (phoneNumber.contains("###")) {
+                                System.out.println("'###' is not allowed");
                             } else if (phoneNumber.length() != 10) {
                                 System.out.println("Phone number is invalid");
                             } else if (notInt) {
@@ -141,8 +140,8 @@ public class Client implements ClientService {
 
                             if (userDescription == null) {
                                 System.out.println("Description is invalid");
-                            } else if (userDescription.contains("#*")) {
-                                System.out.println("'#*' is not allowed");
+                            } else if (userDescription.contains("###")) {
+                                System.out.println("'###' is not allowed");
                             } else {
                                 break;
                             }
@@ -153,8 +152,8 @@ public class Client implements ClientService {
 
                             if (university == null) {
                                 System.out.println("University is invalid");
-                            } else if (password.contains("#*")) {
-                                System.out.println("'#*' is not allowed");
+                            } else if (password.contains("###")) {
+                                System.out.println("'###' is not allowed");
                             } else {
                                 break;
                             }
@@ -256,12 +255,14 @@ public class Client implements ClientService {
                             }
                         }
                         user = new User(username, password, email, phoneNumber, userDescription, university);
-                        client.register(user);
                         user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
+                        client.register(user);
+                        loggedIn = true;
                         break;
                 }
-            }
+        }
 
+        while (!exit) {
             System.out.println("\nSelect an option:");
             System.out.println("1. Send Message");
             System.out.println("2. View Friend Requests");
@@ -329,201 +330,7 @@ public class Client implements ClientService {
 
                     String selection = scanner.nextLine();
 
-                    switch (selection) {
-                        case "1":
-                            while (true) {
-                                System.out.println("Create a username:");
-                                username = scanner.nextLine();
 
-                                if (username == null) {
-                                    System.out.println("Username is invalid");
-                                } else if (username.contains("#*")) {
-                                    System.out.println("'#*' is not allowed");
-                                } else {
-                                    user.setName(username);
-                                    break;
-                                }
-                            }
-                        case "2":
-                            while (true) {
-                                System.out.println("Create a password: ");
-                                password = scanner.nextLine();
-
-                                if (password == null) {
-                                    System.out.println("Password is invalid");
-                                } else if (password.contains("#*")) {
-                                    System.out.println("'#*' is not allowed");
-                                } else {
-                                    user.setPassword(password);
-                                    break;
-                                }
-                            }
-                        case "3":
-                            while (true) {
-                                System.out.println("Enter your email:");
-                                email = scanner.nextLine();
-
-                                if (email == null || !email.contains("@") || !email.contains(".")) {
-                                    System.out.println("email is invalid");
-                                } else if (email.contains("#*")) {
-                                    System.out.println("'#*' is not allowed");
-                                } else {
-                                    user.setEmail(email);
-                                    break;
-                                }
-                            }
-                        case "4":
-                            while (true) {
-                                System.out.println("Enter your phone number: ");
-                                phoneNumber = scanner.nextLine();
-                                boolean notInt = false;
-                                try {
-                                    int number = Integer.parseInt(phoneNumber);
-                                } catch (Exception e) {
-                                    notInt = true;
-                                }
-
-                                if (phoneNumber == null) {
-                                    System.out.println("Phone number is invalid");
-                                } else if (phoneNumber.contains("#*")) {
-                                    System.out.println("'#*' is not allowed");
-                                } else if (phoneNumber.length() != 10) {
-                                    System.out.println("Phone number is invalid");
-                                } else if (notInt) {
-                                    System.out.println("Not a number");
-                                } else {
-                                    user.setPhoneNumber(phoneNumber);
-                                    break;
-                                }
-                            }
-                        case "5":
-                            while (true) {
-                                System.out.println("Create a description:");
-                                userDescription = scanner.nextLine();
-
-                                if (userDescription == null) {
-                                    System.out.println("Description is invalid");
-                                } else if (userDescription.contains("#*")) {
-                                    System.out.println("'#*' is not allowed");
-                                } else {
-                                    user.setDescription(userDescription);
-                                    break;
-                                }
-                            }
-                        case "6":
-                            while (true) {
-                                System.out.println("Create a university: ");
-                                university = scanner.nextLine();
-
-                                if (university == null) {
-                                    System.out.println("University is invalid");
-                                } else if (password.contains("#*")) {
-                                    System.out.println("'#*' is not allowed");
-                                } else {
-                                    user.setUniversity(university);
-                                    break;
-                                }
-                            }
-                        case "7":
-                            String bedTime;
-                            while (true) {
-                                System.out.println("What is your average bed time?");
-                                bedTime = scanner.nextLine();
-                                boolean nan = false;
-
-                                try {
-                                    int time = Integer.parseInt(bedTime);
-                                } catch (Exception e) {
-                                    nan = true;
-                                }
-
-                                if (bedTime == null) {
-                                    System.out.println("Bed time is invalid");
-                                } else if (!bedTime.contains(":")) {
-                                    System.out.println("Bed time is invalid");
-                                } else if (nan) {
-                                    System.out.println("Not a number");
-                                } else {
-                                    break;
-                                }
-                            }
-                            boolean alcohol;
-                            String answer;
-                            while (true) {
-                                System.out.println("Do you drink alcohol? (y/n)");
-                                answer = scanner.nextLine();
-
-                                if (answer.equals("y")) {
-                                    alcohol = true;
-                                    break;
-                                } else if (answer.equals("n")) {
-                                    alcohol = false;
-                                    break;
-                                } else {
-                                    System.out.println("Invalid Input");
-                                }
-                            }
-                            boolean smoking;
-                            while (true) {
-                                System.out.println("Do you smoke? (y/n)");
-                                answer = scanner.nextLine();
-
-                                if (answer.equals("y")) {
-                                    smoking = true;
-                                    break;
-                                } else if (answer.equals("n")) {
-                                    smoking = false;
-                                    break;
-                                } else {
-                                    System.out.println("Invalid Input");
-                                }
-                            }
-                            boolean guests;
-                            while (true) {
-                                System.out.println("Are you comfortable with guests? (y/n)");
-                                answer = scanner.nextLine();
-
-                                if (answer.equals("y")) {
-                                    guests = true;
-                                    break;
-                                } else if (answer.equals("n")) {
-                                    guests = false;
-                                    break;
-                                } else {
-                                    System.out.println("Invalid Input");
-                                }
-                            }
-                            int tidy;
-                            while (true) {
-                                System.out.println("How tidy are you? (1-10)");
-                                try {
-                                    tidy = scanner.nextInt();
-                                    if (tidy <= 10 && tidy >= 1) {
-                                        break;
-                                    } else {
-                                        System.out.println("Outside of range");
-                                    }
-                                } catch (Exception e) {
-                                    System.out.println("Invalid Input");
-                                }
-                            }
-                            int roomHours;
-                            while (true) {
-                                System.out.println("How many hours per day on average do you spend in your room?");
-                                try {
-                                    roomHours = scanner.nextInt();
-                                    if (roomHours >= 1 && roomHours <= 24) {
-                                        break;
-                                    } else {
-                                        System.out.println("Outside of Range");
-                                    }
-                                } catch (Exception e) {
-                                    System.out.println("Invalid Input");
-                                }
-                            }
-                            user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
-                            break;
-                    }
                     client.updateProfile(user);
                 case "10":
                     System.out.println("\nHow would you like to search?");
@@ -642,22 +449,26 @@ public class Client implements ClientService {
         }
     }
 
-    public boolean register(User user) {
+    public boolean register(User user) throws UsernameTakenException {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
+        this.currentUser = new User(user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getDescription(), user.getUniversity());
 
-        out.println("register#*" + user.getName() + "#*" + user.getPassword() + "#*" + user.getEmail() + "#*"
-                + user.getPhoneNumber() + "#*" + user.getDescription() + "#*" + user.getUniversity());
+        out.println("register###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
+                + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
+                user.getBedTime() + "###" + user.getAlcohol() + "###" + user.getSmoke() + "###" + user.getGuests() + "###" +
+                user.getTidy() + "###" + user.getRoomHours());
+
 
         try {
             String response = in.readLine();
-            if ("User registered".equals(response)) {
+            if ("successful registration".equals(response)) {
                 System.out.println("User registered: " + user.getName());
                 return true;
             } else {
-                System.out.println("Registration failed: " + response);
+                System.out.println("Registration: " + response);
                 return false;
             }
         } catch (IOException e) {
@@ -672,8 +483,8 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("updateProfile#*" + user.getName() + "#*" + user.getPassword() + "#*" + user.getEmail() + "#*"
-                + user.getPhoneNumber() + "#*" + user.getDescription() + "#*" + user.getUniversity() + "#*" + user.getPreferences().replace(",", "#*"));
+        out.println("updateProfile###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
+                + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" + user.getPreferences().replace(",", "###"));
 
         try {
             String response = in.readLine();
@@ -696,7 +507,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("sendMessage#*" + currentUser.getName() + "#*" + receiver + "#*" + message);
+        out.println("sendMessage###" + currentUser.getName() + "###" + receiver + "###" + message);
 
         try {
             String response = in.readLine();
@@ -1076,7 +887,7 @@ public class Client implements ClientService {
         }
 
         String preferences = user.getPreferences();
-        out.println("updatePreferences," + user.getName() + "," + preferences.replace(",", "#*"));
+        out.println("updatePreferences," + user.getName() + "," + preferences.replace(",", "###"));
 
         try {
             String response = in.readLine();
