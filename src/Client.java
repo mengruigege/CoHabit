@@ -33,234 +33,234 @@ public class Client implements ClientService {
 
         boolean exit = false;
 
-            boolean loggedIn = false;
+        boolean loggedIn = false;
 
-            while (!loggedIn) {
-                System.out.println("\nSelect an option:");
-                System.out.println("1. Login");
-                System.out.println("2. Register");
+        while (!loggedIn) {
+            System.out.println("\nSelect an option:");
+            System.out.println("1. Login");
+            System.out.println("2. Register");
 
-                String choice1 = scanner.nextLine();
+            String choice1 = scanner.nextLine();
 
-                switch (choice1) {
-                    case "1":
+            switch (choice1) {
+                case "1":
+                    while (true) {
                         while (true) {
-                            while (true) {
-                                System.out.println("Enter your username:");
-                                username = scanner.nextLine();
-
-                                if (username == null) {
-                                    System.out.println("Username is invalid");
-                                } else {
-                                    break;
-                                }
-                            }
-                            while (true) {
-                                System.out.println("Enter your password:");
-                                password = scanner.nextLine();
-
-                                if (password == null) {
-                                    System.out.println("Password is invalid");
-                                } else {
-                                    break;
-                                }
-                            }
-                            client.login(username, password);
-                            String message = in.readLine();
-                            if (message.equals("Successful Login")) {
-                                loggedIn = true;
-                                break;
-                            } else {
-                                System.out.println("Invalid username or password");
-                            }
-                        }
-                    case "2":
-                        while (true) {
-                            System.out.println("Create a username:");
+                            System.out.println("Enter your username:");
                             username = scanner.nextLine();
 
                             if (username == null) {
                                 System.out.println("Username is invalid");
-                            } else if (username.contains("###")) {
-                                System.out.println("'###' is not allowed");
                             } else {
                                 break;
                             }
                         }
                         while (true) {
-                            System.out.println("Create a password: ");
+                            System.out.println("Enter your password:");
                             password = scanner.nextLine();
 
                             if (password == null) {
                                 System.out.println("Password is invalid");
-                            } else if (password.contains("###")) {
-                                System.out.println("'###' is not allowed");
                             } else {
                                 break;
                             }
                         }
-                        while (true) {
-                            System.out.println("Enter your email:");
-                            email = scanner.nextLine();
+                        client.login(username, password);
+                        String message = in.readLine();
+                        if (message.equals("Successful Login")) {
+                            loggedIn = true;
+                            break;
+                        } else {
+                            System.out.println("Invalid username or password");
+                        }
+                    }
+                case "2":
+                    while (true) {
+                        System.out.println("Create a username:");
+                        username = scanner.nextLine();
 
-                            if (email == null || !email.contains("@") || !email.contains(".")) {
-                                System.out.println("email is invalid");
-                            } else if (email.contains("###")) {
-                                System.out.println("'###' is not allowed");
+                        if (username == null) {
+                            System.out.println("Username is invalid");
+                        } else if (username.contains("###")) {
+                            System.out.println("'###' is not allowed");
+                        } else {
+                            break;
+                        }
+                    }
+                    while (true) {
+                        System.out.println("Create a password: ");
+                        password = scanner.nextLine();
+
+                        if (password == null) {
+                            System.out.println("Password is invalid");
+                        } else if (password.contains("###")) {
+                            System.out.println("'###' is not allowed");
+                        } else {
+                            break;
+                        }
+                    }
+                    while (true) {
+                        System.out.println("Enter your email:");
+                        email = scanner.nextLine();
+
+                        if (email == null || !email.contains("@") || !email.contains(".")) {
+                            System.out.println("email is invalid");
+                        } else if (email.contains("###")) {
+                            System.out.println("'###' is not allowed");
+                        } else {
+                            break;
+                        }
+                    }
+                    while (true) {
+                        System.out.println("Enter your phone number: ");
+                        phoneNumber = scanner.nextLine();
+                        boolean notInt = false;
+                        try {
+                            long number = Long.parseLong(phoneNumber);
+                        } catch (Exception e) {
+                            notInt = true;
+                        }
+
+                        if (phoneNumber == null) {
+                            System.out.println("Phone number is invalid");
+                        } else if (phoneNumber.contains("###")) {
+                            System.out.println("'###' is not allowed");
+                        } else if (phoneNumber.length() != 10) {
+                            System.out.println("Phone number is invalid");
+                        } else if (notInt) {
+                            System.out.println("Not a number");
+                        } else {
+                            break;
+                        }
+                    }
+                    while (true) {
+                        System.out.println("Create a description:");
+                        userDescription = scanner.nextLine();
+
+                        if (userDescription == null) {
+                            System.out.println("Description is invalid");
+                        } else if (userDescription.contains("###")) {
+                            System.out.println("'###' is not allowed");
+                        } else {
+                            break;
+                        }
+                    }
+                    while (true) {
+                        System.out.println("Create a university: ");
+                        university = scanner.nextLine();
+
+                        if (university == null) {
+                            System.out.println("University is invalid");
+                        } else if (password.contains("###")) {
+                            System.out.println("'###' is not allowed");
+                        } else {
+                            break;
+                        }
+                    }
+                    String bedTime;
+                    while (true) {
+                        System.out.println("What is your average bed time?");
+                        bedTime = scanner.nextLine();
+                        boolean nan = false;
+
+                        try {
+                            int time = Integer.parseInt(bedTime.replace(":", ""));
+                        } catch (Exception e) {
+                            nan = true;
+                        }
+
+                        if (bedTime == null) {
+                            System.out.println("Bed time is invalid");
+                        } else if (!bedTime.contains(":")) {
+                            System.out.println("Bed time is invalid");
+                        } else if (nan) {
+                            System.out.println("Not a number");
+                        } else {
+                            break;
+                        }
+                    }
+                    boolean alcohol;
+                    String answer;
+                    while (true) {
+                        System.out.println("Do you drink alcohol? (y/n)");
+                        answer = scanner.nextLine();
+
+                        if (answer.equals("y")) {
+                            alcohol = true;
+                            break;
+                        } else if (answer.equals("n")) {
+                            alcohol = false;
+                            break;
+                        } else {
+                            System.out.println("Invalid Input");
+                        }
+                    }
+                    boolean smoking;
+                    while (true) {
+                        System.out.println("Do you smoke? (y/n)");
+                        answer = scanner.nextLine();
+
+                        if (answer.equals("y")) {
+                            smoking = true;
+                            break;
+                        } else if (answer.equals("n")) {
+                            smoking = false;
+                            break;
+                        } else {
+                            System.out.println("Invalid Input");
+                        }
+                    }
+                    boolean guests;
+                    while (true) {
+                        System.out.println("Are you comfortable with guests? (y/n)");
+                        answer = scanner.nextLine();
+
+                        if (answer.equals("y")) {
+                            guests = true;
+                            break;
+                        } else if (answer.equals("n")) {
+                            guests = false;
+                            break;
+                        } else {
+                            System.out.println("Invalid Input");
+                        }
+                    }
+                    int tidy;
+                    while (true) {
+                        System.out.println("How tidy are you? (1-10)");
+                        try {
+                            tidy = scanner.nextInt();
+                            scanner.nextLine();
+                            if (tidy <= 10 && tidy >= 1) {
+                                break;
                             } else {
-                                break;
+                                System.out.println("Outside of range");
                             }
+                        } catch (Exception e) {
+                            System.out.println("Invalid Input");
                         }
-                        while (true) {
-                            System.out.println("Enter your phone number: ");
-                            phoneNumber = scanner.nextLine();
-                            boolean notInt = false;
-                            try {
-                                long number = Long.parseLong(phoneNumber);
-                            } catch (Exception e) {
-                                notInt = true;
-                            }
-
-                            if (phoneNumber == null) {
-                                System.out.println("Phone number is invalid");
-                            } else if (phoneNumber.contains("###")) {
-                                System.out.println("'###' is not allowed");
-                            } else if (phoneNumber.length() != 10) {
-                                System.out.println("Phone number is invalid");
-                            } else if (notInt) {
-                                System.out.println("Not a number");
-                            } else {
-                                break;
-                            }
-                        }
-                        while (true) {
-                            System.out.println("Create a description:");
-                            userDescription = scanner.nextLine();
-
-                            if (userDescription == null) {
-                                System.out.println("Description is invalid");
-                            } else if (userDescription.contains("###")) {
-                                System.out.println("'###' is not allowed");
-                            } else {
-                                break;
-                            }
-                        }
-                        while (true) {
-                            System.out.println("Create a university: ");
-                            university = scanner.nextLine();
-
-                            if (university == null) {
-                                System.out.println("University is invalid");
-                            } else if (password.contains("###")) {
-                                System.out.println("'###' is not allowed");
-                            } else {
-                                break;
-                            }
-                        }
-                        String bedTime;
-                        while (true) {
-                            System.out.println("What is your average bed time?");
-                            bedTime = scanner.nextLine();
-                            boolean nan = false;
-
-                            try {
-                                int time = Integer.parseInt(bedTime.replace(":", ""));
-                            } catch (Exception e) {
-                                nan = true;
-                            }
-
-                            if (bedTime == null) {
-                                System.out.println("Bed time is invalid");
-                            } else if (!bedTime.contains(":")) {
-                                System.out.println("Bed time is invalid");
-                            } else if (nan) {
-                                System.out.println("Not a number");
-                            } else {
-                                break;
-                            }
-                        }
-                        boolean alcohol;
-                        String answer;
-                        while (true) {
-                            System.out.println("Do you drink alcohol? (y/n)");
-                            answer = scanner.nextLine();
-
-                            if (answer.equals("y")) {
-                                alcohol = true;
-                                break;
-                            } else if (answer.equals("n")) {
-                                alcohol = false;
+                    }
+                    int roomHours;
+                    while (true) {
+                        System.out.println("How many hours per day on average do you spend in your room?");
+                        try {
+                            roomHours = scanner.nextInt();
+                            scanner.nextLine();
+                            if (roomHours >= 1 && roomHours <= 24) {
                                 break;
                             } else {
-                                System.out.println("Invalid Input");
+                                System.out.println("Outside of Range");
                             }
+                        } catch (Exception e) {
+                            System.out.println("Invalid Input");
                         }
-                        boolean smoking;
-                        while (true) {
-                            System.out.println("Do you smoke? (y/n)");
-                            answer = scanner.nextLine();
-
-                            if (answer.equals("y")) {
-                                smoking = true;
-                                break;
-                            } else if (answer.equals("n")) {
-                                smoking = false;
-                                break;
-                            } else {
-                                System.out.println("Invalid Input");
-                            }
-                        }
-                        boolean guests;
-                        while (true) {
-                            System.out.println("Are you comfortable with guests? (y/n)");
-                            answer = scanner.nextLine();
-
-                            if (answer.equals("y")) {
-                                guests = true;
-                                break;
-                            } else if (answer.equals("n")) {
-                                guests = false;
-                                break;
-                            } else {
-                                System.out.println("Invalid Input");
-                            }
-                        }
-                        int tidy;
-                        while (true) {
-                            System.out.println("How tidy are you? (1-10)");
-                            try {
-                                tidy = scanner.nextInt();
-                                scanner.nextLine();
-                                if (tidy <= 10 && tidy >= 1) {
-                                    break;
-                                } else {
-                                    System.out.println("Outside of range");
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Invalid Input");
-                            }
-                        }
-                        int roomHours;
-                        while (true) {
-                            System.out.println("How many hours per day on average do you spend in your room?");
-                            try {
-                                roomHours = scanner.nextInt();
-                                scanner.nextLine();
-                                if (roomHours >= 1 && roomHours <= 24) {
-                                    break;
-                                } else {
-                                    System.out.println("Outside of Range");
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Invalid Input");
-                            }
-                        }
-                        currentUser = new User(username, password, email, phoneNumber, userDescription, university);
-                        currentUser.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
-                        client.register(currentUser);
-                        loggedIn = true;
-                        break;
-                }
+                    }
+                    currentUser = new User(username, password, email, phoneNumber, userDescription, university);
+                    currentUser.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
+                    client.register(currentUser);
+                    loggedIn = true;
+                    break;
+            }
         }
 
         while (!exit) {
