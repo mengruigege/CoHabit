@@ -24,7 +24,13 @@ public class Server {
         if (user == null) {
             return null;
         }
-        if (user.getPassword().equals(password)) {
+        if (!(password.equals(user.getPassword()))) {
+            return "";
+        }
+        if (!(username.equals(user.getName()))) {
+            return "";
+        }
+        if (user.getPassword().equals(password) && user.getName().equals(username)) {
             return user.getName() + "###" + user.getPassword() + "###" + user.getEmail() +
                     "###" + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity();
         }
@@ -33,8 +39,7 @@ public class Server {
     // method used to add the new register user to the database and return true if successful
     public static boolean register(User user) {
         database.loadUsersFromFile();
-        database.addUser(user);
-        return true;
+        return database.addUser(user);
     }
     public static boolean sendMessage(User sender, User reciever, String message) {
         database.loadUsersFromFile();
@@ -173,9 +178,15 @@ public class Server {
         }
     }
     public static String partialMatch(User user) {
+        if (user == null) {
+            return "";
+        }
+
         database.loadUsersFromFile();
-        UserSearch userSearch = new UserSearch();
-        ArrayList<User> partialmatches = userSearch.partialMatch(user);
+        ArrayList<User> partialmatches = database.partialMatch(user);
+        if (partialmatches.isEmpty()) {
+            return "";
+        }
         String result = "";
         for (User users : partialmatches) {
             String username = users.getName();
@@ -185,9 +196,15 @@ public class Server {
 
     }
     public static String exactMatch(User user) {
+        if (user == null) {
+            return "";
+        }
         database.loadUsersFromFile();
-        UserSearch userSearch = new UserSearch();
-        ArrayList<User> exactmatches = userSearch.exactMatch(user);
+        ArrayList<User> exactmatches = database.exactMatch(user);
+
+        if (exactmatches == null) {
+            return "";
+        }
 
         String result = "";
         for (User users : exactmatches) {
@@ -197,9 +214,14 @@ public class Server {
         return result;
     }
     public static String searchByParameter(String parameter, String value) {
+        if (parameter == null || parameter.isEmpty() || value == null || value.isEmpty()) {
+            return "";
+        }
         database.loadUsersFromFile();
-        UserSearch userSearch = new UserSearch();
-        ArrayList<User> matches = userSearch.searchByParameter(parameter, value);
+        ArrayList<User> matches = database.searchByParameter(parameter, value);
+        if (matches == null) {
+            return "";
+        }
         String result = "";
         for (User users : matches) {
             String username = users.getName();
