@@ -163,7 +163,7 @@ public class Client implements ClientService {
                         }
                     }
                     while (true) {
-                        System.out.println("Create a university: ");
+                        System.out.println("Enter your university: ");
                         client.setUniversity(scanner.nextLine());
 
                         if (client.getUniversity() == null) {
@@ -274,8 +274,9 @@ public class Client implements ClientService {
                     }
                     user = new User(client.getUsername(), client.getPassword(), client.getEmail(), client.getPhone(), client.getUserDescription(), client.getUniversity());
                     user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
-                    client.register(user);
-                    loggedIn = true;
+                    if (client.register(user)) {
+                        loggedIn = false;
+                    }
                     break;
             }
         }
