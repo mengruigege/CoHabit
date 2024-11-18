@@ -279,7 +279,6 @@ public class Client implements ClientService {
                     break;
             }
         }
-        System.out.println(exit);
         while (!exit) {
             System.out.println("\nSelect an option:");
             System.out.println("1. Send Message");
@@ -302,7 +301,7 @@ public class Client implements ClientService {
                     String receiver = scanner.nextLine();
                     System.out.print("Enter message: ");
                     String message = scanner.nextLine();
-                    client.fetchMessages(client.getUsername(), receiver);
+                    //client.fetchMessages(client.getUsername(), receiver);
                     client.sendMessage(receiver, message);
                     break;
                 case "2":
@@ -525,8 +524,8 @@ public class Client implements ClientService {
         password = tokens[1];
         email = tokens[2];
         phoneNumber = tokens[3];
-        university = tokens[4];
-        userDescription = tokens[5];
+        userDescription = tokens[4];
+        university = tokens[5];
     }
 
     public boolean register(User user) throws UsernameTakenException {
@@ -590,6 +589,7 @@ public class Client implements ClientService {
             return false;
         }
         System.out.println("requesting the server ");
+        System.out.println("is the socket connected?" + isConnected);
         out.println("sendMessage###" + username + "###" + receiver + "###" + message);
 
         try {

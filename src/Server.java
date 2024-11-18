@@ -42,11 +42,12 @@ public class Server {
             return false;
         }
         System.out.println("here? 2");
-        database.loadConversation(sender.getName(), reciever.getName());
+        ArrayList<String> messages = database.loadConversation(sender.getName(), reciever.getName());
         String senderName = sender.getName();
         String recieverName = reciever.getName();
         System.out.println("here? 3");
         database.recordMessages(senderName, recieverName, message);
+        System.out.println("RETURNING TRUE");
         return true;
     }
     public static String loadMessages(User user, User reciever) {
@@ -240,7 +241,9 @@ public class Server {
                       BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                       PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                     while (true) {
+                        System.out.println("while loop running");
                         String line = reader.readLine();
+                        System.out.println("line = " + line);
                         // this is the main part that help to decide what to do with information of line
                         //"login, username, password,
                         if (line.length() > 5 && line.substring(0,5).contains("login")) {
@@ -294,9 +297,11 @@ public class Server {
                             String message = parts[3];
                             System.out.println("here? 1");
                             if (Server.sendMessage(sender, receiver, message)) {
+                                System.out.println("SUCCESS");
                                 writer.println("Successfully sent message"); //not sure what the output is here
                             }
                             else {
+                                System.out.println("FAILURE");
                                 writer.println("Something went wrong");
                             }
                         }
