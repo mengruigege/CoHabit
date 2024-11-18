@@ -584,11 +584,19 @@ Constructor
 
 8. ServerService.java
 
-*
-*
-*
-*
-*
+* void start(int port)
+* void stop()
+* boolean authenticateUser(String username, String password)
+* boolean registerUser(User user)
+* boolean sendMessage(String sender, String receiver, String message)
+* ArrayList<String> getMessages(String user1, String user2)
+* boolean addFriend(String user1, String user2)
+* boolean sendFriendRequest(String sender, String receiver)
+* boolean respondToFriendRequest(String sender, String receiver, boolean accept)
+* ArrayList<String> getFriendRequests(String username)
+* boolean blockUser(String requester, String target)
+* User getUserProfile(String username)
+* boolean updateUserProfile(String username, User updatedProfile)
 
 ---
 
