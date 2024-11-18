@@ -229,6 +229,29 @@ public class User implements Profile, FriendManageable, Blockable {
         return count;
 
     }
+    public String getBedTime() {
+        return bedTime;
+    }
+
+    public boolean getAlcohol() {
+        return alcohol;
+    }
+
+    public boolean getSmoke() {
+        return smoke;
+    }
+
+    public boolean getGuests() {
+        return guests;
+    }
+
+    public int getTidy() {
+        return tidy;
+    }
+
+    public int getRoomHours() {
+        return roomHours;
+    }
 
     //Returns a string representation of the user object
     public String toString() {
