@@ -14,7 +14,7 @@ public class Server {
         if (user == null) {
             return false;
         }
-        if (user.getPassword().equals(password)) {
+        if (user.getPassword()  .equals(password)) {
             return true;
         }
         return false;
@@ -252,11 +252,10 @@ public class Server {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(1102)) {
-            while (true) {
-                try (Socket socket = serverSocket.accept()) {
-                    new Thread(new ClientHandler(socket)).start();
-
-                }
+            try (Socket socket = serverSocket.accept()) {
+                new Thread(new ClientHandler(socket)).start();
+            } catch (Exception e) {
+                System.out.println("Error starting server");
             }
         } catch (IOException e) {
             e.printStackTrace();
