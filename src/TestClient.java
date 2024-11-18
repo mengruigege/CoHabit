@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 public class TestClient {
     private Thread serverThread;
     private Client client;
-
     @Before
     public void setUp() throws Exception {
         // Start the server in a separate thread
@@ -24,8 +23,8 @@ public class TestClient {
         Thread.sleep(1000);
 
         // Initialize the client with a properly created User
-        User user = new User("Bob","password123","bob@example.com","1234567890","Description for Bob",                "University Example"
-        );
+        User user = new User("Bob","password123","bob@example.com","1234567890","Description for Bob","University Example");
+        User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
         client = new Client(user);
 
         // Connect the client to the server
@@ -108,6 +107,7 @@ public class TestClient {
     // Test sending friend requests
     @Test
     public void testSendFriendRequest_Successful() {
+
         assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "friend"));
     }
 
@@ -130,7 +130,8 @@ public class TestClient {
     // Test removing friends
     @Test
     public void testRemoveFriend_Successful() {
-        assertTrue("Removing friend should succeed for existing friends.", client.removeFriend("Bob", "friend"));
+        client.addFriend("Bob","Jim");
+        assertTrue("Removing friend should succeed for existing friends.", client.removeFriend("Bob", "Jim"));
     }
 
     @Test

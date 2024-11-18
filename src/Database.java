@@ -427,6 +427,6 @@ public class Database implements DatabaseFramework {
     }
 
     public ArrayList<User> searchByParameter(String parameter, String value) {
-
+        return null;
     }
 }
