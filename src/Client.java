@@ -639,7 +639,6 @@ public class Client implements ClientService {
 
         try {
             String response = in.readLine();
-            //System.out.println(response);
             if ("Successfully sent friend request".equals(response)) {
                 System.out.println("Friend request sent to " + potentialFriend);
                 return true;
@@ -672,7 +671,9 @@ public class Client implements ClientService {
             Scanner scanner = new Scanner(System.in);
 
             for (String requester : friendRequests) {
-                System.out.println("Friend request from: " + requester);
+                String[] tokens = requester.split(":");
+
+                System.out.println("Friend request from: " + tokens[0]);
                 System.out.println("Do you want to (1) Accept or (2) Decline?");
                 String choice = scanner.nextLine();
 

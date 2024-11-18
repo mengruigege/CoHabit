@@ -74,7 +74,7 @@ public class Server {
         }
         database.loadFriendRequestsFromFile();
         // do I need to check if potentialFriend blocked the user
-        database.addFriendRequest(potentialFriend, user); //do I need to switch the order
+        database.addFriendRequest(user, potentialFriend); //do I need to switch the order
         // do I need to saveFriendRequests to File
         return true;
     }
@@ -339,7 +339,6 @@ public class Server {
                             User user = database.findUserByName(parts[1]);
                             User potentialfriend = database.findUserByName(parts[2]);
                             if (Server.sendFriendRequest(user,potentialfriend)) {
-                                //System.out.println("Successfully sent friend request");
                                 writer.println("Successfully sent friend request");
                             } else {
                                 //System.out.println("failed");
@@ -358,7 +357,6 @@ public class Server {
                             if (Server.viewFriendRequests(user) == null) {
                                 writer.println("Friend requests are empty");
                             } else {
-
                                 writer.println(String.join(",", viewFriendRequests(user))); // do not use toSting();
                             }
                         }
