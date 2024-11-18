@@ -2,18 +2,8 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-
 public class Server {
     private static Database database = new Database();
-
-
 
     // method to check if the login was successful or not
     public String login(String username, String password) {
@@ -36,11 +26,13 @@ public class Server {
         }
         return null;
     }
+
     // method used to add the new register user to the database and return true if successful
     public boolean register(User user) {
         database.loadUsersFromFile();
         return database.addUser(user);
     }
+
     public static boolean sendMessage(User sender, User reciever, String message) {
         database.loadUsersFromFile();
         if (reciever == null) {
@@ -53,6 +45,7 @@ public class Server {
         System.out.println("RETURNING TRUE");
         return true;
     }
+
     public String loadMessages(User user, User reciever) {
         if (user == null || reciever == null) {
             return null;
@@ -65,7 +58,6 @@ public class Server {
         }
         return result;
     }
-
 
     public boolean sendFriendRequest(User user, User potentialFriend) {
         database.loadUsersFromFile();
@@ -273,7 +265,7 @@ public class Server {
                         System.out.println("line = " + line);
                         // this is the main part that help to decide what to do with information of line
                         //"login, username, password,
-                        if (line.length() > 5 && line.substring(0,5).contains("login")) {
+                        if (line.length() > 5 && line.substring(0, 5).contains("login")) {
                             String[] parts = line.split(",");
 
                             String username = parts[1];
@@ -288,7 +280,7 @@ public class Server {
 
                         }
                         //format should be register#*username#*password#*email#*phoneNumber#*desciption#*university#*bedTime#*alcohol#*smoke#*guests#*tidy#*roomHours
-                        if (line.length() > 8 && line.substring(0,8).contains("register")) {
+                        if (line.length() > 8 && line.substring(0, 8).contains("register")) {
                             String[] parts = line.split("###");
                             try {
                                 User user = new User(parts[1],parts[2],parts[3],parts[4],parts[5],parts[6]);
@@ -314,7 +306,7 @@ public class Server {
                         }
 
                         // should be in format sendMessage#*sender#*reciever#*message
-                        if (line.length() > 11 && line.substring(0,11).contains("sendMessage")) {
+                        if (line.length() > 11 && line.substring(0, 11).contains("sendMessage")) {
                             String[] parts = line.split("###");
                             database.loadUsersFromFile();
                             User sender = database.findUserByName(parts[1]);
@@ -330,8 +322,9 @@ public class Server {
                                 writer.println("Something went wrong");
                             }
                         }
+
                         // should be in format sendFriendRequest,user,potentialFriend
-                        if (line.length() > 17 && line.substring(0,17).contains("sendFriendRequest")) {
+                        if (line.length() > 17 && line.substring(0, 17).contains("sendFriendRequest")) {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
@@ -344,10 +337,10 @@ public class Server {
                             }
 
                         }
-                        // should be in format viewFriendRequests,user
 
+                        // should be in format viewFriendRequests,user
                         if (line.length() > 18 &&
-                                line.substring(0,18).contains("viewFriendRequests")) {
+                                line.substring(0, 18).contains("viewFriendRequests")) {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
@@ -358,8 +351,9 @@ public class Server {
                                 writer.println(String.join(",", server.viewFriendRequests(user))); // do not use toSting();
                             }
                         }
+
                         // format should be declineFriendRequest,user,declinedUser
-                        if (line.length() > 20 && line.substring(0,20).contains("declineFriendRequest")) {
+                        if (line.length() > 20 && line.substring(0, 20).contains("declineFriendRequest")) {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
@@ -372,7 +366,7 @@ public class Server {
                         }
 
                         // should be in format addFriend,user,friend
-                        if (line.length() > 9 && line.substring(0,9).contains("addFriend")) {
+                        if (line.length() > 9 && line.substring(0, 9).contains("addFriend")) {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
@@ -389,8 +383,9 @@ public class Server {
                                 writer.println("Entered a nonexistent Person");
                             }
                         }
+
                         // should be in format removeFriend,user,removedFriend
-                        if (line.length() > 12 && line.substring(0,12).contains("removeFriend")) {
+                        if (line.length() > 12 && line.substring(0, 12).contains("removeFriend")) {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
@@ -402,8 +397,9 @@ public class Server {
                                 writer.println("Something went wrong");
                             }
                         }
+
                         // format should be viewFriendsList,user
-                        if (line.length() > 15 && line.substring(0,15).contains("viewFriendsList")) {
+                        if (line.length() > 15 && line.substring(0, 15).contains("viewFriendsList")) {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
@@ -413,6 +409,7 @@ public class Server {
                                 writer.println(server.viewFriendsList(user));
                             }
                         }
+
                         //  should be in format loadMessages,user,reciever
                         if (line.length() > 12 && line.substring(0,12).contains("loadMessages")) {
                             String[] parts = line.split(",");
@@ -425,6 +422,7 @@ public class Server {
                             }
 
                         }
+
                         // format should be blockUser,user,blockedUser
                         if (line.length() > 9 && line.substring(0,9).contains("blockUser")) {
                             String[] parts = line.split(",");
@@ -438,6 +436,7 @@ public class Server {
                                 writer.println("Something went wrong");
                             }
                         }
+
                         // format should be removeBlockedUser,user,blockedUser
                         if (line.length() > 17 && line.substring(0,17).contains("removeBlockedUser")) {
                             String[] parts = line.split(",");
@@ -451,6 +450,7 @@ public class Server {
                             }
 
                         }
+
                         // format should be viewBlockedUsers,user
                         if (line.length() > 16 && line.substring(0, 16).contains("viewBlockedUsers")) {
                             String[] parts = line.split(",");
@@ -461,8 +461,6 @@ public class Server {
                                 writer.println(server.viewBlockedUsers(user));
                             }
                         }
-
-
 
                         // format is viewProfile,username
                         if (line.length() > 11 && line.substring(0, 11).contains("viewProfile")) {
@@ -475,6 +473,7 @@ public class Server {
                                 writer.println("Something went wrong");
                             }
                         }
+
                         // format should be partialMatch,user
                         if (line.length() > 12 && line.substring(0, 12).contains("partialMatch")) {
                             String[] parts = line.split(",");
@@ -486,6 +485,7 @@ public class Server {
                             }
 
                         }
+
                         // format should be exactMatch,user
                         if (line.length() > 10 && line.substring(0,10).contains("exactMatch")) {
                             String[] parts = line.split(",");
@@ -507,18 +507,13 @@ public class Server {
                                 writer.println(server.searchByParameter(parameter, value));
                             }
                         }
-
                     }
-
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         }   catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
