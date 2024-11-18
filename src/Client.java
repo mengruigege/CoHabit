@@ -276,6 +276,7 @@ public class Client implements ClientService {
             System.out.println("10. Search roommates");
             System.out.println("11. Disconnect and Exit");
 
+            scanner.nextLine();
             String choice2 = scanner.nextLine();
 
             switch (choice2) {
@@ -458,8 +459,7 @@ public class Client implements ClientService {
 
         out.println("register###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
                 + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
-                user.getBedTime() + "###" + user.getAlcohol() + "###" + user.getSmoke() + "###" + user.getGuests() + "###" +
-                user.getTidy() + "###" + user.getRoomHours());
+                user.getPreferences().replace(", ", "###"));
 
 
         try {
@@ -472,7 +472,7 @@ public class Client implements ClientService {
                 return false;
             }
         } catch (IOException e) {
-            System.out.println("Error during registration: " + e.getMessage());
+            System.out.println();
             return false;
         }
     }
