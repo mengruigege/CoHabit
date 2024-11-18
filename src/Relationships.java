@@ -71,6 +71,46 @@ public class Relationships implements FriendManageable, Blockable {
         return incomingRequests.remove(sender);
     }
 
+    // Sets the list of incoming friend requests
+    public synchronized void setIncomingRequests(ArrayList<User> incomingRequests) {
+        if (incomingRequests != null) {
+            this.incomingRequests = new ArrayList<>(incomingRequests); // Defensive copy
+        }
+    }
+
+    // Sets the list of outgoing friend requests
+    public synchronized void setOutgoingRequests(ArrayList<User> outgoingRequests) {
+        if (outgoingRequests != null) {
+            this.outgoingRequests = new ArrayList<>(outgoingRequests); // Defensive copy
+        }
+    }
+
+    // Adds an outgoing friend request (if not already present)
+    public synchronized boolean addOutgoingRequest(User receiver) {
+        if (receiver != null && !outgoingRequests.contains(receiver)) {
+            return outgoingRequests.add(receiver);
+        }
+        return false;
+    }
+
+    // Adds an incoming friend request (if not already present)
+    public synchronized boolean addIncomingRequest(User sender) {
+        if (sender != null && !incomingRequests.contains(sender)) {
+            return incomingRequests.add(sender);
+        }
+        return false;
+    }
+
+    // Removes an outgoing friend request
+    public synchronized boolean removeOutgoingRequest(User receiver) {
+        return outgoingRequests.remove(receiver);
+    }
+
+    // Removes an incoming friend request
+    public synchronized boolean removeIncomingRequest(User sender) {
+        return incomingRequests.remove(sender);
+    }
+
     // Helper method to check if a user is already a friend
     public synchronized boolean isFriend(User user) {
         return friends.contains(user);

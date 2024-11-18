@@ -147,6 +147,19 @@ public class User implements Profile, FriendManageable, Blockable {
                 this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
 
+    public boolean isAlcohol() {
+        return alcohol;
+    }
+
+    public boolean isSmoke() {
+        return smoke;
+    }
+
+    public boolean isGuests() {
+        return guests;
+    }
+
+
     public void setName(String name) {
         this.name = name;
     }
@@ -191,6 +204,43 @@ public class User implements Profile, FriendManageable, Blockable {
             throw new InvalidInput("Invalid Input");
         }
     }
+
+    public void setAlcohol(boolean alcohol) {
+        this.alcohol = alcohol;
+    }
+
+    public void setSmoke(boolean smoke) {
+        this.smoke = smoke;
+    }
+
+    public void setGuests(boolean guests) {
+        this.guests = guests;
+    }
+
+    public void setTidy(int tidy) throws InvalidInput {
+        if (tidy <= 0 || tidy > 10) {
+            throw new InvalidInput("Tidy value must be between 1 and 10");
+        }
+        this.tidy = tidy;
+    }
+
+    public void setRoomHours(int roomHours) throws InvalidInput {
+        if (roomHours < 0) {
+            throw new InvalidInput("Room hours cannot be negative");
+        }
+        this.roomHours = roomHours;
+    }
+
+    // Sets the incoming friend requests
+    public void setIncomingFriendRequest(ArrayList<User> incomingRequests) {
+        relationships.setIncomingRequests(incomingRequests);
+    }
+
+    // Sets the outgoing friend requests
+    public void setOutgoingFriendRequest(ArrayList<User> outgoingRequests) {
+        relationships.setOutgoingRequests(outgoingRequests);
+    }
+
 
     // Method that determines if two users have all the exact same preferences.
     public boolean perfectMatch(User user) {

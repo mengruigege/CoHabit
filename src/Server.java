@@ -78,11 +78,20 @@ public class Server {
         // do I need to saveFriendRequests to File
         return true;
     }
-    public static ArrayList<User> viewFriendRequests(User user) {
+
+    public static ArrayList<String> viewFriendRequests(User user) {
         database.loadUsersFromFile();
-        database.loadFriendRequestsFromFile();
-        return user.getIncomingFriendRequest();
+        if (user == null || database.loadFriendRequestsFromFile() == null) {
+            return null;
+        }
+        ArrayList<String> friendRequestNames = database.loadFriendRequestsFromFile();
+        ArrayList<User> friendRequests = new ArrayList<>();
+        for (String friendRequestName : friendRequestNames) {
+            friendRequests.add(database.findUserByName(friendRequestName));
+        }
+        return friendRequestNames;
     }
+
     public static boolean declineFriendRequest(User user, User declinedUser) {
         if (user != null && declinedUser != null) {
             database.loadUsersFromFile();
@@ -349,7 +358,8 @@ public class Server {
                             if (Server.viewFriendRequests(user) == null) {
                                 writer.println("Friend requests are empty");
                             } else {
-                                writer.println(viewFriendRequests(user).toString()); // do not use toSting();
+
+                                writer.println(String.join(",", viewFriendRequests(user))); // do not use toSting();
                             }
                         }
                         // format should be declineFriendRequest,user,declinedUser
