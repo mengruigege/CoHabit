@@ -76,10 +76,8 @@ public class Server {
             return null;
         }
         ArrayList<String> friendRequestNames = database.loadFriendRequestsFromFile();
-        ArrayList<User> friendRequests = new ArrayList<>();
-        for (String friendRequestName : friendRequestNames) {
-            friendRequests.add(database.findUserByName(friendRequestName));
-        }
+
+
         return friendRequestNames;
     }
 
