@@ -232,6 +232,7 @@ public class Client implements ClientService {
                         System.out.println("How tidy are you? (1-10)");
                         try {
                             tidy = scanner.nextInt();
+                            scanner.next();
                             if (tidy <= 10 && tidy >= 1) {
                                 break;
                             } else {
@@ -246,6 +247,7 @@ public class Client implements ClientService {
                         System.out.println("How many hours per day on average do you spend in your room?");
                         try {
                             roomHours = scanner.nextInt();
+                            scanner.nextLine();
                             if (roomHours >= 1 && roomHours <= 24) {
                                 break;
                             } else {
