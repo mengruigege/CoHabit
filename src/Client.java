@@ -247,7 +247,7 @@ public class Client implements ClientService {
                         System.out.println("How tidy are you? (1-10)");
                         try {
                             tidy = scanner.nextInt();
-                            scanner.next();
+                            scanner.nextLine();
                             if (tidy <= 10 && tidy >= 1) {
                                 break;
                             } else {
@@ -275,7 +275,7 @@ public class Client implements ClientService {
                     user = new User(client.getUsername(), client.getPassword(), client.getEmail(), client.getPhone(), client.getUserDescription(), client.getUniversity());
                     user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
                     if (client.register(user)) {
-                        loggedIn = false;
+                        loggedIn = true;
                     }
                     break;
             }
