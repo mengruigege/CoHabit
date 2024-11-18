@@ -638,6 +638,7 @@ public class Client implements ClientService {
 
         try {
             String response = in.readLine();
+            //System.out.println(response);
             if ("Successfully sent friend request".equals(response)) {
                 System.out.println("Friend request sent to " + potentialFriend);
                 return true;

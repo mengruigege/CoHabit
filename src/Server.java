@@ -46,11 +46,9 @@ public class Server {
         if (reciever == null) {
             return false;
         }
-        System.out.println("here? 2");
         ArrayList<String> messages = database.loadConversation(sender.getName(), reciever.getName());
         String senderName = sender.getName();
         String recieverName = reciever.getName();
-        System.out.println("here? 3");
         database.recordMessages(senderName, recieverName, message);
         System.out.println("RETURNING TRUE");
         return true;
@@ -102,9 +100,10 @@ public class Server {
             database.loadUsersFromFile();
 
             if (!(user.getFriendList().contains(friend))) {
-                database.loadFriendsFromFile();
+//                database.loadFriendsFromFile();?
                 database.addFriend(user, friend);
                 database.addFriend(friend, user);
+                database.saveFriendsToFile();
                 database.removeFriendRequest(user, friend);
                 //saveFriendRequestFile
                 return true;
@@ -263,7 +262,6 @@ public class Server {
                       BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                       PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                     while (true) {
-                        System.out.println("while loop running");
                         String line = reader.readLine();
                         System.out.println("line = " + line);
                         // this is the main part that help to decide what to do with information of line
@@ -311,13 +309,11 @@ public class Server {
                         // should be in format sendMessage#*sender#*reciever#*message
                         if (line.length() > 11 && line.substring(0,11).contains("sendMessage")) {
                             String[] parts = line.split("###");
-                            System.out.println("here? 0");
                             database.loadUsersFromFile();
                             User sender = database.findUserByName(parts[1]);
                             User receiver = database.findUserByName(parts[2]);
 
                             String message = parts[3];
-                            System.out.println("here? 1");
                             if (Server.sendMessage(sender, receiver, message)) {
                                 System.out.println("SUCCESS");
                                 writer.println("Successfully sent message"); //not sure what the output is here
@@ -334,8 +330,10 @@ public class Server {
                             User user = database.findUserByName(parts[1]);
                             User potentialfriend = database.findUserByName(parts[2]);
                             if (Server.sendFriendRequest(user,potentialfriend)) {
+                                //System.out.println("Successfully sent friend request");
                                 writer.println("Successfully sent friend request");
                             } else {
+                                //System.out.println("failed");
                                 writer.println("Friend request failed");
                             }
 
@@ -347,6 +345,7 @@ public class Server {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
+                            //System.out.println(Server.viewFriendRequests(user));
                             if (Server.viewFriendRequests(user) == null) {
                                 writer.println("Friend requests are empty");
                             } else {
@@ -373,6 +372,11 @@ public class Server {
                             User user = database.findUserByName(parts[1]);
                             User friend = database.findUserByName(parts[2]);
                             if (Server.addFriend(user,friend)) {
+                                System.out.println(user.getFriendList());
+                                for (User friend1 : user.getFriendList()) {
+                                    System.out.println(friend1.getName());
+                                }
+
                                 writer.println("Successfully added friend");
                             }
                             else {

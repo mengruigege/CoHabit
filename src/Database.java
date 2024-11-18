@@ -351,9 +351,11 @@ public class Database implements DatabaseFramework {
     public synchronized void saveFriendsToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
             for (User user : allUsers) {
+                System.out.println("User: " + user.getName());
                 String line = user.getName() + ":";
 
                 for (User friend : user.getFriendList()) {
+                    System.out.println("Friend: " + friend.getName());
                     line += friend.getName() + ",";
                 }
 
@@ -419,7 +421,7 @@ public class Database implements DatabaseFramework {
     public synchronized ArrayList<String> loadFriendRequestsFromFile() {
         ArrayList<String> friendRequests = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
-            String line;
+            String line ;
             while ((line = br.readLine()) != null) {
                 friendRequests.add(line); // Load each request as a line in the list
             }

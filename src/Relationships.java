@@ -34,6 +34,8 @@ public class Relationships implements FriendManageable, Blockable {
         this.database = new Database();
         this.friends = new ArrayList<>();
         this.blocked = new ArrayList<>();
+        this.incomingRequests = new ArrayList<>();
+        this.outgoingRequests = new ArrayList<>();
     }
 
     // Sends a friend request to another user
@@ -81,12 +83,13 @@ public class Relationships implements FriendManageable, Blockable {
 
     // Returns a list of incoming friend requests
     public synchronized ArrayList<User> getIncomingRequests() {
-        return new ArrayList<>(incomingRequests);
+        System.out.println(incomingRequests);
+        return incomingRequests;
     }
 
     // Returns a list of outgoing friend requests
     public synchronized ArrayList<User> getOutgoingRequests() {
-        return new ArrayList<>(outgoingRequests);
+        return outgoingRequests;
     }
 
     //Adds a user to the friends list if not already a friend.
