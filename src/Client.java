@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Client implements ClientService {
 
-    private static User currentUser;
+    private User currentUser;
     private boolean isConnected;
     private Socket socket;
     private static PrintWriter out;
@@ -18,7 +18,8 @@ public class Client implements ClientService {
 
     public static void main(String[] args) throws InvalidInput, UsernameTakenException, IOException {
         Scanner scanner = new Scanner(System.in);
-        Client client = new Client(currentUser);
+        User user = null;
+        Client client = new Client(user);
         String username = "";
         String password = "";
         String email = "";
@@ -74,6 +75,7 @@ public class Client implements ClientService {
                             System.out.println("Invalid username or password");
                         }
                     }
+                    break;
                 case "2":
                     while (true) {
                         System.out.println("Create a username:");
@@ -230,7 +232,6 @@ public class Client implements ClientService {
                         System.out.println("How tidy are you? (1-10)");
                         try {
                             tidy = scanner.nextInt();
-                            scanner.nextLine();
                             if (tidy <= 10 && tidy >= 1) {
                                 break;
                             } else {
@@ -245,7 +246,6 @@ public class Client implements ClientService {
                         System.out.println("How many hours per day on average do you spend in your room?");
                         try {
                             roomHours = scanner.nextInt();
-                            scanner.nextLine();
                             if (roomHours >= 1 && roomHours <= 24) {
                                 break;
                             } else {
@@ -255,9 +255,9 @@ public class Client implements ClientService {
                             System.out.println("Invalid Input");
                         }
                     }
-                    currentUser = new User(username, password, email, phoneNumber, userDescription, university);
-                    currentUser.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
-                    client.register(currentUser);
+                    user = new User(username, password, email, phoneNumber, userDescription, university);
+                    user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
+                    client.register(user);
                     loggedIn = true;
                     break;
             }
@@ -332,7 +332,7 @@ public class Client implements ClientService {
                     String selection = scanner.nextLine();
 
 
-                    client.updateProfile(currentUser);
+                    client.updateProfile(user);
                 case "10":
                     System.out.println("\nHow would you like to search?");
                     System.out.println("1. By Parameter");
@@ -378,9 +378,9 @@ public class Client implements ClientService {
                             }
 
                         case "2":
-                            client.exactMatch(currentUser);
+                            client.exactMatch(user);
                         case "3":
-                            client.partialMatch(currentUser);
+                            client.partialMatch(user);
                     }
 
                 case "11":
@@ -459,7 +459,8 @@ public class Client implements ClientService {
 
         out.println("register###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
                 + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
-                user.getPreferences().replace(", ", "###"));
+                user.getBedTime() + "###" + user.getAlcohol() + "###" + user.getSmoke() + "###" + user.getGuests() + "###" +
+                user.getTidy() + "###" + user.getRoomHours());
 
 
         try {
@@ -472,7 +473,7 @@ public class Client implements ClientService {
                 return false;
             }
         } catch (IOException e) {
-            System.out.println();
+            System.out.println("Error during registration: " + e.getMessage());
             return false;
         }
     }
