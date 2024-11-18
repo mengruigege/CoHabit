@@ -7,8 +7,8 @@ public class Client implements ClientService {
     private final User currentUser;
     private boolean isConnected;
     private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private static PrintWriter out;
+    private static BufferedReader in;
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
 
@@ -16,7 +16,7 @@ public class Client implements ClientService {
         this.currentUser = user;
     }
 
-    public static void main(String[] args) throws InvalidInput, UsernameTakenException {
+    public static void main(String[] args) throws InvalidInput, UsernameTakenException, IOException {
         Scanner scanner = new Scanner(System.in);
         User user = null;
         Client client = new Client(user);
