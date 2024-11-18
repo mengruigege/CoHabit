@@ -418,12 +418,31 @@ _Method Summary_
 | public void	       | updatePreferences(User user) | Updates the user’s preferences                                      |
 
 
-\\More methods to be addes
-
 _Testing_
 Client.java is tested by unit tests included in the class TestClient.java.
 
-\\ To be added
+| **Modifier**    | **Method Signature**                                                 | **Description**                                                                                  |
+|------------------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `synchronized`   | `boolean login(String username, String password)`                   | Validates user login credentials against the database.                                           |
+| `synchronized`   | `boolean register(User user)`                                       | Registers a new user and adds them to the database if not already present.                      |
+| `synchronized`   | `boolean sendMessage(User sender, User receiver, String message)`   | Sends a message from the sender to the receiver and records it in the database.                |
+| `synchronized`   | `String loadMessages(User user, User receiver)`                     | Loads all messages exchanged between the given user and receiver.                               |
+| `synchronized`   | `boolean sendFriendRequest(User user, User potentialFriend)`        | Sends a friend request from the user to the potential friend.                                   |
+| `synchronized`   | `ArrayList<User> viewFriendRequests(User user)`                     | Retrieves a list of incoming friend requests for the user.                                      |
+| `synchronized`   | `boolean declineFriendRequest(User user, User declinedUser)`        | Declines a friend request from the specified user.                                              |
+| `synchronized`   | `boolean addFriend(User user, User friend)`                         | Adds the specified user to the friend list after accepting a friend request.                   |
+| `synchronized`   | `boolean removeFriend(User user, User removedFriend)`              | Removes the specified user from the user's friend list.                                         |
+| `synchronized`   | `boolean blockUser(User user, User blockedUser)`                    | Blocks the specified user, preventing interactions with the current user.                       |
+| `synchronized`   | `boolean removeBlockedUser(User user, User blockedUser)`            | Unblocks a previously blocked user.                                                            |
+| `synchronized`   | `ArrayList<User> viewBlockedUsers(User user)`                       | Retrieves a list of all users blocked by the current user.                                      |
+| `synchronized`   | `ArrayList<User> viewFriendsList(User user)`                        | Retrieves the friend list of the current user.                                                  |
+| `synchronized`   | `String viewProfile(String username)`                               | Returns the profile information of the specified user.                                          |
+| `synchronized`   | `String partialMatch(User user)`                                    | Finds and returns partial matches based on the user's preferences.                              |
+| `synchronized`   | `String exactMatch(User user)`                                      | Finds and returns exact matches based on the user's preferences.                                |
+| `synchronized`   | `String searchByParameter(String parameter, String value)`         | Searches for users based on a specific parameter and value.                                     |
+| `synchronized`   | `void setPreferences(User user, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours)` | Updates the preferences of the specified user.                                                  |
+| `public`         | `void start()`                                                     | Starts the server socket to listen for client connections and initializes request handling.     |
+| `public`         | `static void main(String[] args)`                                   | Entry point for the server application, initializing the server and its resources.             |
 
 ---
 **Server.java**
