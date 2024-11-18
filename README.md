@@ -391,36 +391,6 @@ _Constructor Summary_
 
 _Method Summary_
 
-| Modifier and Type          | Method Name               | Description                                                            |
-|----------------------------|---------------------------|------------------------------------------------------------------------|
-| public boolean             | connect(String serverAddress, int port) | To connect the client to the server.                     |
-| public boolean             | isConnected               | Checks if the client is currently connected to the server.             |
-| public void                | disconnect                | To disconnect the client from the server.                              |
-| public boolean             | login(String username, String password) | To allow users to login to their CoHabit account.        |
-| public boolean             | register(User user)       | To allow users to register or sign up for the app.                     |
-| public boolean             | sendMessage(String receiver, String message) | To send messages to other users.                    |
-| public String              | fetchMessages(String user, String receiver) | Retrieves the chat history between the users.        |
-| public boolean             | sendFriendRequest(String user, String potentialFriend) | To send friend requests to other users.   |
-| public void                | viewFriendRequests(String user) | To view all friend requests that a user has.                     |
-| public boolean             | acceptFriendRequest       | To accept a friend request sent by another user.                       |
-| public boolean             | declineFriendRequest      | To decline a friend request sent by another user.                      |
-| public boolean             | addFriend (String user, String friend) | To add another user as a friend.                          |
-| public boolean             | removeFriend (String user, String friend) | To remove another user from the friends list.          |
-| public boolean             | blockUser(String user, String blockedUser) | To block a user.                                      |
-| public boolean	       | unblockUser(String username, String blockedUser) | Unblocks the specified user.                    |
-| public void                | viewProfile               | To view a user’s profile.                                              |
-| public void	       | viewBlockedUsers(String username) | Displays a list of blocked users and allows interaction to unblock them. | 
-| public boolean             | updateProfile(User user)  | Updates the user’s profile information on the server.                  |
-| public void	       | viewFriendsList(String username) | Displays the current user’s friend list.                        |
-| public void	       | searchByParameter(String parameter, String value) | Searches for users by a specific parameter     |
-| public void	       | exactMatch(User user)     | Finds exact matches for the current user’s preferences.                |
-| public void	       | partialMatch(User user)	  | Finds partial matches for the current user’s preferences.              |
-| public void	       | updatePreferences(User user) | Updates the user’s preferences                                      |
-
-
-_Testing_
-Client.java is tested by unit tests included in the class TestClient.java.
-
 | **Modifier**    | **Method Signature**                                                 | **Description**                                                                                  |
 |------------------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | `synchronized`   | `boolean login(String username, String password)`                   | Validates user login credentials against the database.                                           |
@@ -443,6 +413,12 @@ Client.java is tested by unit tests included in the class TestClient.java.
 | `synchronized`   | `void setPreferences(User user, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours)` | Updates the preferences of the specified user.                                                  |
 | `public`         | `void start()`                                                     | Starts the server socket to listen for client connections and initializes request handling.     |
 | `public`         | `static void main(String[] args)`                                   | Entry point for the server application, initializing the server and its resources.             |
+
+
+_Testing_
+
+Client.java is tested by unit tests included in the class TestClient.java.
+
 
 ---
 **Server.java**
