@@ -257,6 +257,9 @@ public class Server {
                       PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                     while (true) {
                         String line = reader.readLine();
+                        if (line == null) {
+                            line = "";
+                        }
                         System.out.println("line = " + line);
                         // this is the main part that help to decide what to do with information of line
                         //"login, username, password,
