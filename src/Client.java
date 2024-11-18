@@ -118,7 +118,7 @@ public class Client implements ClientService {
                             phoneNumber = scanner.nextLine();
                             boolean notInt = false;
                             try {
-                                int number = Integer.parseInt(phoneNumber);
+                                long number = Long.parseLong(phoneNumber);
                             } catch (Exception e) {
                                 notInt = true;
                             }
