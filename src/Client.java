@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Client implements ClientService {
 
-    private User currentUser;
+    private static User currentUser;
     private boolean isConnected;
     private Socket socket;
     private static PrintWriter out;
@@ -18,8 +18,7 @@ public class Client implements ClientService {
 
     public static void main(String[] args) throws InvalidInput, UsernameTakenException, IOException {
         Scanner scanner = new Scanner(System.in);
-        User user = null;
-        Client client = new Client(user);
+        Client client = new Client(currentUser);
         String username = "";
         String password = "";
         String email = "";
@@ -231,6 +230,7 @@ public class Client implements ClientService {
                             System.out.println("How tidy are you? (1-10)");
                             try {
                                 tidy = scanner.nextInt();
+                                scanner.nextLine();
                                 if (tidy <= 10 && tidy >= 1) {
                                     break;
                                 } else {
@@ -245,6 +245,7 @@ public class Client implements ClientService {
                             System.out.println("How many hours per day on average do you spend in your room?");
                             try {
                                 roomHours = scanner.nextInt();
+                                scanner.nextLine();
                                 if (roomHours >= 1 && roomHours <= 24) {
                                     break;
                                 } else {
@@ -254,9 +255,9 @@ public class Client implements ClientService {
                                 System.out.println("Invalid Input");
                             }
                         }
-                        user = new User(username, password, email, phoneNumber, userDescription, university);
-                        user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
-                        client.register(user);
+                        currentUser = new User(username, password, email, phoneNumber, userDescription, university);
+                        currentUser.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
+                        client.register(currentUser);
                         loggedIn = true;
                         break;
                 }
@@ -276,7 +277,6 @@ public class Client implements ClientService {
             System.out.println("10. Search roommates");
             System.out.println("11. Disconnect and Exit");
 
-            scanner.nextLine();
             String choice2 = scanner.nextLine();
 
             switch (choice2) {
@@ -332,7 +332,7 @@ public class Client implements ClientService {
                     String selection = scanner.nextLine();
 
 
-                    client.updateProfile(user);
+                    client.updateProfile(currentUser);
                 case "10":
                     System.out.println("\nHow would you like to search?");
                     System.out.println("1. By Parameter");
@@ -378,9 +378,9 @@ public class Client implements ClientService {
                             }
 
                         case "2":
-                            client.exactMatch(user);
+                            client.exactMatch(currentUser);
                         case "3":
-                            client.partialMatch(user);
+                            client.partialMatch(currentUser);
                     }
 
                 case "11":
