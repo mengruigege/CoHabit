@@ -47,26 +47,26 @@ public class Client implements ClientService {
                 switch (choice1) {
                     case "1":
                         while (true) {
-                            System.out.println("Enter your username:");
-                            username = scanner.nextLine();
+                            while (true) {
+                                System.out.println("Enter your username:");
+                                username = scanner.nextLine();
 
-                            if (username == null) {
-                                System.out.println("Username is invalid");
-                            } else {
-                                break;
+                                if (username == null) {
+                                    System.out.println("Username is invalid");
+                                } else {
+                                    break;
+                                }
                             }
-                        }
-                        while (true) {
-                            System.out.println("Enter your password:");
-                            password = scanner.nextLine();
+                            while (true) {
+                                System.out.println("Enter your password:");
+                                password = scanner.nextLine();
 
-                            if (password == null) {
-                                System.out.println("Password is invalid");
-                            } else {
-                                break;
+                                if (password == null) {
+                                    System.out.println("Password is invalid");
+                                } else {
+                                    break;
+                                }
                             }
-                        }
-                        while (true) {
                             client.login(username, password);
                             String message = in.readLine();
                             if (message.equals("Successful Login")) {
