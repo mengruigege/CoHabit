@@ -16,7 +16,7 @@ public class Server {
 
 
     // method to check if the login was successful or not
-    public static String login(String username, String password) {
+    public String login(String username, String password) {
         //might have to make getAllUsers in database static
         database.loadUsersFromFile();
         User user;
@@ -37,7 +37,7 @@ public class Server {
         return null;
     }
     // method used to add the new register user to the database and return true if successful
-    public static boolean register(User user) {
+    public boolean register(User user) {
         database.loadUsersFromFile();
         return database.addUser(user);
     }
@@ -53,7 +53,7 @@ public class Server {
         System.out.println("RETURNING TRUE");
         return true;
     }
-    public static String loadMessages(User user, User reciever) {
+    public String loadMessages(User user, User reciever) {
         if (user == null || reciever == null) {
             return null;
         }
@@ -67,19 +67,18 @@ public class Server {
     }
 
 
-    public static boolean sendFriendRequest(User user, User potentialFriend) {
+    public boolean sendFriendRequest(User user, User potentialFriend) {
         database.loadUsersFromFile();
         if (user == null || potentialFriend == null) {
             return false;
         }
-        database.loadFriendRequestsFromFile();
         // do I need to check if potentialFriend blocked the user
         database.addFriendRequest(user, potentialFriend); //do I need to switch the order
         // do I need to saveFriendRequests to File
         return true;
     }
 
-    public static ArrayList<String> viewFriendRequests(User user) {
+    public ArrayList<String> viewFriendRequests(User user) {
         database.loadUsersFromFile();
         if (user == null || database.loadFriendRequestsFromFile() == null) {
             return null;
@@ -92,7 +91,7 @@ public class Server {
         return friendRequestNames;
     }
 
-    public static boolean declineFriendRequest(User user, User declinedUser) {
+    public  boolean declineFriendRequest(User user, User declinedUser) {
         if (user != null && declinedUser != null) {
             database.loadUsersFromFile();
             database.loadFriendRequestsFromFile();
@@ -104,7 +103,7 @@ public class Server {
         }
     }
     //addFriend is what happens when you accept a friend request
-    public static boolean addFriend(User user, User friend) {
+    public  boolean addFriend(User user, User friend) {
         if (user != null && friend != null) {
             database.loadUsersFromFile();
 
@@ -120,7 +119,7 @@ public class Server {
         }
         return false;
     }
-    public static boolean removeFriend(User user, User removedFriend) {
+    public  boolean removeFriend(User user, User removedFriend) {
         if (user != null && removedFriend != null) {
             database.loadUsersFromFile();
             database.loadFriendsFromFile();
@@ -132,7 +131,7 @@ public class Server {
         }
         return false;
     }
-    public static boolean blockUser(User user, User blockedUser) {
+    public  boolean blockUser(User user, User blockedUser) {
         if (user != null || blockedUser != null) {
             database.loadUsersFromFile();
             database.loadBlockedFromFile();
@@ -143,7 +142,7 @@ public class Server {
         }
         return false;
     }
-    public static boolean removeBlockedUser(User user, User blockedUser) {
+    public  boolean removeBlockedUser(User user, User blockedUser) {
         if (user != null || blockedUser != null) {
             database.loadBlockedFromFile();
             database.loadBlockedFromFile();
@@ -154,7 +153,7 @@ public class Server {
         }
         return false;
     }
-    public static ArrayList<User> viewBlockedUsers(User user) {
+    public  ArrayList<User> viewBlockedUsers(User user) {
         if (user != null) {
             database.loadBlockedFromFile();
             database.loadBlockedFromFile();
@@ -162,7 +161,7 @@ public class Server {
         }
         return null;
     }
-    public static ArrayList<User> viewFriendsList(User user) {
+    public  ArrayList<User> viewFriendsList(User user) {
         if (user != null) {
             database.loadFriendsFromFile();
             database.loadFriendsFromFile();
@@ -172,11 +171,7 @@ public class Server {
         }
     }
 
-
-
-
-
-    public static String viewProfile(String username) {
+    public  String viewProfile(String username) {
         database.loadUsersFromFile();
         User user = database.findUserByName(username);
         if (user != null) {
@@ -185,7 +180,7 @@ public class Server {
             return null;
         }
     }
-    public static String partialMatch(User user) {
+    public  String partialMatch(User user) {
         if (user == null) {
             return "";
         }
@@ -203,7 +198,7 @@ public class Server {
         return result;
 
     }
-    public static String exactMatch(User user) {
+    public  String exactMatch(User user) {
         if (user == null) {
             return "";
         }
@@ -221,7 +216,7 @@ public class Server {
         }
         return result;
     }
-    public static String searchByParameter(String parameter, String value) {
+    public  String searchByParameter(String parameter, String value) {
         if (parameter == null || parameter.isEmpty() || value == null || value.isEmpty()) {
             return "";
         }
@@ -262,7 +257,7 @@ public class Server {
     public static void main(String[] args) {
 
         database.loadUsersFromFile();
-        User currentUser;
+        Server server = new Server();
         // some way to read all data that already exists in the database
         //open the ServerSocket and use the specific port
         try ( ServerSocket serverSocket = new ServerSocket(1102)) {
@@ -281,7 +276,7 @@ public class Server {
                             String username = parts[1];
                             String password = parts[2];
 
-                            String userInformation = Server.login(username, password);
+                            String userInformation = server.login(username, password);
                             if (userInformation != null) { // not sure about this
                                 writer.println("Successful login");
                                 writer.println(userInformation);
@@ -304,7 +299,7 @@ public class Server {
                                 } catch (Exception e) {
                                     writer.println(e.getMessage()); //not sure what to do here
                                 }
-                                if (Server.register(user)) {
+                                if (server.register(user)) {
                                     writer.println("successful registration");
                                 } else {
                                     writer.println("registration failed");
@@ -323,7 +318,7 @@ public class Server {
                             User receiver = database.findUserByName(parts[2]);
 
                             String message = parts[3];
-                            if (Server.sendMessage(sender, receiver, message)) {
+                            if (server.sendMessage(sender, receiver, message)) {
                                 System.out.println("SUCCESS");
                                 writer.println("Successfully sent message"); //not sure what the output is here
                             }
@@ -338,7 +333,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User potentialfriend = database.findUserByName(parts[2]);
-                            if (Server.sendFriendRequest(user,potentialfriend)) {
+                            if (server.sendFriendRequest(user,potentialfriend)) {
                                 writer.println("Successfully sent friend request");
                             } else {
                                 //System.out.println("failed");
@@ -353,11 +348,11 @@ public class Server {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
-                            //System.out.println(Server.viewFriendRequests(user));
-                            if (Server.viewFriendRequests(user) == null) {
+                            //System.out.println(server.viewFriendRequests(user));
+                            if (server.viewFriendRequests(user) == null) {
                                 writer.println("Friend requests are empty");
                             } else {
-                                writer.println(String.join(",", viewFriendRequests(user))); // do not use toSting();
+                                writer.println(String.join(",", server.viewFriendRequests(user))); // do not use toSting();
                             }
                         }
                         // format should be declineFriendRequest,user,declinedUser
@@ -366,7 +361,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User declinedUser = database.findUserByName(parts[2]);
-                            if (Server.declineFriendRequest(user, declinedUser)) {
+                            if (server.declineFriendRequest(user, declinedUser)) {
                                 writer.println("You declined friend request declined");
                             } else {
                                 writer.println("Could not decline friend request sucessfully");
@@ -379,7 +374,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User friend = database.findUserByName(parts[2]);
-                            if (Server.addFriend(user,friend)) {
+                            if (server.addFriend(user,friend)) {
                                 System.out.println(user.getFriendList());
                                 for (User friend1 : user.getFriendList()) {
                                     System.out.println(friend1.getName());
@@ -397,7 +392,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User friend = database.findUserByName(parts[2]);
-                            if (Server.removeFriend(user,friend)) {
+                            if (server.removeFriend(user,friend)) {
                                 writer.println("Successfully removed friend");
                             }
                             else {
@@ -409,10 +404,10 @@ public class Server {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
-                            if (Server.viewFriendsList(user) == null) {
+                            if (server.viewFriendsList(user) == null) {
                                 writer.println("Friend list is empty");
                             } else {
-                                writer.println(viewFriendsList(user));
+                                writer.println(server.viewFriendsList(user));
                             }
                         }
                         //  should be in format loadMessages,user,reciever
@@ -420,10 +415,10 @@ public class Server {
                             String[] parts = line.split(",");
                             User user = database.findUserByName(parts[1]);
                             User reciever = database.findUserByName(parts[2]);
-                            if (Server.loadMessages(user, reciever) == null) {
+                            if (server.loadMessages(user, reciever) == null) {
                                 writer.println("Message list is empty");
                             } else {
-                                writer.println(loadMessages(user, reciever));
+                                writer.println(server.loadMessages(user, reciever));
                             }
 
                         }
@@ -433,7 +428,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User blockedUser = database.findUserByName(parts[2]);
-                            if (Server.blockUser(user,blockedUser)) {
+                            if (server.blockUser(user,blockedUser)) {
                                 writer.println("Successfully blocked user");
                             }
                             else {
@@ -446,7 +441,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User blockedUser = database.findUserByName(parts[2]);
-                            if (Server.removeBlockedUser(user,blockedUser)) {
+                            if (server.removeBlockedUser(user,blockedUser)) {
                                 writer.println("Successfully removed from blocked list");
                             } else {
                                 writer.println("Something went wrong");
@@ -454,23 +449,23 @@ public class Server {
 
                         }
                         // format should be viewBlockedUsers,user
-                        if (line.length() > 16 && line.substring(0,16).contains("viewBlockedUsers")) {
+                        if (line.length() > 16 && line.substring(0, 16).contains("viewBlockedUsers")) {
                             String[] parts = line.split(",");
                             User user = database.findUserByName(parts[1]);
-                            if (Server.viewBlockedUsers(user) == null) {
+                            if (server.viewBlockedUsers(user) == null) {
                                 writer.println("Blocked list is empty");
                             } else {
-                                writer.println(viewBlockedUsers(user));
+                                writer.println(server.viewBlockedUsers(user));
                             }
                         }
 
 
 
                         // format is viewProfile,username
-                        if (line.length() > 11 && line.substring(0,11).contains("viewProfile")) {
+                        if (line.length() > 11 && line.substring(0, 11).contains("viewProfile")) {
                             String[] parts = line.split(",");
                             String username = parts[1];
-                            String viewProfile = Server.viewProfile(username);
+                            String viewProfile = server.viewProfile(username);
                             if (viewProfile != null) {
                                 writer.println(viewProfile);
                             } else {
@@ -478,13 +473,13 @@ public class Server {
                             }
                         }
                         // format should be partialMatch,user
-                        if (line.length() > 12 && line.substring(0,12).contains("partialMatch")) {
+                        if (line.length() > 12 && line.substring(0, 12).contains("partialMatch")) {
                             String[] parts = line.split(",");
                             User user = database.findUserByName(parts[1]);
-                            if (Server.partialMatch(user) == null) {
+                            if (server.partialMatch(user) == null) {
                                 writer.println("No partial matches found");
                             } else {
-                                writer.println(partialMatch(user));
+                                writer.println(server.partialMatch(user));
                             }
 
                         }
@@ -492,21 +487,21 @@ public class Server {
                         if (line.length() > 10 && line.substring(0,10).contains("exactMatch")) {
                             String[] parts = line.split(",");
                             User user = database.findUserByName(parts[1]);
-                            if (Server.exactMatch(user) == null) {
+                            if (server.exactMatch(user) == null) {
                                 writer.println("No exact matches found");
                             } else {
-                                writer.println(exactMatch(user));
+                                writer.println(server.exactMatch(user));
                             }
                         }
                         // format should be searchByParameter,parameter,value
-                        if (line.length() > 17 && line.substring(0,17).contains("searchByParameter")) {
+                        if (line.length() > 17 && line.substring(0, 17).contains("searchByParameter")) {
                             String[] parts = line.split(",");
                             String parameter = parts[1];
                             String value = parts[2];
-                            if (Server.searchByParameter(parameter, value) == null) {
+                            if (server.searchByParameter(parameter, value) == null) {
                                 writer.println("No matches found");
                             } else {
-                                writer.println(searchByParameter(parameter, value));
+                                writer.println(server.searchByParameter(parameter, value));
                             }
                         }
 
