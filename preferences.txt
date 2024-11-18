@@ -1,0 +1,10 @@
+Bob,10:00 PM,false,false,true,7,8
+Jim,10:00 PM,false,false,true,7,8
+Bob,10:00 PM,false,false,false,3,5
+Jim,1:00 AM,true,true,true,9,10
+Alice,12:00 PM,true,false,false,2,3
+Bob,10:00 PM,false,false,true,7,8
+Jim,1:00 AM,true,true,true,9,10
+Bob,11:00 PM,true,false,true,7,8
+Jim,11:00 PM,true,true,true,5,8
+Alice,11:00 PM,true,false,true,6,8

@@ -171,8 +171,7 @@ public class Server {
         }
 
         database.loadUsersFromFile();
-        UserSearch userSearch = new UserSearch();
-        ArrayList<User> partialmatches = userSearch.partialMatch(user);
+        ArrayList<User> partialmatches = database.partialMatch(user);
         if (partialmatches.isEmpty()) {
             return "";
         }
@@ -190,8 +189,7 @@ public class Server {
             return "";
         }
         database.loadUsersFromFile();
-        UserSearch userSearch = new UserSearch();
-        ArrayList<User> exactmatches = userSearch.exactMatch(user);
+        ArrayList<User> exactmatches = database.exactMatch(user);
 
         if (exactmatches == null) {
             return "";
@@ -210,8 +208,7 @@ public class Server {
             return "";
         }
         database.loadUsersFromFile();
-        UserSearch userSearch = new UserSearch();
-        ArrayList<User> matches = userSearch.searchByParameter(parameter, value);
+        ArrayList<User> matches = database.searchByParameter(parameter, value);
         if (matches == null) {
             return "";
         }
@@ -287,7 +284,7 @@ public class Server {
                         String username = parts[1];
                         String password = parts[2];
                         if (login(username, password)) { // not sure about this
-                            writer.println("Sucessful login");
+                            writer.println("Successful login");
                             break;
                         } else writer.println("Wrong username or password");
                     }

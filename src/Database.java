@@ -13,6 +13,7 @@ import java.io.*;
 public class Database implements DatabaseFramework {
     private static ArrayList<User> allUsers = new ArrayList<>();
     private static final String USERS_FILE = "users.txt";
+    private static final String PREFERENCES_FILE = "preferences.txt";
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
     private static final String BLOCKED_FILE = "blocked.txt";
@@ -129,6 +130,94 @@ public class Database implements DatabaseFramework {
             return true;
         }
         return false;
+    }
+
+    public synchronized boolean setPreferences(String username, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
+        if (username == null || username.isEmpty()) {
+            System.out.println("Invalid username.");
+            return false;
+        }
+
+        // Find the user
+        User user = findUserByName(username);
+        if (user == null) {
+            System.out.println("User not found: " + username);
+            return false;
+        }
+
+        // Store preferences directly in a simple, clear format
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("preferences.txt", true))) {
+            writer.write(username + "," + bedtime + "," + alcohol + "," + smoke + "," + guests + "," + tidy + "," + roomHours);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public synchronized void updatePreferences(String username, ArrayList<String> preferences) {
+        File tempFile = new File("temp_preferences.txt");
+        File originalFile = new File(PREFERENCES_FILE);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(PREFERENCES_FILE));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+
+            String line;
+            boolean updated = false;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", 2);
+                if (parts.length > 0 && parts[0].equals(username)) {
+                    // Replace the existing preferences for the user
+                    writer.write(username + "," + String.join(",", preferences));
+                    writer.newLine();
+                    updated = true;
+                } else {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+
+            // If user not found, add new preferences
+            if (!updated) {
+                writer.write(username + "," + String.join(",", preferences));
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Replace the original file with the updated file
+        if (!originalFile.delete() || !tempFile.renameTo(originalFile)) {
+            System.out.println("Failed to update preferences file.");
+        }
+    }
+
+    public synchronized ArrayList<String> loadPreferences(String username) {
+        ArrayList<String> preferences = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(PREFERENCES_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", 2);
+                if (parts.length == 2 && parts[0].equals(username)) {
+                    String[] prefs = parts[1].split(",");
+                    for (String pref : prefs) {
+                        preferences.add(pref);
+                    }
+                    return preferences;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("No preferences found for user: " + username);
+        return preferences;
     }
 
     public synchronized boolean usernameExists(String username) {
@@ -426,7 +515,82 @@ public class Database implements DatabaseFramework {
         return messages;
     }
 
-    public ArrayList<User> searchByParameter(String parameter, String value) {
-        return null;
+    public synchronized ArrayList<User> searchByParameter(String parameter, String value) {
+        loadUsersFromFile();
+        ArrayList<User> matchingUsers = new ArrayList<>();
+
+        // Null and edge-case handling
+        if (parameter == null || value == null || value.isEmpty()) {
+            System.out.println("Invalid parameter or value for search.");
+            return matchingUsers; // Return empty list
+        }
+
+        for (User user : allUsers) {
+            switch (parameter.toLowerCase()) {
+                case "name":
+                    if (value.equals(user.getName())) {
+                        matchingUsers.add(user);
+                    }
+                    break;
+                case "email":
+                    if (value.equals(user.getEmail())) {
+                        matchingUsers.add(user);
+                    }
+                    break;
+                case "phone":
+                    if (value.equals(user.getPhoneNumber())) {
+                        matchingUsers.add(user);
+                    }
+                    break;
+                case "university":
+                    if (value.equals(user.getUniversity())) {
+                        matchingUsers.add(user);
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid parameter type for search: " + parameter);
+                    break;
+            }
+        }
+
+        return matchingUsers;
+    }
+
+    public synchronized ArrayList<User> exactMatch(User mainUser) {
+        if (mainUser == null) {
+            System.out.println("Main user cannot be null.");
+            return new ArrayList<>();
+        }
+
+        loadUsersFromFile();
+        ArrayList<User> results = new ArrayList<>();
+
+        for (User user : allUsers) {
+            if (mainUser.perfectMatch(user)) {
+                results.add(user);
+            }
+        }
+
+        return results;
+    }
+
+    public synchronized ArrayList<User> partialMatch(User mainUser) {
+        if (mainUser == null) {
+            System.out.println("Main user cannot be null.");
+            return new ArrayList<>();
+        }
+
+        loadUsersFromFile();
+        ArrayList<User> results = new ArrayList<>();
+
+        // Iterate by decreasing match scores for prioritized results
+        for (int score = 5; score > 0; score--) {
+            for (User user : allUsers) {
+                if (!mainUser.getName().equals(user.getName()) && mainUser.partialMatch(user) == score) {
+                    results.add(user);
+                }
+            }
+        }
+        return results;
     }
 }

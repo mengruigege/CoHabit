@@ -66,9 +66,16 @@ public class Client implements ClientService {
                                 break;
                             }
                         }
-                        client.login(username, password);
-                        loggedIn = true;
-                        break;
+                        while (true) {
+                            client.login(username, password);
+                            String message = in.readLine();
+                            if (message.equals("Successful Login")) {
+                                loggedIn = true;
+                                break;
+                            } else {
+                                System.out.println("Invalid username or password");
+                            }
+                        }
                     case "2":
                         while (true) {
                             System.out.println("Create a username:");
