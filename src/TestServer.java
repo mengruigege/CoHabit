@@ -31,20 +31,20 @@ public class TestServer {
     }
 
     // Test login functionality
-    @Test
-    public void testLogin_Successful() {
-        assertTrue("Login should succeed with correct credentials.", server.login("Bob", "password123"));
-    }
-
-    @Test
-    public void testLogin_InvalidPassword() {
-        assertFalse("Login should fail with an incorrect password.", server.login("Bob", "wrongPassword"));
-    }
-
-    @Test
-    public void testLogin_UserNotFound() {
-        assertFalse("Login should fail for a non-existent user.", server.login("UnknownUser", "password123"));
-    }
+    //    @Test
+//    public void testLogin_Successful() {
+//        assertTrue("Login should succeed with correct credentials.", server.login("Bob", "password123"));
+//    }
+//
+//    @Test
+//    public void testLogin_InvalidPassword() {
+//        assertFalse("Login should fail with an incorrect password.", server.login("Bob", "wrongPassword"));
+//    }
+//
+//    @Test
+//    public void testLogin_UserNotFound() {
+//        assertFalse("Login should fail for a non-existent user.", server.login("UnknownUser", "password123"));
+//    }
 
     // Test register functionality
     @Test

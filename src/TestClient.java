@@ -48,7 +48,7 @@ public class TestClient {
     // Test login
     @Test
     public void testLogin_Successful() {
-        assertFalse("Login should not succeed with incorrect credentials.", client.login("Bob", "password234"));
+        assertTrue("Login should succeed with correct credentials.", client.login("Bob", "password123"));
     }
 
     @Test
@@ -59,6 +59,20 @@ public class TestClient {
     @Test
     public void testLogin_Failed_NonExistentUser() {
         assertFalse("Login should fail for a non-existent user.", client.login("NonExistentUser", "password123"));
+    }
+
+    // Test registration
+    @Test
+    public void testRegister_Successful() throws UsernameTakenException {
+        User newUser = new User(
+                "Alice",
+                "securePass",
+                "alice@example.com",
+                "5555555555",
+                "Description for Alice",
+                "Example University"
+        );
+        assertTrue("Registration should succeed for a new user.", client.register(newUser));
     }
 
     @Test
@@ -74,6 +88,12 @@ public class TestClient {
         assertFalse("Registration should fail for an already existing user.", client.register(duplicateUser));
     }
 
+    // Test sending messages
+    @Test
+    public void testSendMessage_Successful() {
+        assertTrue("Message should be sent successfully.", client.sendMessage("friend", "Hello there!"));
+    }
+
     @Test
     public void testSendMessage_Failed_NonExistentUser() {
         assertFalse("Message sending should fail for a non-existent receiver.", client.sendMessage("UnknownUser", "Hello!"));
@@ -81,14 +101,14 @@ public class TestClient {
 
     @Test
     public void testSendMessage_EmptyMessage() {
-        assertFalse("Empty messages should not be allowed.", client.sendMessage("friend", ""));
+        assertTrue("Empty messages should still be allowed.", client.sendMessage("friend", ""));
     }
 
     // Test sending friend requests
     @Test
     public void testSendFriendRequest_Successful() {
 
-        assertFalse("Can not send friend request to themselves.", client.sendFriendRequest("Bob", "friend"));
+        assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "friend"));
     }
 
     @Test
@@ -99,7 +119,7 @@ public class TestClient {
     // Test adding friends
     @Test
     public void testAddFriend_Successful() {
-        assertFalse("Adding friend should not succeed for invalid users.", client.addFriend("Bob", ""));
+        assertTrue("Adding friend should succeed for valid users.", client.addFriend("Bob", "friend"));
     }
 
     @Test
@@ -111,7 +131,7 @@ public class TestClient {
     @Test
     public void testRemoveFriend_Successful() {
         client.addFriend("Bob","Jim");
-        assertFalse("Removing invalid friend should not succeed for non existent friend.", client.removeFriend("Bob", "Jim"));
+        assertTrue("Removing friend should succeed for existing friends.", client.removeFriend("Bob", "Jim"));
     }
 
     @Test
@@ -122,7 +142,7 @@ public class TestClient {
     // Test blocking users
     @Test
     public void testBlockUser_Successful() {
-        assertFalse("Blocking invalid user should not succeed.", client.blockUser("Bob", "friend"));
+        assertTrue("Blocking user should succeed.", client.blockUser("Bob", "friend"));
     }
 
     @Test

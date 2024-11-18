@@ -4,28 +4,44 @@ import java.util.Scanner;
 
 public class Client implements ClientService {
 
-    private User currentUser;
+    private String username = "";
+    private String password = "";
+    private String email = "";
+    private String phoneNumber = "";
+    private String userDescription = "";
+    private String university = "";
+
     private boolean isConnected;
     private Socket socket;
-    private static PrintWriter out;
-    private static BufferedReader in;
+    private PrintWriter out;
+    private BufferedReader in;
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
 
     public Client(User user) {
-        this.currentUser = user;
+        if (user != null && user.getName() != null && user.getPassword() != null
+                && user.getEmail() != null && user.getPhoneNumber() != null &&
+                user.getDescription() != null && user.getUniversity() != null) {
+            this.username = user.getName();
+            this.password = user.getPassword();
+            this.email = user.getEmail();
+            this.phoneNumber = user.getPhoneNumber();
+            this.userDescription = user.getDescription();
+            this.university = user.getUniversity();
+        } else {
+            this.username = null;
+            this.password = null;
+            this.email = null;
+            this.phoneNumber = null;
+            this.userDescription = null;
+            this.university = null;
+        }
     }
 
     public static void main(String[] args) throws InvalidInput, UsernameTakenException, IOException {
         Scanner scanner = new Scanner(System.in);
         User user = null;
         Client client = new Client(user);
-        String username = "";
-        String password = "";
-        String email = "";
-        String phoneNumber = "";
-        String userDescription = "";
-        String university = "";
 
         if (!client.connect(client.serverAddress, client.serverPort)) {
             System.out.println("Failed to connect to the server. Exiting.");
@@ -48,9 +64,9 @@ public class Client implements ClientService {
                     while (true) {
                         while (true) {
                             System.out.println("Enter your username:");
-                            username = scanner.nextLine();
+                            client.setUsername(scanner.nextLine());
 
-                            if (username == null) {
+                            if (client.getUsername() == null) {
                                 System.out.println("Username is invalid");
                             } else {
                                 break;
@@ -58,18 +74,17 @@ public class Client implements ClientService {
                         }
                         while (true) {
                             System.out.println("Enter your password:");
-                            password = scanner.nextLine();
+                            client.setPassword(scanner.nextLine());
 
-                            if (password == null) {
+                            if (client.getPassword() == null) {
                                 System.out.println("Password is invalid");
                             } else {
                                 break;
                             }
                         }
-                        client.login(username, password);
-                        String message = in.readLine();
-                        if (message.equals("Successful Login")) {
+                        if (client.login(client.getUsername(), client.getPassword())) {
                             loggedIn = true;
+                            client.setUserInformation();
                             break;
                         } else {
                             System.out.println("Invalid username or password");
@@ -79,11 +94,11 @@ public class Client implements ClientService {
                 case "2":
                     while (true) {
                         System.out.println("Create a username:");
-                        username = scanner.nextLine();
+                        client.setUsername(scanner.nextLine());
 
-                        if (username == null) {
+                        if (client.getUsername() == null) {
                             System.out.println("Username is invalid");
-                        } else if (username.contains("###")) {
+                        } else if (client.getUsername().contains("###")) {
                             System.out.println("'###' is not allowed");
                         } else {
                             break;
@@ -91,11 +106,11 @@ public class Client implements ClientService {
                     }
                     while (true) {
                         System.out.println("Create a password: ");
-                        password = scanner.nextLine();
+                        client.setPassword(scanner.nextLine());
 
-                        if (password == null) {
+                        if (client.getPassword() == null) {
                             System.out.println("Password is invalid");
-                        } else if (password.contains("###")) {
+                        } else if (client.getPassword().contains("###")) {
                             System.out.println("'###' is not allowed");
                         } else {
                             break;
@@ -103,11 +118,11 @@ public class Client implements ClientService {
                     }
                     while (true) {
                         System.out.println("Enter your email:");
-                        email = scanner.nextLine();
+                        client.setEmail(scanner.nextLine());
 
-                        if (email == null || !email.contains("@") || !email.contains(".")) {
-                            System.out.println("email is invalid");
-                        } else if (email.contains("###")) {
+                        if (client.getEmail() == null || !client.getEmail().contains("@") || !client.getEmail().contains(".")) {
+                            System.out.println("client.getEmail() is invalid");
+                        } else if (client.getEmail().contains("###")) {
                             System.out.println("'###' is not allowed");
                         } else {
                             break;
@@ -115,19 +130,19 @@ public class Client implements ClientService {
                     }
                     while (true) {
                         System.out.println("Enter your phone number: ");
-                        phoneNumber = scanner.nextLine();
+                        client.setPhone(scanner.nextLine());
                         boolean notInt = false;
                         try {
-                            long number = Long.parseLong(phoneNumber);
+                            long number = Long.parseLong(client.getPhone());
                         } catch (Exception e) {
                             notInt = true;
                         }
 
-                        if (phoneNumber == null) {
+                        if (client.getPhone() == null) {
                             System.out.println("Phone number is invalid");
-                        } else if (phoneNumber.contains("###")) {
+                        } else if (client.getPhone().contains("###")) {
                             System.out.println("'###' is not allowed");
-                        } else if (phoneNumber.length() != 10) {
+                        } else if (client.getPhone().length() != 10) {
                             System.out.println("Phone number is invalid");
                         } else if (notInt) {
                             System.out.println("Not a number");
@@ -137,11 +152,11 @@ public class Client implements ClientService {
                     }
                     while (true) {
                         System.out.println("Create a description:");
-                        userDescription = scanner.nextLine();
+                        client.setUserDescription(scanner.nextLine());
 
-                        if (userDescription == null) {
+                        if (client.getUserDescription() == null) {
                             System.out.println("Description is invalid");
-                        } else if (userDescription.contains("###")) {
+                        } else if (client.getUserDescription().contains("###")) {
                             System.out.println("'###' is not allowed");
                         } else {
                             break;
@@ -149,11 +164,11 @@ public class Client implements ClientService {
                     }
                     while (true) {
                         System.out.println("Create a university: ");
-                        university = scanner.nextLine();
+                        client.setUniversity(scanner.nextLine());
 
-                        if (university == null) {
+                        if (client.getUniversity() == null) {
                             System.out.println("University is invalid");
-                        } else if (password.contains("###")) {
+                        } else if (client.getPassword().contains("###")) {
                             System.out.println("'###' is not allowed");
                         } else {
                             break;
@@ -257,14 +272,14 @@ public class Client implements ClientService {
                             System.out.println("Invalid Input");
                         }
                     }
-                    user = new User(username, password, email, phoneNumber, userDescription, university);
+                    user = new User(client.getUsername(), client.getPassword(), client.getEmail(), client.getPhone(), client.getUserDescription(), client.getUniversity());
                     user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
                     client.register(user);
                     loggedIn = true;
                     break;
             }
         }
-
+        System.out.println(exit);
         while (!exit) {
             System.out.println("\nSelect an option:");
             System.out.println("1. Send Message");
@@ -287,34 +302,34 @@ public class Client implements ClientService {
                     String receiver = scanner.nextLine();
                     System.out.print("Enter message: ");
                     String message = scanner.nextLine();
-                    client.fetchMessages(username, receiver);
+                    client.fetchMessages(client.getUsername(), receiver);
                     client.sendMessage(receiver, message);
                     break;
                 case "2":
-                    client.viewFriendRequests(username);
+                    client.viewFriendRequests(client.getUsername());
                     break;
                 case "3":
                     System.out.print("Enter username to send friend request: ");
                     String friendRequestUsername = scanner.nextLine();
-                    client.sendFriendRequest(username, friendRequestUsername);
+                    client.sendFriendRequest(client.getUsername(), friendRequestUsername);
                     break;
                 case "4":
                     System.out.print("Enter username to add as friend: ");
                     String friendUsername = scanner.nextLine();
-                    client.addFriend(username, friendUsername);
+                    client.addFriend(client.getUsername(), friendUsername);
                     break;
                 case "5":
                     System.out.print("Enter username to remove as friend: ");
                     String removedFriend = scanner.nextLine();
-                    client.removeFriend(username, removedFriend);
+                    client.removeFriend(client.getUsername(), removedFriend);
                     break;
                 case "6":
                     System.out.print("Enter username to block: ");
                     String blockedUser = scanner.nextLine();
-                    client.blockUser(username, blockedUser);
+                    client.blockUser(client.getUsername(), blockedUser);
                     break;
                 case "7":
-                    client.viewBlockedUsers(username);
+                    client.viewBlockedUsers(client.getUsername());
                     break;
                 case "8":
                     System.out.print("Enter a profile to view: ");
@@ -397,6 +412,54 @@ public class Client implements ClientService {
         System.out.println("Client exited.");
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phoneNumber;
+    }
+
+    public String getUniversity() {
+        return university;
+    }
+
+    public String getUserDescription() {
+        return userDescription;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setUniversity(String university) {
+        this.university = university;
+    }
+
+    public void setUserDescription(String userDescription) {
+        this.userDescription = userDescription;
+    }
+
     public boolean connect(String serverAddress, int port) {
         try {
             socket = new Socket(serverAddress, port);
@@ -452,13 +515,25 @@ public class Client implements ClientService {
         }
     }
 
+    public void setUserInformation() throws IOException {
+        String information = in.readLine();
+        String[] tokens = information.split("###");
+        if (tokens.length != 6) {
+            throw new IOException("Error! Invalid User Information");
+        }
+        username = tokens[0];
+        password = tokens[1];
+        email = tokens[2];
+        phoneNumber = tokens[3];
+        university = tokens[4];
+        userDescription = tokens[5];
+    }
+
     public boolean register(User user) throws UsernameTakenException {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
-        this.currentUser = new User(user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getDescription(), user.getUniversity());
-
         out.println("register###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
                 + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
                 user.getBedTime() + "###" + user.getAlcohol() + "###" + user.getSmoke() + "###" + user.getGuests() + "###" +
@@ -480,6 +555,10 @@ public class Client implements ClientService {
         }
     }
 
+    public String getMessage() throws IOException {
+        return in.readLine();
+    }
+
     public boolean updateProfile(User user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -487,7 +566,8 @@ public class Client implements ClientService {
         }
 
         out.println("updateProfile###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
-                + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" + user.getPreferences().replace(",", "###"));
+                + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
+                user.getPreferences().replace(",", "###"));
 
         try {
             String response = in.readLine();
@@ -509,8 +589,8 @@ public class Client implements ClientService {
             System.out.println("Not connected to server.");
             return false;
         }
-
-        out.println("sendMessage###" + currentUser.getName() + "###" + receiver + "###" + message);
+        System.out.println("requesting the server ");
+        out.println("sendMessage###" + username + "###" + receiver + "###" + message);
 
         try {
             String response = in.readLine();
@@ -533,7 +613,7 @@ public class Client implements ClientService {
             return null;
         }
 
-        out.println("loadMessages," + currentUser.getName() + "," + receiver + "," + receiver);
+        out.println("loadMessages," + username + "," + receiver + "," + receiver);
 
         try {
             String response = in.readLine();
