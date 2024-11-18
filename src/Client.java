@@ -483,6 +483,7 @@ public class Client implements ClientService {
             if (socket != null && !socket.isClosed()) {
                 out.close();
                 in.close();
+                socket.close();
                 isConnected = false;
                 System.out.println("Disconnected from the server.");
             }
