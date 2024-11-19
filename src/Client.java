@@ -2,6 +2,13 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+/** 
+ * This document was created for CS 180 PJ 5 Phase 2
+ *
+ * @version 1.0
+ * @author Andrew Tang, Aidan Lefort, Keya Jadhav, Rithvik Siddenki, Rui Meng
+ */
+
 public class Client implements ClientService {
 
     private String username = "";
@@ -25,6 +32,7 @@ public class Client implements ClientService {
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
 
+    //Constructor for Client
     public Client(User user) {
         if (user != null && user.getName() != null && user.getPassword() != null
                 && user.getEmail() != null && user.getPhoneNumber() != null &&
@@ -45,6 +53,7 @@ public class Client implements ClientService {
         }
     }
 
+    //Main method to interact with client
     public static void main(String[] args) throws InvalidInput, UsernameTakenException, IOException {
         Scanner scanner = new Scanner(System.in);
         User user = null;
@@ -64,10 +73,10 @@ public class Client implements ClientService {
             System.out.println("1. Login");
             System.out.println("2. Register");
 
-            String choice1 = scanner.nextLine();
+            String choice1 = scanner.nextLine(); //Variable to check if user wants to register or log in
 
             switch (choice1) {
-                case "1":
+                case "1": //functionality for logging in
                     while (!loggedIn) {
                         while (true) {
                             System.out.println("Enter your username:");
@@ -98,9 +107,9 @@ public class Client implements ClientService {
                         }
                     }
                     break;
-                case "2":
+                case "2": //functionality for registering: entering personal details and seeting preferences
                     while (true) {
-                        System.out.println("Create a username:");
+                        System.out.println("Create a username:"); //to create a username
                         client.setUsername(scanner.nextLine());
 
                         if (client.getUsername() == null) {
@@ -112,7 +121,7 @@ public class Client implements ClientService {
                         }
                     }
                     while (true) {
-                        System.out.println("Create a password: ");
+                        System.out.println("Create a password: "); //to create a password
                         client.setPassword(scanner.nextLine());
 
                         if (client.getPassword() == null) {
@@ -124,7 +133,7 @@ public class Client implements ClientService {
                         }
                     }
                     while (true) {
-                        System.out.println("Enter your email:");
+                        System.out.println("Enter your email:"); //to enter email id
                         client.setEmail(scanner.nextLine());
 
                         if (client.getEmail() == null || !client.getEmail().contains("@") || !client.getEmail().contains(".")) {
@@ -136,7 +145,7 @@ public class Client implements ClientService {
                         }
                     }
                     while (true) {
-                        System.out.println("Enter your phone number: ");
+                        System.out.println("Enter your phone number: "); //to enter your phone number
                         client.setPhone(scanner.nextLine());
                         boolean notInt = false;
                         try {
@@ -145,8 +154,8 @@ public class Client implements ClientService {
                             notInt = true;
                         }
 
-                        if (client.getPhone() == null) {
-                            System.out.println("Phone number is invalid");
+                        if (client.getPhone() == null) { //checks if entered number is valid
+                            System.out.println("Phone number is invalid"); 
                         } else if (client.getPhone().contains("###")) {
                             System.out.println("'###' is not allowed");
                         } else if (client.getPhone().length() != 10) {
@@ -158,7 +167,7 @@ public class Client implements ClientService {
                         }
                     }
                     while (true) {
-                        System.out.println("Create a description:");
+                        System.out.println("Create a description:"); //to create a user description
                         client.setUserDescription(scanner.nextLine());
 
                         if (client.getUserDescription() == null) {
@@ -170,7 +179,7 @@ public class Client implements ClientService {
                         }
                     }
                     while (true) {
-                        System.out.println("Enter your university: ");
+                        System.out.println("Enter your university: "); //to enter university name
                         client.setUniversity(scanner.nextLine());
 
                         if (client.getUniversity() == null) {
@@ -183,7 +192,7 @@ public class Client implements ClientService {
                     }
                     String bedTime;
                     while (true) {
-                        System.out.println("What is your average bed time?");
+                        System.out.println("What is your average bed time?"); //to set a bedtime preference
                         bedTime = scanner.nextLine();
                         boolean nan = false;
 
@@ -206,7 +215,7 @@ public class Client implements ClientService {
                     boolean alcohol;
                     String answer;
                     while (true) {
-                        System.out.println("Do you drink alcohol? (y/n)");
+                        System.out.println("Do you drink alcohol? (y/n)"); //to set drinking habits
                         answer = scanner.nextLine();
 
                         if (answer.equals("y")) {
@@ -221,7 +230,7 @@ public class Client implements ClientService {
                     }
                     boolean smoking;
                     while (true) {
-                        System.out.println("Do you smoke? (y/n)");
+                        System.out.println("Do you smoke? (y/n)"); //to set smoking habits
                         answer = scanner.nextLine();
 
                         if (answer.equals("y")) {
@@ -236,7 +245,7 @@ public class Client implements ClientService {
                     }
                     boolean guests;
                     while (true) {
-                        System.out.println("Are you comfortable with guests? (y/n)");
+                        System.out.println("Are you comfortable with guests? (y/n)"); //to set guest preferences
                         answer = scanner.nextLine();
 
                         if (answer.equals("y")) {
@@ -251,7 +260,7 @@ public class Client implements ClientService {
                     }
                     int tidy;
                     while (true) {
-                        System.out.println("How tidy are you? (1-10)");
+                        System.out.println("How tidy are you? (1-10)"); //to set tidiness preferences
                         try {
                             tidy = scanner.nextInt();
                             scanner.nextLine();
@@ -266,7 +275,7 @@ public class Client implements ClientService {
                     }
                     int roomHours;
                     while (true) {
-                        System.out.println("How many hours per day on average do you spend in your room?");
+                        System.out.println("How many hours per day on average do you spend in your room?"); 
                         try {
                             roomHours = scanner.nextInt();
                             scanner.nextLine();
@@ -287,7 +296,7 @@ public class Client implements ClientService {
                     break;
             }
         }
-        while (!exit) {
+        while (!exit) { //loop so that user can enter the choice based on what they want to do in the app
             System.out.println("\nSelect an option:");
             System.out.println("1. Send Message");
             System.out.println("2. View Friend Requests");
@@ -304,46 +313,46 @@ public class Client implements ClientService {
             String choice2 = scanner.nextLine();
 
             switch (choice2) {
-                case "1":
-                    System.out.print("Enter receiver's username: ");
+                case "1": //to send a message
+                    System.out.print("Enter receiver's username: "); 
                     String receiver = scanner.nextLine();
                     System.out.print("Enter message: ");
                     String message = scanner.nextLine();
                     //client.fetchMessages(client.getUsername(), receiver);
                     client.sendMessage(receiver, message);
                     break;
-                case "2":
+                case "2": //to view friend requests
                     client.viewFriendRequests(client.getUsername());
                     break;
-                case "3":
+                case "3": //to send friend requests
                     System.out.print("Enter username to send friend request: ");
                     String friendRequestUsername = scanner.nextLine();
                     client.sendFriendRequest(client.getUsername(), friendRequestUsername);
                     break;
-                case "4":
+                case "4": //to remove another user from friend list
                     System.out.print("Enter username to remove as friend: ");
                     String removedFriend = scanner.nextLine();
                     client.removeFriend(client.getUsername(), removedFriend);
                     break;
-                case "5":
+                case "5": //to block a user
                     System.out.print("Enter username to block: ");
                     String blockedUser = scanner.nextLine();
                     client.blockUser(client.getUsername(), blockedUser);
                     break;
-                case "6":
+                case "6": //to unblock user
                     System.out.print("Enter username to unblock: ");
                     String unblockUser = scanner.nextLine();
                     client.unblockUser(client.getUsername(), unblockUser);
                     break;
-                case "7":
+                case "7": //to view and managed blocked users
                     client.viewBlockedUsers(client.getUsername());
                     break;
-                case "8":
+                case "8": //to view a profile
                     System.out.print("Enter a profile to view: ");
                     String profile = scanner.nextLine();
                     client.viewProfile(profile);
                     break;
-                case "9":
+                case "9": //to update a profile and choose specific parameter to update
                     System.out.println("\nChoose a parameter to update:");
                     System.out.println("1. Username");
                     System.out.println("2. Password");
@@ -380,7 +389,7 @@ public class Client implements ClientService {
                             System.out.print("Enter new university: ");
                             client.setUniversity(scanner.nextLine());
                             break;
-                        case "7":
+                        case "7": 
                             System.out.println("Updating preferences...");
                             // Call a method to collect preferences and update
                             System.out.print("Enter your average bed time (e.g., 22:30): ");
@@ -411,7 +420,7 @@ public class Client implements ClientService {
                         System.out.println("Profile update failed.");
                     }
                     break;
-                case "10":
+                case "10": //to search other users based on preferences
                     System.out.println("\nHow would you like to search?");
                     System.out.println("1. By Parameter");
                     System.out.println("2. Exact Match");
@@ -482,29 +491,33 @@ public class Client implements ClientService {
         System.out.println("Client exited.");
     }
 
+    //getters
+
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public String getPhone() {
-        return phoneNumber;
+        return this.phoneNumber;
     }
 
     public String getUniversity() {
-        return university;
+        return this.university;
     }
 
     public String getUserDescription() {
-        return userDescription;
+        return this.userDescription;
     }
+
+    //setters
 
     public void setUsername(String username) {
         this.username = username;
@@ -530,6 +543,8 @@ public class Client implements ClientService {
         this.userDescription = userDescription;
     }
 
+    //to connect client to server
+    
     public boolean connect(String serverAddress, int port) {
         try {
             socket = new Socket(serverAddress, port);
@@ -544,9 +559,13 @@ public class Client implements ClientService {
         }
     }
 
+    //to check if client is connected to server
+    
     public boolean isConnected() {
         return isConnected;
     }
+
+    //to disconnect client from server
 
     public void disconnect() {
         try {
@@ -562,6 +581,8 @@ public class Client implements ClientService {
         }
     }
 
+    //for client log in
+    
     public boolean login(String username, String password) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -571,7 +592,7 @@ public class Client implements ClientService {
         out.println("login," + username + "," + password);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server 
             if ("Successful login".equals(response)) {
                 System.out.println("Login successful.");
                 return true;
@@ -584,6 +605,8 @@ public class Client implements ClientService {
             return false;
         }
     }
+
+    //helper method for registration
 
     public void setUserInformation() throws IOException {
         String information = in.readLine();
@@ -600,6 +623,8 @@ public class Client implements ClientService {
         university = tokens[5];
     }
 
+    //helper method for user registration
+
     public void setUserRegisterInformation(String username, String password, String email,
                                            String phoneNumber, String userDescription, String university) {
         this.username = username;
@@ -610,6 +635,8 @@ public class Client implements ClientService {
         this.university = university;
     }
 
+    //to handle user registration 
+    
     public boolean register() {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -621,7 +648,7 @@ public class Client implements ClientService {
                 tidy + "###" + roomHours);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("successful registration".equals(response)) {
                 System.out.println("User registered: " + username);
                 return true;
@@ -639,6 +666,8 @@ public class Client implements ClientService {
         return in.readLine();
     }
 
+    //To handle if client wants to update their profile
+    
     public boolean updateProfile(String oldUsername) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -651,7 +680,7 @@ public class Client implements ClientService {
                 tidy + "###" + roomHours);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Profile Updated".equals(response)) {
                 System.out.println("Profile Updated: " + username);
                 return true;
@@ -665,6 +694,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To set client's preferences
+    
     public void setPreferences(String bedTime, boolean alcohol, boolean smoke,
                                boolean guests, int tidy, int roomHours) {
         this.bedTime = bedTime;
@@ -678,6 +709,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To send messages between clients
+    
     public boolean sendMessage(String receiver, String message) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -701,6 +734,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To fetch chat history between clients
+
     public String fetchMessages(String user, String receiver) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -710,7 +745,7 @@ public class Client implements ClientService {
         out.println("loadMessages," + username + "," + receiver + "," + receiver);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Message List is Empty".equals(response)) {
                 return null;
             } else {
@@ -722,6 +757,8 @@ public class Client implements ClientService {
         }
     }
 
+    // To send friend requests between clients
+    
     public boolean sendFriendRequest(String user, String potentialFriend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -731,7 +768,7 @@ public class Client implements ClientService {
         out.println("sendFriendRequest," + user + "," + potentialFriend);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Successfully sent friend request".equals(response)) {
                 System.out.println("Friend request sent to " + potentialFriend);
                 return true;
@@ -745,6 +782,8 @@ public class Client implements ClientService {
         }
     }
 
+    // To view friend requests between clients
+
     public void viewFriendRequests(String user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -754,7 +793,7 @@ public class Client implements ClientService {
         out.println("viewFriendRequests," + user);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if (response == null || response.isEmpty() || "No friend requests".equals(response)) {
                 System.out.println("You have no pending friend requests.");
                 return;
@@ -771,14 +810,14 @@ public class Client implements ClientService {
                 String choice = scanner.nextLine();
 
                 switch (choice) {
-                    case "1":
+                    case "1": //If user accepts a friend request
                         if (acceptFriendRequest(requester)) {
                             System.out.println("You accepted the friend request from: " + requester);
                         } else {
                             System.out.println("Failed to accept friend request from: " + requester);
                         }
                         break;
-                    case "2":
+                    case "2": //If user declines a friend request
                         if (declineFriendRequest(requester)) {
                             System.out.println("You declined the friend request from: " + requester);
                         } else {
@@ -794,6 +833,8 @@ public class Client implements ClientService {
         }
     }
 
+    //Helper method to accept friend requests
+    
     public boolean acceptFriendRequest(String friend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -803,7 +844,7 @@ public class Client implements ClientService {
         out.println("acceptFriendRequest," + this.username + "," + friend);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Successfully added friend".equals(response)) {
                 System.out.println(friend + " is now your friend.");
                 return true;
@@ -816,6 +857,8 @@ public class Client implements ClientService {
             return false;
         }
     }
+
+    //Helper method to decline friend requests
 
     public boolean declineFriendRequest(String username) {
         if (!isConnected) {
@@ -826,7 +869,7 @@ public class Client implements ClientService {
         out.println("declineFriendRequest," + username);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             return "Successfully declined friend request".equals(response);
         } catch (IOException e) {
             System.out.println("Error declining friend request: " + e.getMessage());
@@ -834,6 +877,7 @@ public class Client implements ClientService {
         }
     }
 
+    //To add another user to friend list
     public boolean addFriend(String user, String friend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -843,7 +887,7 @@ public class Client implements ClientService {
         out.println("addFriend," + user + "," + friend);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Successfully added friend".equals(response)) {
                 System.out.println(friend + " is now your friend.");
                 return true;
@@ -857,6 +901,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To remove user from friend list
+    
     public boolean removeFriend(String user, String friend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -866,7 +912,7 @@ public class Client implements ClientService {
         out.println("removeFriend," + user + "," + friend);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Successfully removed friend".equals(response)) {
                 System.out.println(friend + " has been removed from your friend list.");
                 return true;
@@ -880,6 +926,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To block another user and remove them from friend list
+
     public boolean blockUser(String user, String blockedUser) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -889,7 +937,7 @@ public class Client implements ClientService {
         out.println("blockUser," + user + "," + blockedUser);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Successfully blocked user".equals(response)) {
                 System.out.println(blockedUser + " has been blocked.");
                 return true;
@@ -903,6 +951,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To view a user profile 
+    
     public void viewProfile(String username) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -912,13 +962,15 @@ public class Client implements ClientService {
         out.println("viewProfile," + username);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             System.out.println("Profile data: " + response);
         } catch (IOException e) {
             System.out.println("Error viewing profile: " + e.getMessage());
         }
     }
 
+    //To view user's friend list
+    
     public void viewFriendsList(String username) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -928,7 +980,7 @@ public class Client implements ClientService {
         out.println("viewFriendsList," + username);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if (response.equals("Friend list is empty")) {
                 System.out.println("You have no friends yet.");
             } else {
@@ -939,6 +991,7 @@ public class Client implements ClientService {
         }
     }
 
+    //To unblock a user
     public boolean unblockUser(String user, String blockedUser) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -948,7 +1001,7 @@ public class Client implements ClientService {
         out.println("removeBlockedUser," + user + "," + blockedUser);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if ("Successfully removed from blocked list".equals(response)) {
                 System.out.println(blockedUser + " has been unblocked.");
                 return true;
@@ -962,7 +1015,8 @@ public class Client implements ClientService {
         }
     }
 
-
+    //To view all the users a client has blocked
+    
     public void viewBlockedUsers(String username) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -972,7 +1026,7 @@ public class Client implements ClientService {
         out.println("viewBlockedUsers," + username);
 
         try {
-            String response = in.readLine();
+            String response = in.readLine(); //reads response from server
             if (response == null) {
                 System.out.println("You have not blocked anyone.");
                 return;
@@ -995,7 +1049,7 @@ public class Client implements ClientService {
                         }
                         break;
                     case "2":
-                        System.out.println("You chose not to unblock " + blockedUser);
+                        System.out.println("You chose not to unblock " + blockedUser); //In case user changes their mind
                         break;
                     default:
                         System.out.println("Invalid option. Skipping " + blockedUser);
@@ -1006,6 +1060,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To search for users based on certain preferences
+    
     public void searchByParameter(String parameter, String value) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -1026,6 +1082,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To search for a roommate based on exact match of all preferences
+    
     public void exactMatch(User user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -1046,6 +1104,8 @@ public class Client implements ClientService {
         }
     }
 
+    //To search for roommates based on partial match of preferences
+    
     public void partialMatch(User user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
@@ -1066,6 +1126,8 @@ public class Client implements ClientService {
         }
     }
 
+    // To update a user's preferences
+    
     public void updatePreferences(User user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
