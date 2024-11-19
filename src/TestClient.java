@@ -61,33 +61,6 @@ public class TestClient {
         assertFalse("Login should fail for a non-existent user.", client.login("NonExistentUser", "password123"));
     }
 
-    // Test registration
-//    @Test
-//    public void testRegister_Successful() throws UsernameTakenException {
-//        User newUser = new User(
-//                "Alice",
-//                "securePass",
-//                "alice@example.com",
-//                "5555555555",
-//                "Description for Alice",
-//                "Example University"
-//        );
-//        assertTrue("Registration should succeed for a new user.", client.register(newUser));
-//    }
-//
-//    @Test
-//    public void testRegister_Failed_DuplicateUser() throws UsernameTakenException {
-//        User duplicateUser = new User(
-//                "Bob",
-//                "password123",
-//                "bob@example.com",
-//                "1234567890",
-//                "Description for Bob",
-//                "University Example"
-//        );
-//        assertFalse("Registration should fail for an already existing user.", client.register(duplicateUser));
-//    }
-
     // Test sending messages
     @Test
     public void testSendMessage_Successful() {
