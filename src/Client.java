@@ -546,7 +546,7 @@ public class Client implements ClientService {
         this.university = university;
     }
 
-    public boolean register(User user) throws UsernameTakenException {
+    public boolean register() {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;

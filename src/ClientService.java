@@ -7,7 +7,7 @@ public interface ClientService {
 
     boolean login(String username, String password);          // User login
 
-    boolean register(User user) throws UsernameTakenException;                              // Register a new user
+    boolean register() throws UsernameTakenException;                              // Register a new user
 
     boolean sendMessage(String receiver, String message);     // Send a message
 
