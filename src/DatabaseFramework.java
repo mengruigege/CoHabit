@@ -13,7 +13,6 @@ public interface DatabaseFramework {
     boolean addFriend(User user1, User user2);
     boolean removeFriend(User user1, User user2);
     ArrayList<User> loadFriendsFromFile();
-    void saveFriendsToFile();
 
     // Block management
     ArrayList<User> loadBlockedFromFile();
