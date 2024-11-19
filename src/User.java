@@ -200,9 +200,6 @@ public class User implements Profile, FriendManageable, Blockable {
         this.guests = guests;
         this.tidy = tidy;
         this.roomHours = roomHours;
-        if (bedTime == null || tidy <= 0 || tidy > 10 || roomHours < 0) {
-            throw new InvalidInput("Invalid Input");
-        }
     }
 
     public void setAlcohol(boolean alcohol) {
