@@ -91,7 +91,7 @@ public class TestClient {
     // Test sending messages
     @Test
     public void testSendMessage_Successful() {
-        assertTrue("Message should be sent successfully.", client.sendMessage("friend", "Hello there!"));
+        assertTrue("Message should be sent successfully.", client.sendMessage("Jim", "Hello there!"));
     }
 
     @Test
@@ -101,14 +101,14 @@ public class TestClient {
 
     @Test
     public void testSendMessage_EmptyMessage() {
-        assertTrue("Empty messages should still be allowed.", client.sendMessage("friend", ""));
+        assertFalse("Empty messages should not be allowed.", client.sendMessage("Jim", ""));
     }
 
     // Test sending friend requests
     @Test
     public void testSendFriendRequest_Successful() {
 
-        assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "friend"));
+        assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "Jim"));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class TestClient {
     // Test blocking users
     @Test
     public void testBlockUser_Successful() {
-        assertTrue("Blocking user should succeed.", client.blockUser("Bob", "friend"));
+        assertTrue("Blocking user should succeed.", client.blockUser("Bob", "Jim"));
     }
 
     @Test
