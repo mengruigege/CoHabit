@@ -117,8 +117,7 @@ public class Server {
     public  boolean removeFriend(User user, User removedFriend) {
         if (user != null && removedFriend != null) {
             database.loadUsersFromFile();
-            database.loadFriendsFromFile();
-            if (user.getFriendList().contains(removedFriend)) {
+            if (database.getFriendsFromFile(user.getName()).contains(removedFriend.getName())) {
                 database.removeFriend(user, removedFriend);
                 database.removeFriend(removedFriend, user); //not sure that we need this
                 return true;
