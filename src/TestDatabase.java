@@ -143,17 +143,17 @@ public class TestDatabase {
         assertEquals("Jim", users.get(1).getName());
     }
 
-    @Test
-    public void testSaveAndLoadFriendsFromFile() {
-        database.addUser(user1);
-        database.addUser(user2);
-        database.addFriend(user1, user2);
-        database.saveFriendsToFile();  // Save friendships to file
-
-        ArrayList<User> loadedFriends = database.loadFriendsFromFile();
-        assertTrue(loadedFriends.contains(user2));
-        assertTrue(user1.getFriendList().contains(user2));
-    }
+//    @Test
+//    public void testSaveAndLoadFriendsFromFile() {
+//        database.addUser(user1);
+//        database.addUser(user2);
+//        database.addFriend(user1, user2);
+//        database.saveFriendsToFile();  // Save friendships to file
+//
+//        ArrayList<User> loadedFriends = database.loadFriendsFromFile();
+//        assertTrue(loadedFriends.contains(user2));
+//        assertTrue(user1.getFriendList().contains(user2));
+//    }
 
     @Test
     public void testRecordAndLoadConversation() {

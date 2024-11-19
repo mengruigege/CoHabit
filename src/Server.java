@@ -99,7 +99,7 @@ public class Server {
         }
     }
     //addFriend is what happens when you accept a friend request
-    public  boolean addFriend(User user, User friend) {
+    public boolean addFriend(User user, User friend) {
         if (user != null && friend != null) {
             database.loadUsersFromFile();
 
@@ -107,7 +107,6 @@ public class Server {
 //                database.loadFriendsFromFile();?
                 database.addFriend(user, friend);
                 database.addFriend(friend, user);
-                database.saveFriendsToFile();
                 database.removeFriendRequest(user, friend);
                 //saveFriendRequestFile
                 return true;
@@ -369,7 +368,7 @@ public class Server {
                         }
 
                         // should be in format addFriend,user,friend
-                        if (line.length() > 9 && line.substring(0, 9).contains("addFriend")) {
+                        if (line.length() > 19 && line.substring(0, 19).contains("acceptFriendRequest")) {
                             String[] parts = line.split(",");
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
@@ -379,7 +378,6 @@ public class Server {
                                 for (User friend1 : user.getFriendList()) {
                                     System.out.println(friend1.getName());
                                 }
-
                                 writer.println("Successfully added friend");
                             }
                             else {

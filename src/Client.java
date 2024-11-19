@@ -292,14 +292,13 @@ public class Client implements ClientService {
             System.out.println("1. Send Message");
             System.out.println("2. View Friend Requests");
             System.out.println("3. Send Friend Request");
-            System.out.println("4. Add Friend");
-            System.out.println("5. Remove Friend");
-            System.out.println("6. Block User");
-            System.out.println("7. View and Manage Blocked Users");
-            System.out.println("8. View Profile");
-            System.out.println("9. Update Profile");
-            System.out.println("10. Search roommates");
-            System.out.println("11. Disconnect and Exit");
+            System.out.println("4. Remove Friend");
+            System.out.println("5. Block User");
+            System.out.println("6. View and Manage Blocked Users");
+            System.out.println("7. View Profile");
+            System.out.println("8. Update Profile");
+            System.out.println("9. Search roommates");
+            System.out.println("10. Disconnect and Exit");
 
             String choice2 = scanner.nextLine();
 
@@ -320,30 +319,30 @@ public class Client implements ClientService {
                     String friendRequestUsername = scanner.nextLine();
                     client.sendFriendRequest(client.getUsername(), friendRequestUsername);
                     break;
+//                case "4":
+//                    System.out.print("Enter username to add as friend: ");
+//                    String friendUsername = scanner.nextLine();
+//                    client.addFriend(client.getUsername(), friendUsername);
+//                    break;
                 case "4":
-                    System.out.print("Enter username to add as friend: ");
-                    String friendUsername = scanner.nextLine();
-                    client.addFriend(client.getUsername(), friendUsername);
-                    break;
-                case "5":
                     System.out.print("Enter username to remove as friend: ");
                     String removedFriend = scanner.nextLine();
                     client.removeFriend(client.getUsername(), removedFriend);
                     break;
-                case "6":
+                case "5":
                     System.out.print("Enter username to block: ");
                     String blockedUser = scanner.nextLine();
                     client.blockUser(client.getUsername(), blockedUser);
                     break;
-                case "7":
+                case "6":
                     client.viewBlockedUsers(client.getUsername());
                     break;
-                case "8":
+                case "7":
                     System.out.print("Enter a profile to view: ");
                     String profile = scanner.nextLine();
                     client.viewProfile(profile);
                     break;
-                case "9":
+                case "8":
                     System.out.println("\nChoose a parameter to update:");
                     System.out.println("1. Username");
                     System.out.println("2. Password");
@@ -411,7 +410,7 @@ public class Client implements ClientService {
                         System.out.println("Profile update failed.");
                     }
                     break;
-                case "10":
+                case "9":
                     System.out.println("\nHow would you like to search?");
                     System.out.println("1. By Parameter");
                     System.out.println("2. Exact Match");
@@ -469,7 +468,7 @@ public class Client implements ClientService {
                             break;
                     }
                     break;
-                case "11":
+                case "10":
                     client.disconnect();
                     exit = true;
                     break;
@@ -794,19 +793,25 @@ public class Client implements ClientService {
         }
     }
 
-    public boolean acceptFriendRequest(String username) {
+    public boolean acceptFriendRequest(String friend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("acceptFriendRequest," + username);
+        out.println("acceptFriendRequest," + this.username + "," + friend);
 
         try {
             String response = in.readLine();
-            return "Successfully accepted friend request".equals(response);
+            if ("Successfully added friend".equals(response)) {
+                System.out.println(friend + " is now your friend.");
+                return true;
+            } else {
+                System.out.println("Failed to add friend.");
+                return false;
+            }
         } catch (IOException e) {
-            System.out.println("Error accepting friend request: " + e.getMessage());
+            System.out.println("Error adding friend: " + e.getMessage());
             return false;
         }
     }

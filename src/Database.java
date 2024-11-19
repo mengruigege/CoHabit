@@ -72,26 +72,50 @@ public class Database implements DatabaseFramework {
     }
 
     public synchronized boolean addFriend(User user1, User user2) {
+        // Check if the users are already friends
         boolean isFriend1 = false;
         boolean isFriend2 = false;
+
         for (User user : user1.getFriendList()) {
-            if (user1.getName().equals(user2.getName())) {
+            if (user.getName().equals(user2.getName())) {
                 isFriend1 = true;
                 break;
             }
         }
+
         for (User user : user2.getFriendList()) {
-            if (user1.getName().equals(user.getName())) {
+            if (user.getName().equals(user1.getName())) {
                 isFriend2 = true;
                 break;
             }
         }
+
+        // If they are not already friends, add each other as friends
         if (!isFriend1 && !isFriend2) {
             user1.addFriend(user2);
-            return true;
+            user2.addFriend(user1);
+
+            // Save the updated friends list to the file
+            try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
+                for (User user : allUsers) {
+                    String line = user.getName() + ":";
+                    for (User friend : user.getFriendList()) {
+                        line += friend.getName() + ",";
+                    }
+                    if (line.endsWith(",")) {
+                        line = line.substring(0, line.length() - 1);
+                    }
+                    pw.println(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false; // Return false if saving the file fails
+            }
+            return true; // Return true if the friend was added and saved successfully
         }
-        return false;
+        return false; // Return false if they are already friends
     }
+
 
     public synchronized boolean removeFriend(User user1, User user2) {
         boolean isFriend1 = false;
@@ -345,27 +369,6 @@ public class Database implements DatabaseFramework {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public synchronized void saveFriendsToFile() {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
-            for (User user : allUsers) {
-                System.out.println("User: " + user.getName());
-                String line = user.getName() + ":";
-
-                for (User friend : user.getFriendList()) {
-                    System.out.println("Friend: " + friend.getName());
-                    line += friend.getName() + ",";
-                }
-
-                if (line.endsWith(",")) {
-                    line = line.substring(0, line.length() - 1);
-                }
-                pw.println(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
