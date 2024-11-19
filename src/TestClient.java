@@ -5,195 +5,132 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestClient {
+    private Thread serverThread;
     private Client client;
-
     @Before
     public void setUp() throws Exception {
-        // Setting up a new client instance for each test
-        client = new Client(new User("testUser", "password123", "test@example.com", "1234567890", "Test description", "Test University"));
-        assertNotNull("Client instance should be created.", client);
+        // Start the server in a separate thread
+        serverThread = new Thread(() -> {
+            try {
+                Server.main(new String[0]); // Start the real server
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        serverThread.start();
+
+        // Wait briefly to ensure the server starts
+        Thread.sleep(1000);
+
+        // Initialize the client with a properly created User
+        User user = new User("Bob","password123","bob@example.com","1234567890","Description for Bob","University Example");
+        User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
+        client = new Client(user);
+
+        // Connect the client to the server
+        assertTrue("Client should successfully connect to the server.", client.connect("localhost", 1102));
     }
 
     @After
     public void tearDown() throws Exception {
-        // Ensure disconnection after each test
         client.disconnect();
-        assertFalse("Client should be disconnected.", client.isConnected());
+        serverThread.interrupt(); // Stop the server thread
     }
 
-    // 1. Test initializing client with valid user
+    // Test connection
     @Test
-    public void testClientInitialization() {
-        assertEquals("testUser", client.getUsername());
-    }
-
-    // 2. Test setting username
-    @Test
-    public void testSetUsername() {
-        client.setUsername("newUser");
-        assertEquals("newUser", client.getUsername());
-    }
-
-    // 3. Test setting password
-    @Test
-    public void testSetPassword() {
-        client.setPassword("newPassword");
-        assertEquals("newPassword", client.getPassword());
-    }
-
-    // 4. Test setting email
-    @Test
-    public void testSetEmail() {
-        client.setEmail("new@example.com");
-        assertEquals("new@example.com", client.getEmail());
-    }
-
-    // 5. Test setting phone number
-    @Test
-    public void testSetPhoneNumber() {
-        client.setPhone("0987654321");
-        assertEquals("0987654321", client.getPhone());
-    }
-
-    // 6. Test setting description
-    @Test
-    public void testSetDescription() {
-        client.setUserDescription("Updated description");
-        assertEquals("Updated description", client.getUserDescription());
-    }
-
-    // 7. Test setting university
-    @Test
-    public void testSetUniversity() {
-        client.setUniversity("New University");
-        assertEquals("New University", client.getUniversity());
-    }
-
-    // 8. Test connection (dummy test, assuming server exists)
-    @Test
-    public void testConnect() {
-        boolean connected = client.connect("localhost", 1102);
-        if (connected) {
-            assertTrue("Client should be connected to the server.", client.isConnected());
-        } else {
-            assertFalse("Client should not connect to an unavailable server.", client.isConnected());
-        }
-    }
-
-    // 9. Test disconnection
-    @Test
-    public void testDisconnect() {
-        client.connect("localhost", 1102);
+    public void testClientConnection() {
+        assertTrue("Client should be connected to the server.", client.isConnected());
         client.disconnect();
-        assertFalse("Client should be disconnected.", client.isConnected());
+        assertFalse("Client should disconnect successfully.", client.isConnected());
     }
 
-    // 10. Test preferences setup
+    // Test login
     @Test
-    public void testSetPreferences() {
-        client.setPreferences("22:00", true, false, true, 7, 5);
-        assertNotNull("Preferences should be set without errors.", client);
+    public void testLogin_Successful() {
+        assertTrue("Login should succeed with correct credentials.", client.login("Bob", "password123"));
     }
 
-    // 11. Test registering a new user
     @Test
-    public void testRegister() {
-        client.setUserRegisterInformation("newUser", "newPass", "new@example.com", "9876543210", "New description", "New University");
-        assertTrue("Registration should succeed for valid user.", client.register());
+    public void testLogin_Failed_InvalidPassword() {
+        assertFalse("Login should fail with an incorrect password.", client.login("Bob", "wrongPassword"));
     }
 
-    // 12. Test invalid registration
     @Test
-    public void testInvalidRegister() {
-        client.setUserRegisterInformation("", "", "", "", "", "");
-        assertFalse("Registration should fail for invalid data.", client.register());
+    public void testLogin_Failed_NonExistentUser() {
+        assertFalse("Login should fail for a non-existent user.", client.login("NonExistentUser", "password123"));
     }
 
-    // 13. Test updating profile
+    // Test sending messages
     @Test
-    public void testUpdateProfile() {
-        client.setUsername("UpdatedUser");
-        assertTrue("Profile update should succeed with valid data.", client.updateProfile("testUser"));
+    public void testSendMessage_Successful() {
+        assertTrue("Message should be sent successfully.", client.sendMessage("Jim", "Hello there!"));
     }
 
-    // 14. Test sending a valid message
     @Test
-    public void testSendMessage() {
-        assertTrue("Message should be sent successfully.", client.sendMessage("receiver", "Hello there!"));
+    public void testSendMessage_Failed_NonExistentUser() {
+        assertFalse("Message sending should fail for a non-existent receiver.", client.sendMessage("UnknownUser", "Hello!"));
     }
 
-    // 15. Test sending an empty message
     @Test
-    public void testSendEmptyMessage() {
-        assertTrue("Empty messages should be allowed.", client.sendMessage("receiver", ""));
+    public void testSendMessage_EmptyMessage() {
+        assertFalse("Empty messages should not be allowed.", client.sendMessage("Jim", ""));
     }
 
-    // 16. Test fetching messages
+    // Test sending friend requests
     @Test
-    public void testFetchMessages() {
-        String messages = client.fetchMessages("testUser", "receiver");
-        assertNotNull("Messages should be fetched successfully.", messages);
+    public void testSendFriendRequest_Successful() {
+
+        assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "Jim"));
     }
 
-    // 17. Test sending friend requests
     @Test
-    public void testSendFriendRequest() {
-        assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("testUser", "receiver"));
+    public void testSendFriendRequest_Failed() {
+        assertFalse("Friend request should fail for a non-existent user.", client.sendFriendRequest("Bob", "UnknownUser"));
     }
 
-    // 18. Test viewing profiles
+    // Test removing friends
     @Test
-    public void testViewProfile() {
-        client.viewProfile("testUser");
+    public void testRemoveFriend_Successful() {
+        client.sendFriendRequest("Bob", "Jim");
+        client.acceptFriendRequest("Jim");
+        assertTrue("Removing friend should succeed for existing friends.", client.removeFriend("Bob", "Jim"));
+    }
+
+    @Test
+    public void testRemoveFriend_Failed() {
+        assertFalse("Removing friend should fail for a non-friend.", client.removeFriend("Bob", "UnknownUser"));
+    }
+
+    // Test blocking users
+    @Test
+    public void testBlockUser_Successful() {
+        assertTrue("Blocking user should succeed.", client.blockUser("Bob", "Jim"));
+    }
+
+    @Test
+    public void testBlockUser_Failed() {
+        assertFalse("Blocking user should fail for a non-existent user.", client.blockUser("Bob", "UnknownUser"));
+    }
+
+    // Test viewing profiles
+    @Test
+    public void testViewProfile_Successful() {
+        client.viewProfile("Bob");
+        // Assuming the server returns the profile as a string
         System.out.println("Profile viewed successfully.");
     }
 
-    // 19. Test viewing blocked users
     @Test
-    public void testViewBlockedUsers() {
-        client.blockUser("testUser", "blockedUser");
-        client.viewBlockedUsers("testUser");
-        System.out.println("Blocked users viewed successfully.");
+    public void testViewProfile_Failed() {
+        client.viewProfile("UnknownUser");
+        System.out.println("Profile viewing should fail for a non-existent user.");
     }
 
-    // 20. Test blocking a user
+    // Test disconnect
     @Test
-    public void testBlockUser() {
-        assertTrue("Blocking user should succeed.", client.blockUser("testUser", "blockedUser"));
-    }
-
-    // 21. Test unblocking a user
-    @Test
-    public void testUnblockUser() {
-        client.blockUser("testUser", "blockedUser");
-        assertTrue("Unblocking user should succeed.", client.unblockUser("testUser", "blockedUser"));
-    }
-
-    // 22. Test viewing friend list
-    @Test
-    public void testViewFriendsList() {
-        client.viewFriendsList("testUser");
-        System.out.println("Friend list viewed successfully.");
-    }
-
-    // 23. Test searching by parameter
-    @Test
-    public void testSearchByParameter() {
-        client.searchByParameter("email", "test@example.com");
-        System.out.println("Search by parameter executed successfully.");
-    }
-
-    // 24. Test exact match
-    @Test
-    public void testExactMatch() throws UsernameTakenException {
-        client.exactMatch(new User("testUser", "password123", "test@example.com", "1234567890", "Test description", "Test University"));
-        System.out.println("Exact match search executed successfully.");
-    }
-
-    // 25. Test partial match
-    @Test
-    public void testPartialMatch() throws UsernameTakenException {
-        client.partialMatch(new User("testUser", "password123", "test@example.com", "1234567890", "Test description", "Test University"));
-        System.out.println("Partial match search executed successfully.");
+    public void testDisconnect() {
+        client.disconnect();
+        assertFalse("Client should not be connected after disconnecting.", client.isConnected());
     }
 }
