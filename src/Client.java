@@ -519,7 +519,8 @@ public class Client implements ClientService {
         String information = in.readLine();
         String[] tokens = information.split("###");
         if (tokens.length != 6) {
-            throw new IOException("Error! Invalid User Information");
+            System.out.println("Error! Invalid User Information");
+            return;
         }
         username = tokens[0];
         password = tokens[1];
@@ -538,7 +539,6 @@ public class Client implements ClientService {
                 + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
                 user.getBedTime() + "###" + user.getAlcohol() + "###" + user.getSmoke() + "###" + user.getGuests() + "###" +
                 user.getTidy() + "###" + user.getRoomHours());
-
 
         try {
             String response = in.readLine();

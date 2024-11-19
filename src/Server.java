@@ -76,9 +76,16 @@ public class Server {
             return null;
         }
         ArrayList<String> friendRequestNames = database.loadFriendRequestsFromFile();
+        int i = 0;
+        ArrayList<String> actualFriendRequestNames = new ArrayList<>();
 
+        for (String friendRequestName : friendRequestNames) {
+            if (friendRequestName.split(":")[1].equals(user.getName())) {
+                actualFriendRequestNames.add(friendRequestName.split(":")[0]);
+            }
+        }
 
-        return friendRequestNames;
+        return actualFriendRequestNames;
     }
 
     public  boolean declineFriendRequest(User user, User declinedUser) {
@@ -327,7 +334,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User potentialfriend = database.findUserByName(parts[2]);
-                            if (server.sendFriendRequest(user,potentialfriend)) {
+                            if (server.sendFriendRequest(user, potentialfriend)) {
                                 writer.println("Successfully sent friend request");
                             } else {
                                 //System.out.println("failed");
