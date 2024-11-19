@@ -1,1 +1,2 @@
 mengr,wnagzhe,meng@purdue.edu,1234567890,hello world,purdue,10:00,false,false,false,1,2
+mengr,helloworld,meng@purdue.edu,1234567890,hello world,purdue,10:00,false,false,true,1,2

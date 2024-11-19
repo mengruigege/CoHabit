@@ -490,7 +490,7 @@ public class Database implements DatabaseFramework {
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",");
-                if (data.length != 6) {
+                if (data.length != 12) {
                     continue;
                 }
                 String name = data[0];
@@ -500,14 +500,29 @@ public class Database implements DatabaseFramework {
                 String description = data[4];
                 String university = data[5];
 
-                User user = new User(name, password,email,phoneNumber,description,university);
-                loadProfilePicture(user);
+                String bedTime = data[6];
+                boolean alcohol = Boolean.parseBoolean(data[7]);
+                boolean smoke = Boolean.parseBoolean(data[8]);
+                boolean guests = Boolean.parseBoolean(data[9]);
+                int tidy = Integer.parseInt(data[10]);
+                int roomHours = Integer.parseInt(data[11]);
+
+                User user = new User(name, password, email, phoneNumber, description, university);
+                user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
+
+                try {
+                    loadProfilePicture(user);
+                } catch (Exception e) {
+                    System.out.println("Error loading profile picture for user: " + e.getMessage());
+                }
                 users.add(user);
             }
             allUsers = users;
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing numeric values in data: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (UsernameTakenException e) {
+        } catch (UsernameTakenException | InvalidInput e ) {
             throw new RuntimeException(e);
         }
     }

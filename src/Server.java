@@ -302,7 +302,7 @@ public class Server {
                                 if (server.register(user)) {
                                     writer.println("successful registration");
                                 } else {
-                                    writer.println("registration failed");
+                                    writer.println("registration failed (possibly username taken)");
                                 }
                             } catch (UsernameTakenException e) {
                                 writer.println("Enter a different username");
