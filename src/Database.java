@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.*;
 import java.io.*;
 
 /**
@@ -214,45 +215,185 @@ public class Database implements DatabaseFramework {
         }
     }
 
-    public synchronized boolean blockUser(User user1, User user2) {
-        boolean isBlocked = false;
-        boolean isFriend = false;
-        for (User user : user1.getBlockedUsers()) {
-            if (user2.getName().equals(user.getName())) {
-                isBlocked = true;
-                break;
-            }
+    public synchronized ArrayList<String> getBlockedUsers(String username) {
+        if (username == null || username.isEmpty()) {
+            return new ArrayList<>(); // Return an empty list if the username is invalid
         }
-        for (User user : user1.getFriendList()) {
-            if (user2.getName().equals(user.getName())) {
-                isFriend = true;
-                break;
+
+        ArrayList<String> blockedUsers = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    String currentUser = parts[0].trim();
+                    if (currentUser.equals(username)) {
+                        String[] blockedList = parts[1].split(",");
+                        blockedUsers.addAll(Arrays.asList(blockedList));
+                        break; // Exit loop once the user is found
+                    }
+                }
             }
+        } catch (IOException e) {
+            System.out.println("Error reading blocked file: " + e.getMessage());
         }
-        if (!isBlocked) {
-            user1.blockUser(user2);
-            if (isFriend) {
-                user1.removeFriend(user2);
-            }
-            return true;
-        }
-        return false;
+
+        return blockedUsers;
     }
 
-    public synchronized boolean unblockUser(User user1, User user2) {
-        boolean isBlocked = false;
-        for (User user : user1.getBlockedUsers()) {
-            if (user2.getName().equals(user.getName())) {
-                isBlocked = true;
-                break;
+
+    public synchronized boolean blockUser(String blockerName, String blockedName) {
+        if (blockerName == null || blockedName == null || blockerName.isEmpty() || blockedName.isEmpty()) {
+            return false;
+        }
+
+        boolean isBlockedAdded = false;
+        ArrayList<String> updatedBlockedFile = new ArrayList<>();
+        ArrayList<String> updatedFriendsFile = new ArrayList<>();
+
+        try {
+            // Step 1: Update the blocked.txt file
+            try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(":");
+                    if (parts.length == 2) {
+                        String currentUser = parts[0].trim();
+                        String[] blockedList = parts[1].split(",");
+                        ArrayList<String> updatedBlocked = new ArrayList<>(Arrays.asList(blockedList));
+
+                        if (currentUser.equals(blockerName)) {
+                            if (!updatedBlocked.contains(blockedName)) {
+                                updatedBlocked.add(blockedName);
+                                isBlockedAdded = true;
+                            }
+                            updatedBlockedFile.add(currentUser + ":" + String.join(",", updatedBlocked));
+                        } else {
+                            updatedBlockedFile.add(line);
+                        }
+                    } else if (parts[0].trim().equals(blockerName)) {
+                        updatedBlockedFile.add(blockerName + ":" + blockedName);
+                        isBlockedAdded = true;
+                    } else {
+                        updatedBlockedFile.add(line);
+                    }
+                }
+
+                // If the blocker is not found in the file, add them with the blocked user
+                if (!isBlockedAdded) {
+                    updatedBlockedFile.add(blockerName + ":" + blockedName);
+                    isBlockedAdded = true;
+                }
             }
+
+            // Rewrite the blocked.txt file
+            try (PrintWriter pw = new PrintWriter(new FileOutputStream(BLOCKED_FILE))) {
+                for (String updatedLine : updatedBlockedFile) {
+                    pw.println(updatedLine);
+                }
+            }
+
+            // Step 2: Update the friends.txt file
+            try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(":");
+                    if (parts.length == 2) {
+                        String currentUser = parts[0].trim();
+                        String[] friendsList = parts[1].split(",");
+                        ArrayList<String> updatedFriends = new ArrayList<>(Arrays.asList(friendsList));
+
+                        if (currentUser.equals(blockerName)) {
+                            updatedFriends.remove(blockedName);
+                            if (updatedFriends.isEmpty()) {
+                                continue; // Skip writing this line if no friends are left
+                            }
+                            updatedFriendsFile.add(currentUser + ":" + String.join(",", updatedFriends));
+                        } else if (currentUser.equals(blockedName)) {
+                            updatedFriends.remove(blockerName);
+                            if (updatedFriends.isEmpty()) {
+                                continue; // Skip writing this line if no friends are left
+                            }
+                            updatedFriendsFile.add(currentUser + ":" + String.join(",", updatedFriends));
+                        } else {
+                            updatedFriendsFile.add(line);
+                        }
+                    } else {
+                        updatedFriendsFile.add(line);
+                    }
+                }
+            }
+
+            // Rewrite the friends.txt file
+            try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
+                for (String updatedLine : updatedFriendsFile) {
+                    pw.println(updatedLine);
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error handling files: " + e.getMessage());
+            return false;
         }
-        if (isBlocked) {
-            user1.unblockUser(user2);
-            return true;
-        }
-        return false;
+
+        return isBlockedAdded;
     }
+
+    public synchronized boolean unblockUser(String blockerName, String unblockedName) {
+        if (blockerName == null || unblockedName == null || blockerName.isEmpty() || unblockedName.isEmpty()) {
+            return false;
+        }
+
+        boolean isUnblocked = false;
+        ArrayList<String> updatedBlockedFile = new ArrayList<>();
+
+        try {
+            // Step 1: Update the blocked.txt file
+            try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(":");
+                    if (parts.length == 2) {
+                        String currentUser = parts[0].trim();
+                        String[] blockedList = parts[1].split(",");
+                        ArrayList<String> updatedBlocked = new ArrayList<>(Arrays.asList(blockedList));
+
+                        if (currentUser.equals(blockerName)) {
+                            // Remove the unblocked user from the blocker's list
+                            if (updatedBlocked.contains(unblockedName)) {
+                                updatedBlocked.remove(unblockedName);
+                                isUnblocked = true;
+                            }
+
+                            // Only add the blocker to the updated file if they still have blocked users
+                            if (!updatedBlocked.isEmpty()) {
+                                updatedBlockedFile.add(currentUser + ":" + String.join(",", updatedBlocked));
+                            }
+                        } else {
+                            updatedBlockedFile.add(line);
+                        }
+                    } else {
+                        updatedBlockedFile.add(line); // Add lines without blocked users
+                    }
+                }
+            }
+
+            // Step 2: Rewrite the blocked.txt file
+            try (PrintWriter pw = new PrintWriter(new FileOutputStream(BLOCKED_FILE))) {
+                for (String updatedLine : updatedBlockedFile) {
+                    pw.println(updatedLine);
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error handling files: " + e.getMessage());
+            return false;
+        }
+
+        return isUnblocked;
+    }
+
 
     public synchronized boolean setPreferences(String username, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
         if (username == null || username.isEmpty()) {

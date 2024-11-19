@@ -128,9 +128,8 @@ public class Server {
     public  boolean blockUser(User user, User blockedUser) {
         if (user != null || blockedUser != null) {
             database.loadUsersFromFile();
-            database.loadBlockedFromFile();
             if (!(user.getBlockedUsers().contains(blockedUser))) {
-                database.blockUser(user, blockedUser);
+                database.blockUser(user.getName(), blockedUser.getName());
                 return true;
             }
         }
@@ -138,15 +137,15 @@ public class Server {
     }
     public  boolean removeBlockedUser(User user, User blockedUser) {
         if (user != null || blockedUser != null) {
-            database.loadBlockedFromFile();
-            database.loadBlockedFromFile();
-            if (user.getBlockedUsers().contains(blockedUser)) {
-                database.unblockUser(user, blockedUser);
+            database.loadUsersFromFile();
+            if (database.getBlockedUsers(user.getName()).contains(blockedUser)) {
+                database.unblockUser(user.getName(), blockedUser.getName());
                 return true;
             }
         }
         return false;
     }
+
     public  ArrayList<User> viewBlockedUsers(User user) {
         if (user != null) {
             database.loadBlockedFromFile();
