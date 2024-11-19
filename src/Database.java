@@ -491,6 +491,7 @@ public class Database implements DatabaseFramework {
 
                 String[] data = line.split(",");
                 if (data.length != 12) {
+                    System.err.println("Invalid Data");
                     continue;
                 }
                 String name = data[0];
