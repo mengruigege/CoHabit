@@ -620,7 +620,7 @@ public class Client implements ClientService {
             return false;
         }
         System.out.println("requesting the server ");
-        System.out.println("is the socket connected?" + isConnected);
+
         out.println("sendMessage###" + username + "###" + receiver + "###" + message);
 
         try {
@@ -899,6 +899,7 @@ public class Client implements ClientService {
             System.out.println("Not connected to server.");
             return;
         }
+
         out.println("viewBlockedUsers," + username);
 
         try {

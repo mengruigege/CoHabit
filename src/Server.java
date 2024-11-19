@@ -229,7 +229,8 @@ public class Server {
         }
         return result;
     }
-    public synchronized void setPreferences(User user, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
+    public synchronized void setPreferences(User user, String bedtime, boolean alcohol,
+                                            boolean smoke, boolean guests, int tidy, int roomHours) {
         if (user == null) {
             return;
         }
@@ -252,11 +253,9 @@ public class Server {
 
 
     public static void main(String[] args) {
-
         database.loadUsersFromFile();
         Server server = new Server();
-        // some way to read all data that already exists in the database
-        //open the ServerSocket and use the specific port
+
         try ( ServerSocket serverSocket = new ServerSocket(1102)) {
             while (true) {
                 try (Socket socket = serverSocket.accept();
@@ -284,11 +283,12 @@ public class Server {
                             } else writer.println("Wrong username or password");
 
                         }
+
                         //format should be register#*username#*password#*email#*phoneNumber#*desciption#*university#*bedTime#*alcohol#*smoke#*guests#*tidy#*roomHours
                         if (line.length() > 8 && line.substring(0, 8).contains("register")) {
                             String[] parts = line.split("###");
                             try {
-                                User user = new User(parts[1],parts[2],parts[3],parts[4],parts[5],parts[6]);
+                                User user = new User(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
                                 boolean alcohol = Boolean.parseBoolean(parts[8]);
                                 boolean smoke = Boolean.parseBoolean(parts[9]);
                                 boolean guests = Boolean.parseBoolean(parts[10]);
