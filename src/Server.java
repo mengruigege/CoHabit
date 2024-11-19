@@ -135,11 +135,11 @@ public class Server {
         }
         return false;
     }
-    public  boolean removeBlockedUser(User user, User blockedUser) {
-        if (user != null || blockedUser != null) {
+    public  boolean removeBlockedUser(User user, User unblockUser) {
+        if (user != null || unblockUser != null) {
             database.loadUsersFromFile();
-            if (database.getBlockedUsers(user.getName()).contains(blockedUser)) {
-                database.unblockUser(user.getName(), blockedUser.getName());
+            if (user.getBlockedUsers().contains(unblockUser)) {
+                database.unblockUser(user.getName(), unblockUser.getName());
                 return true;
             }
         }

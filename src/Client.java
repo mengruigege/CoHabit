@@ -939,13 +939,13 @@ public class Client implements ClientService {
         }
     }
 
-    public boolean unblockUser(String username, String blockedUser) {
+    public boolean unblockUser(String user, String blockedUser) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("removeBlockedUser," + username + "," + blockedUser);
+        out.println("removeBlockedUser," + user + "," + blockedUser);
 
         try {
             String response = in.readLine();
