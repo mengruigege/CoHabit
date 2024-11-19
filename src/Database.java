@@ -20,10 +20,10 @@ public class Database implements DatabaseFramework {
     private static final String BLOCKED_FILE = "blocked.txt";
     private static final String FRIEND_REQUESTS_FILE = "friend_requests.txt";
     private static final String PROFILE_PICTURE_FOLDER = "profile_pictures";
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
 
     public Database() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.allUsers = new ArrayList<>();
         }
     }
@@ -38,7 +38,7 @@ public class Database implements DatabaseFramework {
 
     public boolean deleteUser(User user) {
         boolean removed;
-        synchronized (lock) {
+        synchronized (LOCK) {
             removed = allUsers.remove(user);
         }
         if (removed) {
@@ -67,7 +67,7 @@ public class Database implements DatabaseFramework {
     }
 
     public ArrayList<User> getAllUsers() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return allUsers;
         }
     }
@@ -823,4 +823,3 @@ public class Database implements DatabaseFramework {
         }
         return results;
     }
-}
