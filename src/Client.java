@@ -68,7 +68,7 @@ public class Client implements ClientService {
 
             switch (choice1) {
                 case "1":
-                    while (true) {
+                    while (!loggedIn) {
                         while (true) {
                             System.out.println("Enter your username:");
                             client.setUsername(scanner.nextLine());
@@ -683,7 +683,6 @@ public class Client implements ClientService {
             System.out.println("Not connected to server.");
             return false;
         }
-        System.out.println("requesting the server ");
 
         out.println("sendMessage###" + username + "###" + receiver + "###" + message);
 

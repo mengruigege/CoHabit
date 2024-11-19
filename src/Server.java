@@ -34,7 +34,6 @@ public class Server {
     }
 
     public static boolean sendMessage(User sender, User reciever, String message) {
-        database.loadUsersFromFile();
         if (reciever == null) {
             return false;
         }
@@ -266,7 +265,6 @@ public class Server {
                         if (line == null) {
                             line = "";
                         }
-                        System.out.println("line = " + line);
                         // this is the main part that help to decide what to do with information of line
                         //"login, username, password,
                         if (line.length() > 5 && line.substring(0, 5).contains("login")) {
@@ -276,7 +274,7 @@ public class Server {
                             String password = parts[2];
 
                             String userInformation = server.login(username, password);
-                            if (userInformation != null) { // not sure about this
+                            if (userInformation != null || !userInformation.isEmpty()) { // not sure about this
                                 writer.println("Successful login");
                                 writer.println(userInformation);
                                 //break;
