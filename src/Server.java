@@ -30,7 +30,12 @@ public class Server {
     // method used to add the new register user to the database and return true if successful
     public boolean register(User user) {
         database.loadUsersFromFile();
-        return database.addUser(user);
+        if (database.addUser(user)) {
+            database.saveUsersToFile();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static boolean sendMessage(User sender, User reciever, String message) {

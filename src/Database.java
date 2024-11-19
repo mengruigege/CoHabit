@@ -513,7 +513,7 @@ public class Database implements DatabaseFramework {
     }
 
     public synchronized void saveUsersToFile() {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE))) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE, true))) {
             for (User user : allUsers) {
                 pw.println(user);
             }
