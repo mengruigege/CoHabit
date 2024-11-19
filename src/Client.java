@@ -294,7 +294,7 @@ public class Client implements ClientService {
             System.out.println("3. Send Friend Request");
             System.out.println("4. Remove Friend");
             System.out.println("5. Block User");
-            System.out.println("6. Block User");
+            System.out.println("6. Unblock User");
             System.out.println("7. View and Manage Blocked Users");
             System.out.println("8. View Profile");
             System.out.println("9. Update Profile");
@@ -331,7 +331,9 @@ public class Client implements ClientService {
                     client.blockUser(client.getUsername(), blockedUser);
                     break;
                 case "6":
-                    client.viewBlockedUsers(client.getUsername());
+                    System.out.print("Enter username to unblock: ");
+                    String unblockUser = scanner.nextLine();
+                    client.unblockUser(client.getUsername(), unblockUser);
                     break;
                 case "7":
                     client.viewBlockedUsers(client.getUsername());
