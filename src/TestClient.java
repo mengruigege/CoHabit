@@ -116,21 +116,11 @@ public class TestClient {
         assertFalse("Friend request should fail for a non-existent user.", client.sendFriendRequest("Bob", "UnknownUser"));
     }
 
-    // Test adding friends
-    @Test
-    public void testAddFriend_Successful() {
-        assertTrue("Adding friend should succeed for valid users.", client.addFriend("Bob", "friend"));
-    }
-
-    @Test
-    public void testAddFriend_Failed() {
-        assertFalse("Adding friend should fail for a non-existent user.", client.addFriend("Bob", "UnknownUser"));
-    }
-
     // Test removing friends
     @Test
     public void testRemoveFriend_Successful() {
-        client.addFriend("Bob","Jim");
+        client.sendFriendRequest("Bob", "Jim");
+        client.acceptFriendRequest("Jim");
         assertTrue("Removing friend should succeed for existing friends.", client.removeFriend("Bob", "Jim"));
     }
 
