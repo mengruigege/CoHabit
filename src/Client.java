@@ -11,6 +11,13 @@ public class Client implements ClientService {
     private String userDescription = "";
     private String university = "";
 
+    private String bedTime;
+    private boolean alcohol;
+    private boolean smoke;
+    private boolean guests;
+    private int tidy;
+    private int roomHours;
+
     private boolean isConnected;
     private Socket socket;
     private PrintWriter out;
@@ -272,9 +279,9 @@ public class Client implements ClientService {
                             System.out.println("Invalid Input");
                         }
                     }
-                    user = new User(client.getUsername(), client.getPassword(), client.getEmail(), client.getPhone(), client.getUserDescription(), client.getUniversity());
-                    user.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
-                    if (client.register(user)) {
+                    client.setUserRegisterInformation(client.getUsername(), client.getPassword(), client.getEmail(), client.getPhone(), client.getUserDescription(), client.getUniversity());
+                    client.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
+                    if (client.register()) {
                         loggedIn = true;
                     }
                     break;
@@ -347,7 +354,6 @@ public class Client implements ClientService {
                     System.out.println("7. Preferences");
 
                     String selection = scanner.nextLine();
-
 
                     client.updateProfile(user);
                 case "10":
@@ -530,20 +536,30 @@ public class Client implements ClientService {
         university = tokens[5];
     }
 
+    public void setUserRegisterInformation(String username, String password, String email,
+                                           String phoneNumber, String userDescription, String university) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.userDescription = userDescription;
+        this.university = university;
+    }
+
     public boolean register(User user) throws UsernameTakenException {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
-        out.println("register###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
-                + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
-                user.getBedTime() + "###" + user.getAlcohol() + "###" + user.getSmoke() + "###" + user.getGuests() + "###" +
-                user.getTidy() + "###" + user.getRoomHours());
+        out.println("register###" + username + "###" + password + "###" + email + "###"
+                + phoneNumber + "###" + userDescription + "###" + university + "###" +
+                bedTime + "###" + alcohol + "###" + smoke + "###" + guests + "###" +
+                tidy + "###" + roomHours);
 
         try {
             String response = in.readLine();
             if ("successful registration".equals(response)) {
-                System.out.println("User registered: " + user.getName());
+                System.out.println("User registered: " + username);
                 return true;
             } else {
                 System.out.println("Registration: " + response);
@@ -565,14 +581,15 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("updateProfile###" + user.getName() + "###" + user.getPassword() + "###" + user.getEmail() + "###"
-                + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity() + "###" +
-                user.getPreferences().replace(",", "###"));
+        out.println("updateProfile###" + username + "###" + password + "###" + email + "###"
+                + phoneNumber + "###" + userDescription + "###" + university + "###" +
+                bedTime + "###" + alcohol + "###" + smoke + "###" + guests + "###" +
+                tidy + "###" + roomHours);
 
         try {
             String response = in.readLine();
             if ("Profile Updated".equals(response)) {
-                System.out.println("Profile Updated: " + user.getName());
+                System.out.println("Profile Updated: " + username);
                 return true;
             } else {
                 System.out.println("Updating failed: " + response);
@@ -581,6 +598,19 @@ public class Client implements ClientService {
         } catch (IOException e) {
             System.out.println("Error during updating: " + e.getMessage());
             return false;
+        }
+    }
+
+    public void setPreferences(String bedTime, boolean alcohol, boolean smoke,
+                               boolean guests, int tidy, int roomHours) {
+        this.bedTime = bedTime;
+        this.alcohol = alcohol;
+        this.smoke = smoke;
+        this.guests = guests;
+        this.tidy = tidy;
+        this.roomHours = roomHours;
+        if (bedTime == null || tidy <= 0 || tidy > 10 || roomHours < 0) {
+            System.out.println("Invalid Input");
         }
     }
 
@@ -932,7 +962,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("exactMatch," + user.getName());
+        out.println("exactMatch," + username);
 
         try {
             String response = in.readLine();
@@ -952,7 +982,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("partialMatch," + user.getName());
+        out.println("partialMatch," + username);
 
         try {
             String response = in.readLine();
@@ -973,7 +1003,7 @@ public class Client implements ClientService {
         }
 
         String preferences = user.getPreferences();
-        out.println("updatePreferences," + user.getName() + "," + preferences.replace(",", "###"));
+        out.println("updatePreferences," + username + "," + preferences.replace(",", "###"));
 
         try {
             String response = in.readLine();

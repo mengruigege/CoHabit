@@ -259,7 +259,7 @@ public class Server {
         //open the ServerSocket and use the specific port
         try ( ServerSocket serverSocket = new ServerSocket(1102)) {
             while (true) {
-                try ( Socket socket = serverSocket.accept();
+                try (Socket socket = serverSocket.accept();
                       BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                       PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                     while (true) {
