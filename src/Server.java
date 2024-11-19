@@ -274,7 +274,7 @@ public class Server {
                             String password = parts[2];
 
                             String userInformation = server.login(username, password);
-                            if (userInformation != null || !userInformation.isEmpty()) { // not sure about this
+                            if (userInformation != null && !userInformation.isEmpty()) { // not sure about this
                                 writer.println("Successful login");
                                 writer.println(userInformation);
                                 //break;
