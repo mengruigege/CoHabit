@@ -1,3 +1,4 @@
 Bob,password123,bob@gmail.com,1234567890,Test user Bob,University A,null,false,false,false,0,0
 Jim,password234,jim@gmail.com,2345678901,Test user Jim,University B,null,false,false,false,0,0
 Alice,password345,alice@example.com,5555555555,Test user Alice,University A,null,false,false,false,0,0
+
