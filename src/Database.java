@@ -490,6 +490,9 @@ public class Database implements DatabaseFramework {
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",");
+                if (data.length != 6) {
+                    continue;
+                }
                 String name = data[0];
                 String password = data[1];
                 String email = data[2];

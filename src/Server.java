@@ -30,9 +30,7 @@ public class Server {
     // method used to add the new register user to the database and return true if successful
     public boolean register(User user) {
         database.loadUsersFromFile();
-        database.addUser(user);
-        database.saveUsersToFile();
-        return true;
+        return database.addUser(user);
     }
 
     public static boolean sendMessage(User sender, User reciever, String message) {
@@ -257,8 +255,8 @@ public class Server {
         try ( ServerSocket serverSocket = new ServerSocket(1102)) {
             while (true) {
                 try (Socket socket = serverSocket.accept();
-                      BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                      PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                     PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                     while (true) {
                         String line = reader.readLine();
                         if (line == null) {
