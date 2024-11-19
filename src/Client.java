@@ -354,8 +354,63 @@ public class Client implements ClientService {
                     System.out.println("7. Preferences");
 
                     String selection = scanner.nextLine();
+                    String oldUsername = client.getUsername();
+                    switch (selection) {
+                        case "1":
+                            System.out.print("Enter new username: ");
+                            client.setUsername(scanner.nextLine());
+                            break;
+                        case "2":
+                            System.out.print("Enter new password: ");
+                            client.setPassword(scanner.nextLine());
+                            break;
+                        case "3":
+                            System.out.print("Enter new email: ");
+                            client.setEmail(scanner.nextLine());
+                            break;
+                        case "4":
+                            System.out.print("Enter new phone number: ");
+                            client.setPhone(scanner.nextLine());
+                            break;
+                        case "5":
+                            System.out.print("Enter new description: ");
+                            client.setUserDescription(scanner.nextLine());
+                            break;
+                        case "6":
+                            System.out.print("Enter new university: ");
+                            client.setUniversity(scanner.nextLine());
+                            break;
+                        case "7":
+                            System.out.println("Updating preferences...");
+                            // Call a method to collect preferences and update
+                            System.out.print("Enter your average bed time (e.g., 22:30): ");
+                            client.bedTime = scanner.nextLine();
 
-                    client.updateProfile(user);
+                            System.out.print("Do you drink alcohol? (y/n): ");
+                            client.alcohol = scanner.nextLine().equalsIgnoreCase("y");
+
+                            System.out.print("Do you smoke? (y/n): ");
+                            client.smoke = scanner.nextLine().equalsIgnoreCase("y");
+
+                            System.out.print("Are you comfortable with guests? (y/n): ");
+                            client.guests = scanner.nextLine().equalsIgnoreCase("y");
+
+                            System.out.print("How tidy are you? (1-10): ");
+                            client.tidy = Integer.parseInt(scanner.nextLine());
+
+                            System.out.print("How many hours per day do you spend in your room? ");
+                            client.roomHours = Integer.parseInt(scanner.nextLine());
+                            break;
+                        default:
+                            System.out.println("Invalid selection.");
+                    }
+
+                    if (client.updateProfile(oldUsername)) {
+                        System.out.println("Profile updated successfully.");
+                    } else {
+                        System.out.println("Profile update failed.");
+                    }
+                    break;
                 case "10":
                     System.out.println("\nHow would you like to search?");
                     System.out.println("1. By Parameter");
@@ -386,32 +441,41 @@ public class Client implements ClientService {
                                     System.out.println("\nEnter the desired value:");
                                     parameter = scanner.nextLine();
                                     client.searchByParameter("name", parameter);
+                                    break;
                                 case "2":
                                     System.out.println("\nEnter the desired value:");
                                     parameter = scanner.nextLine();
                                     client.searchByParameter("email", parameter);
+                                    break;
                                 case "3":
                                     System.out.println("\nEnter the desired value:");
                                     parameter = scanner.nextLine();
                                     client.searchByParameter("phone", parameter);
+                                    break;
                                 case "4":
                                     System.out.println("\nEnter the desired value:");
                                     parameter = scanner.nextLine();
                                     client.searchByParameter("university", parameter);
+                                    break;
                             }
-
                         case "2":
                             client.exactMatch(user);
+                            break;
                         case "3":
                             client.partialMatch(user);
+                            break;
+                        default:
+                            System.out.println("Invalid Input");
+                            break;
                     }
-
+                    break;
                 case "11":
                     client.disconnect();
                     exit = true;
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
+                    break;
             }
         }
         scanner.close();
@@ -575,13 +639,13 @@ public class Client implements ClientService {
         return in.readLine();
     }
 
-    public boolean updateProfile(User user) {
+    public boolean updateProfile(String oldUsername) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("updateProfile###" + username + "###" + password + "###" + email + "###"
+        out.println("updateProfile###" + oldUsername + "###" + username + "###" + password + "###" + email + "###"
                 + phoneNumber + "###" + userDescription + "###" + university + "###" +
                 bedTime + "###" + alcohol + "###" + smoke + "###" + guests + "###" +
                 tidy + "###" + roomHours);

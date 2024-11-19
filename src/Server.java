@@ -479,6 +479,64 @@ public class Server {
                             }
                         }
 
+                        // format is updateProfile###username###password###email###phoneNumber###description###university###bedTime###alcohol###smoke###guests###tidy###roomHours
+                        if (line.length() > 13 && line.substring(0, 13).contains("updateProfile")) {
+                            String[] tokens = line.split("###");
+                            if (tokens.length < 14) {
+                                writer.println("Error: Missing fields for updating profile.");
+                                continue;
+                            }
+
+                            String oldUsername = tokens[1]; // Old username for lookup
+                            String newUsername = tokens[2]; // New username (if updated)
+                            String password = tokens[3];
+                            String email = tokens[4];
+                            String phoneNumber = tokens[5];
+                            String description = tokens[6];
+                            String university = tokens[7];
+                            String bedTime = tokens[8];
+                            boolean alcohol = Boolean.parseBoolean(tokens[9]);
+                            boolean smoke = Boolean.parseBoolean(tokens[10]);
+                            boolean guests = Boolean.parseBoolean(tokens[11]);
+                            int tidy;
+                            int roomHours;
+
+                            try {
+                                tidy = Integer.parseInt(tokens[12]);
+                                roomHours = Integer.parseInt(tokens[13]);
+                            } catch (NumberFormatException e) {
+                                writer.println("Error: Invalid numeric values for tidy or roomHours.");
+                                continue;
+                            }
+
+                            database.loadUsersFromFile();
+                            User user = database.findUserByName(oldUsername); // Lookup using the old username
+
+                            if (user == null) {
+                                writer.println("Error: User not found.");
+                                continue;
+                            }
+
+                            if (!password.equals(user.getPassword())) {
+                                writer.println("Error: Incorrect password.");
+                                continue;
+                            }
+
+                            // Update the user's profile
+                            try {
+                                user.setName(newUsername); // Update the username
+                                user.setEmail(email);
+                                user.setPhoneNumber(phoneNumber);
+                                user.setDescription(description);
+                                user.setUniversity(university);
+                                user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
+                                database.saveUsersToFile(); // Save the updated user profile
+                                writer.println("Profile Updated");
+                            } catch (Exception e) {
+                                writer.println("Error updating profile: " + e.getMessage());
+                            }
+                        }
+
                         // format should be partialMatch,user
                         if (line.length() > 12 && line.substring(0, 12).contains("partialMatch")) {
                             String[] parts = line.split(",");

@@ -20,5 +20,5 @@ public interface ClientService {
 
     void viewProfile(String username);                        // View user profile
 
-    boolean updateProfile(User updatedProfile);               // Update profile
+    boolean updateProfile(String oldUsername);               // Update profile
 }
