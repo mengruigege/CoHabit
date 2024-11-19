@@ -72,49 +72,36 @@ public class Database implements DatabaseFramework {
     }
 
     public synchronized boolean addFriend(User user1, User user2) {
-        // Check if the users are already friends
-        boolean isFriend1 = false;
-        boolean isFriend2 = false;
+        if (user1 == null || user2 == null) {
+            System.out.println("Either user1 or user2 is null. Cannot add friends.");
+            return false;
+        }
 
-        for (User user : user1.getFriendList()) {
-            if (user.getName().equals(user2.getName())) {
-                isFriend1 = true;
-                break;
+        // Check if they are already friends
+        for (User friend : user1.getFriendList()) {
+            if (friend.getName().equals(user2.getName())) {
+                System.out.println(user2.getName() + " is already a friend of " + user1.getName());
+                return false;
             }
         }
 
-        for (User user : user2.getFriendList()) {
-            if (user.getName().equals(user1.getName())) {
-                isFriend2 = true;
-                break;
-            }
+        // Add each other to their respective friend lists
+        user1.addFriend(user2);
+        user2.addFriend(user1);
+
+        // Append the friendship directly to the friends file
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE, true))) {
+            pw.println(user1.getName() + ":" + user2.getName());
+            pw.println(user2.getName() + ":" + user1.getName());
+            System.out.println("Friends added successfully: " + user1.getName() + " and " + user2.getName());
+        } catch (IOException e) {
+            System.out.println("Error adding friends to file: " + e.getMessage());
+            return false;
         }
 
-        // If they are not already friends, add each other as friends
-        if (!isFriend1 && !isFriend2) {
-            user1.addFriend(user2);
-            user2.addFriend(user1);
-
-            // Save the updated friends list to the file
-            try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
-                for (User user : allUsers) {
-                    String line = user.getName() + ":";
-                    for (User friend : user.getFriendList()) {
-                        line += friend.getName() + ",";
-                    }
-                    if (line.endsWith(",")) {
-                        line = line.substring(0, line.length() - 1);
-                    }
-                    pw.println(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false; // Return false if saving the file fails
-            }
-            return true; // Return true if the friend was added and saved successfully
-        }
-        return false; // Return false if they are already friends
+        return true;
     }
+
 
 
     public synchronized boolean removeFriend(User user1, User user2) {
