@@ -72,72 +72,107 @@ public class Database implements DatabaseFramework {
     }
 
     public synchronized boolean addFriend(User user1, User user2) {
-        // Check if the users are already friends
-        boolean isFriend1 = false;
-        boolean isFriend2 = false;
+        if (user1 == null || user2 == null) {
+            System.out.println("Either user1 or user2 is null. Cannot add friends.");
+            return false;
+        }
 
-        for (User user : user1.getFriendList()) {
-            if (user.getName().equals(user2.getName())) {
-                isFriend1 = true;
-                break;
+        // Check if they are already friends
+        for (User friend : user1.getFriendList()) {
+            if (friend.getName().equals(user2.getName())) {
+                System.out.println(user2.getName() + " is already a friend of " + user1.getName());
+                return false;
             }
         }
 
-        for (User user : user2.getFriendList()) {
-            if (user.getName().equals(user1.getName())) {
-                isFriend2 = true;
-                break;
-            }
+        // Add each other to their respective friend lists
+        user1.addFriend(user2);
+        user2.addFriend(user1);
+
+        // Append the friendship directly to the friends file
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE, true))) {
+            pw.println(user1.getName() + ":" + user2.getName());
+            pw.println(user2.getName() + ":" + user1.getName());
+            System.out.println("Friends added successfully: " + user1.getName() + " and " + user2.getName());
+        } catch (IOException e) {
+            System.out.println("Error adding friends to file: " + e.getMessage());
+            return false;
         }
 
-        // If they are not already friends, add each other as friends
-        if (!isFriend1 && !isFriend2) {
-            user1.addFriend(user2);
-            user2.addFriend(user1);
-
-            // Save the updated friends list to the file
-            try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
-                for (User user : allUsers) {
-                    String line = user.getName() + ":";
-                    for (User friend : user.getFriendList()) {
-                        line += friend.getName() + ",";
-                    }
-                    if (line.endsWith(",")) {
-                        line = line.substring(0, line.length() - 1);
-                    }
-                    pw.println(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false; // Return false if saving the file fails
-            }
-            return true; // Return true if the friend was added and saved successfully
-        }
-        return false; // Return false if they are already friends
+        return true;
     }
 
-
     public synchronized boolean removeFriend(User user1, User user2) {
-        boolean isFriend1 = false;
-        boolean isFriend2 = false;
-        for (User user : user1.getFriendList()) {
-            if (user2.getName().equals(user.getName())) {
-                isFriend1 = true;
-                break;
+        if (user1 == null || user2 == null) {
+            return false;
+        }
+
+        boolean removed = false;
+        ArrayList<String> updatedFriendsFile = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    String currentUser = parts[0].trim();
+                    String[] friendList = parts[1].split(",");
+                    ArrayList<String> updatedFriends = new ArrayList<>();
+
+                    if (currentUser.equals(user1.getName())) {
+                        // Remove user2 from user1's friend list
+                        for (String friend : friendList) {
+                            if (!friend.trim().equals(user2.getName())) {
+                                updatedFriends.add(friend.trim());
+                            } else {
+                                removed = true;
+                            }
+                        }
+                        if (!updatedFriends.isEmpty()) {
+                            updatedFriendsFile.add(currentUser + ":" + String.join(",", updatedFriends));
+                        }
+                    } else if (currentUser.equals(user2.getName())) {
+                        // Remove user1 from user2's friend list
+                        for (String friend : friendList) {
+                            if (!friend.trim().equals(user1.getName())) {
+                                updatedFriends.add(friend.trim());
+                            } else {
+                                removed = true;
+                            }
+                        }
+                        if (!updatedFriends.isEmpty()) {
+                            updatedFriendsFile.add(currentUser + ":" + String.join(",", updatedFriends));
+                        }
+                    } else {
+                        // Copy other users' data as is
+                        updatedFriendsFile.add(line);
+                    }
+                } else if (parts.length == 1) {
+                    // If there's no colon and it's just a user with no friends, skip this line
+                    if (!parts[0].trim().equals(user1.getName()) && !parts[0].trim().equals(user2.getName())) {
+                        updatedFriendsFile.add(line);
+                    } else {
+                        removed = true;
+                    }
+                }
             }
+        } catch (IOException e) {
+            System.out.println("Error reading friends file: " + e.getMessage());
+            return false;
         }
-        for (User user : user2.getFriendList()) {
-            if (user1.getName().equals(user.getName())) {
-                isFriend2 = true;
-                break;
+
+        // Rewrite the file with updated data
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE))) {
+            for (String updatedLine : updatedFriendsFile) {
+                pw.println(updatedLine);
             }
+        } catch (IOException e) {
+            System.out.println("Error writing friends file: " + e.getMessage());
+            return false;
         }
-        if (isFriend1 && isFriend2) {
-            user1.removeFriend(user2);
-            user2.removeFriend(user1);
-            return true;
-        }
-        return false;
+
+        return removed;
     }
 
     public synchronized void addFriendRequest(User sender, User receiver) {
@@ -342,6 +377,37 @@ public class Database implements DatabaseFramework {
             e.printStackTrace();
         }
     }
+
+    public synchronized ArrayList<String> getFriendsFromFile(String username) {
+        ArrayList<String> friends = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    String currentUser = parts[0].trim();
+                    String[] friendList = parts[1].split(",");
+
+                    // If this is the user we are looking for, populate their friends list
+                    if (currentUser.equals(username)) {
+                        for (String friend : friendList) {
+                            if (!friend.trim().isEmpty()) {
+                                friends.add(friend.trim());
+                            }
+                        }
+                        break; // We found the user; no need to keep reading
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading friends from file: " + e.getMessage());
+        }
+
+        return friends;
+    }
+
 
     public synchronized ArrayList<User> loadFriendsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
