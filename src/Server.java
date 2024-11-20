@@ -116,11 +116,9 @@ public class Server {
             database.loadUsersFromFile();
 
             if (!(user.getFriendList().contains(friend))) {
-//                database.loadFriendsFromFile();?
                 database.addFriend(user, friend);
                 database.addFriend(friend, user);
                 database.removeFriendRequest(user, friend);
-                //saveFriendRequestFile
                 return true;
             }
         }
@@ -203,7 +201,7 @@ public class Server {
         return result;
 
     }
-    public  String exactMatch(User user) {
+    public String exactMatch(User user) {
         if (user == null) {
             return "";
         }
@@ -286,7 +284,6 @@ public class Server {
                                 if (userInformation != null && !userInformation.isEmpty()) { // not sure about this
                                     writer.println("Successful login");
                                     writer.println(userInformation);
-                                    //break;
                                 } else writer.println("Wrong username or password");
 
                             }
@@ -356,7 +353,6 @@ public class Server {
                                 String[] parts = line.split(",");
                                 database.loadUsersFromFile();
                                 User user = database.findUserByName(parts[1]);
-                                //System.out.println(server.viewFriendRequests(user));
                                 if (server.viewFriendRequests(user) == null) {
                                     writer.println("Friend requests are empty");
                                 } else {

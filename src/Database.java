@@ -786,10 +786,9 @@ public class Database implements DatabaseFramework {
         return matchingUsers;
     }
 
-
     public synchronized ArrayList<User> exactMatch(User mainUser) {
         if (mainUser == null) {
-            System.out.println("Main user cannot be null.");
+            System.err.println("Main user cannot be null.");
             return new ArrayList<>();
         }
 
@@ -797,7 +796,7 @@ public class Database implements DatabaseFramework {
         ArrayList<User> results = new ArrayList<>();
 
         for (User user : allUsers) {
-            if (mainUser.perfectMatch(user)) {
+            if (mainUser.perfectMatch(user) && !mainUser.getName().equals(user.getName())) {
                 results.add(user);
             }
         }
