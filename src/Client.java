@@ -450,7 +450,7 @@ public class Client implements ClientService {
                     String parameter;
                     String value;
 
-                    if (!option1.equals("1") || !option1.equals("2") || !option1.equals("3")) {
+                    if (!option1.equals("1") && !option1.equals("2") && !option1.equals("3")) {
                         System.out.println("Invalid Input");
                     }
 

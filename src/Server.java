@@ -345,8 +345,7 @@ public class Server {
                             if (server.sendFriendRequest(user, potentialfriend)) {
                                 writer.println("Successfully sent friend request");
                             } else {
-                                //System.out.println("failed");
-                                writer.println("Friend request failed");
+                                writer.println("Friend request failed (possibly already sent a friend request)");
                             }
 
                         }
