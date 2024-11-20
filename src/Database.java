@@ -22,12 +22,15 @@ public class Database implements DatabaseFramework {
     private static final String PROFILE_PICTURE_FOLDER = "profile_pictures";
     private static final Object LOCK = new Object();
 
+    // Constructor to initialize the Database object
     public Database() {
         synchronized (LOCK) {
             this.allUsers = new ArrayList<>();
         }
     }
 
+    // Adds a user to the database if the username is not already taken
+    // Returns true if successful, false otherwise
     public synchronized boolean addUser(User user) {
         if (user != null && !usernameExists(user.getName())) {
             allUsers.add(user);
@@ -36,6 +39,8 @@ public class Database implements DatabaseFramework {
         return false; // User is null or username is taken
     }
 
+    // Removes a user from the database
+    // Returns true if successful, false otherwise
     public boolean deleteUser(User user) {
         boolean removed;
         synchronized (LOCK) {
@@ -48,6 +53,7 @@ public class Database implements DatabaseFramework {
         return removed;
     }
 
+    // Checks if a username already exists in the database
     public synchronized boolean usernameExists(String username) {
         for (User user : allUsers) {
             if (user.getName().equals(username)) {
@@ -57,6 +63,8 @@ public class Database implements DatabaseFramework {
         return false;
     }
 
+    // Finds and returns a user by their username
+    // Returns null if no match is found
     public synchronized User findUserByName(String name) {
         for (User user : allUsers) {
             if (user.getName().equals(name)) {
@@ -66,12 +74,15 @@ public class Database implements DatabaseFramework {
         return null; // User not found
     }
 
+    // Retrieves the list of all users
     public ArrayList<User> getAllUsers() {
         synchronized (LOCK) {
             return allUsers;
         }
     }
 
+    // Adds two users as friends
+    // Updates both users' friend lists and appends the friendship to a file
     public synchronized boolean addFriend(User user1, User user2) {
         if (user1 == null || user2 == null) {
             System.out.println("Either user1 or user2 is null. Cannot add friends.");
@@ -90,7 +101,6 @@ public class Database implements DatabaseFramework {
         user1.addFriend(user2);
         user2.addFriend(user1);
 
-        // Append the friendship directly to the friends file
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIENDS_FILE, true))) {
             pw.println(user1.getName() + ":" + user2.getName());
             pw.println(user2.getName() + ":" + user1.getName());
@@ -100,9 +110,11 @@ public class Database implements DatabaseFramework {
             return false;
         }
 
-        return true;
+        return true; // Friendship added successfully
     }
 
+    // Removes a friendship between two users
+    
     public synchronized boolean removeFriend(User user1, User user2) {
         if (user1 == null || user2 == null) {
             return false;
@@ -176,6 +188,7 @@ public class Database implements DatabaseFramework {
         return removed;
     }
 
+    // Records a friend request from one user to another in the file
     public synchronized void addFriendRequest(User sender, User receiver) {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE, true))) {
             pw.println(sender.getName() + ":" + receiver.getName());
@@ -184,9 +197,11 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Removes a specific friend request from the file
     public synchronized void removeFriendRequest(User sender, User receiver) {
         ArrayList<String> friendRequests = new ArrayList<>();
 
+        // Read the current friend requests and filter out the specified request
         try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -215,6 +230,7 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Retrieves a list of users blocked by the specified username
     public synchronized ArrayList<String> getBlockedUsers(String username) {
         if (username == null || username.isEmpty()) {
             return new ArrayList<>(); // Return an empty list if the username is invalid
@@ -222,6 +238,7 @@ public class Database implements DatabaseFramework {
 
         ArrayList<String> blockedUsers = new ArrayList<>();
 
+        // Read the blocked file and collect users blocked by the given username
         try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -237,9 +254,10 @@ public class Database implements DatabaseFramework {
         } catch (IOException e) {
             System.out.println("Error reading blocked file: " + e.getMessage());
         }
-        return blockedUsers;
+        return blockedUsers; // Return the list of blocked users
     }
 
+    // Blocks a user by adding them to the blocker's block list and removing any existing friendship between them
 
     public synchronized boolean blockUser(String blockerName, String blockedName) {
         if (blockerName == null || blockedName == null || blockerName.isEmpty() || blockedName.isEmpty()) {
@@ -251,7 +269,7 @@ public class Database implements DatabaseFramework {
         ArrayList<String> updatedFriendsFile = new ArrayList<>();
 
         try {
-            // Step 1: Update the blocked.txt file
+            // Update the blocked.txt file
             try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -292,7 +310,7 @@ public class Database implements DatabaseFramework {
                 }
             }
 
-            // Step 2: Update the friends.txt file
+            // Update the friends.txt file
             try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -338,6 +356,7 @@ public class Database implements DatabaseFramework {
         return isBlockedAdded;
     }
 
+    // Unblocks a user by removing them from the blocker's block list 
     public synchronized boolean unblockUser(String blockerName, String unblockedName) {
         if (blockerName == null || unblockedName == null || blockerName.isEmpty() || unblockedName.isEmpty()) {
             return false;
@@ -347,7 +366,7 @@ public class Database implements DatabaseFramework {
         ArrayList<String> updatedBlockedFile = new ArrayList<>();
 
         try {
-            // Step 1: Update the blocked.txt file
+            // Update the blocked.txt file
             try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -377,7 +396,7 @@ public class Database implements DatabaseFramework {
                 }
             }
 
-            // Step 2: Rewrite the blocked.txt file
+            // Rewrite the blocked.txt file
             try (PrintWriter pw = new PrintWriter(new FileOutputStream(BLOCKED_FILE))) {
                 for (String updatedLine : updatedBlockedFile) {
                     pw.println(updatedLine);
@@ -421,6 +440,7 @@ public class Database implements DatabaseFramework {
         return true;
     }
 
+    // Updates or adds preferences for a specific user in the preferences file
 
     public synchronized void updatePreferences(String username, ArrayList<String> preferences) {
         File tempFile = new File("temp_preferences.txt");
@@ -430,7 +450,7 @@ public class Database implements DatabaseFramework {
              BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
 
             String line;
-            boolean updated = false;
+            boolean updated = false; // Tracks if the user's preferences were updated
 
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",", 2);
@@ -461,6 +481,8 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Loads the preferences for a specific user from the preferences file
+
     public synchronized ArrayList<String> loadPreferences(String username) {
         ArrayList<String> preferences = new ArrayList<>();
 
@@ -469,11 +491,12 @@ public class Database implements DatabaseFramework {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",", 2);
                 if (parts.length == 2 && parts[0].equals(username)) {
+                     // If the username matches, parse and add the preferences
                     String[] prefs = parts[1].split(",");
                     for (String pref : prefs) {
                         preferences.add(pref);
                     }
-                    return preferences;
+                    return preferences; // Return preferences once found
                 }
             }
         } catch (IOException e) {
@@ -481,9 +504,10 @@ public class Database implements DatabaseFramework {
         }
 
         System.out.println("No preferences found for user: " + username);
-        return preferences;
+        return preferences; // Return an empty list if no preferences are found
     }
 
+    // Loads users from a file and populates the allUsers list
     public synchronized void loadUsersFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
@@ -491,7 +515,7 @@ public class Database implements DatabaseFramework {
             while ((line = br.readLine()) != null) {
 
                 String[] data = line.split(",");
-                if (data.length != 12) {
+                if (data.length != 12) { // Ensure the line has the expected number of fields
                     continue;
                 }
                 String name = data[0];
@@ -508,6 +532,8 @@ public class Database implements DatabaseFramework {
                 int tidy = Integer.parseInt(data[10]);
                 int roomHours = Integer.parseInt(data[11]);
 
+                // Create a User object and set preferences
+                
                 User user = new User(name, password, email, phoneNumber, description, university);
                 user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
 
@@ -518,7 +544,7 @@ public class Database implements DatabaseFramework {
                 }
                 users.add(user);
             }
-            allUsers = users;
+            allUsers = users; // Replace the allUsers list with the newly loaded users
         } catch (NumberFormatException e) {
             System.err.println("Error parsing numeric values in data: " + e.getMessage());
         } catch (IOException e) {
@@ -528,16 +554,18 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Saves all users to the USERS_FILE
     public synchronized void saveUsersToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE, true))) {
             for (User user : allUsers) {
-                pw.println(user);
+                pw.println(user); // Write user information
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // Retrieves a user's friends from the FRIENDS_FILE
     public synchronized ArrayList<String> getFriendsFromFile(String username) {
         ArrayList<String> friends = new ArrayList<>();
 
@@ -568,7 +596,7 @@ public class Database implements DatabaseFramework {
         return friends;
     }
 
-
+    // Loads all users' friends from the FRIENDS_FILE
     public synchronized ArrayList<User> loadFriendsFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
             String line;
@@ -598,6 +626,7 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Loads blocked users from the BLOCKED_FILE
     public synchronized ArrayList<User> loadBlockedFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(BLOCKED_FILE))) {
             String line;
@@ -627,6 +656,7 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Saves the current state of blocked users to the BLOCKED_FILE
     public synchronized void saveBlockedToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(BLOCKED_FILE))) {
             for (User user : allUsers) {
@@ -660,6 +690,7 @@ public class Database implements DatabaseFramework {
         return friendRequests;
     }
 
+    // Saves all friend requests for all users to the FRIEND_REQUESTS_FILE
     public synchronized boolean saveFriendRequest() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
             for (User user : allUsers) {
@@ -675,14 +706,16 @@ public class Database implements DatabaseFramework {
                     }
                 }
             }
-            return true;
+            return true; // Successfully saved requests
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return false; // Failed to save requests
         }
     }
 
+    // Records a message exchanged between two users in the MESSAGES_FILE
     public synchronized void recordMessages(String sender, String receiver, String message) {
+         // Format the message log: sender,receiver,message
         String log = String.format("%s,%s,%s", sender, receiver, message);
         try (PrintWriter pr = new PrintWriter(new FileOutputStream(MESSAGES_FILE, true))) {
             pr.println(log);
@@ -691,6 +724,7 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Loads the conversation history between two users
     public synchronized ArrayList<String> loadConversation(String user1, String user2) {
         ArrayList<String> messages = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(MESSAGES_FILE))) {
@@ -710,13 +744,14 @@ public class Database implements DatabaseFramework {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return messages;
+        return messages; // Return the list of conversation messages
     }
 
+    // Saves the profile picture of a user to a file
     public void saveProfilePicture(User user) {
         byte[] pictureData = user.getProfilePicture();
         if (pictureData == null) {
-            return;
+            return; // Exit if no picture data is available
         }
         File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
         try (FileOutputStream fos = new FileOutputStream(pictureFile)) {
@@ -726,25 +761,28 @@ public class Database implements DatabaseFramework {
         }
     }
 
+    // Loads the profile picture of a user from a file
     public void loadProfilePicture(User user) {
         File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
         if (pictureFile.exists()) {
             try (FileInputStream fis = new FileInputStream(pictureFile)) {
                 byte[] pictureData = fis.readAllBytes();
-                user.setProfilePicture(pictureData);
+                user.setProfilePicture(pictureData); // Set the profile picture data to the user
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    // Deletes the profile picture of a user
     public void deleteProfilePicture(User user) {
         File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
         if (pictureFile.exists()) {
-            pictureFile.delete();
+            pictureFile.delete(); // Delete the profile picture file if it exists
         }
     }
 
+    // Searches users based on a specified parameter and value
     public synchronized ArrayList<User> searchByParameter(String parameter, String value) {
         loadUsersFromFile();
         ArrayList<User> matchingUsers = new ArrayList<>();
@@ -783,9 +821,10 @@ public class Database implements DatabaseFramework {
             }
         }
 
-        return matchingUsers;
+        return matchingUsers; // Return the list of matching users
     }
 
+    // Finds users who are an exact match with the main user
     public synchronized ArrayList<User> exactMatch(User mainUser) {
         if (mainUser == null) {
             System.err.println("Main user cannot be null.");
@@ -801,9 +840,10 @@ public class Database implements DatabaseFramework {
             }
         }
 
-        return results;
+        return results; // Return the list of exact matches
     }
 
+    // Finds users who partially match with the main user
     public synchronized ArrayList<User> partialMatch(User mainUser) {
         if (mainUser == null) {
             System.out.println("Main user cannot be null.");
