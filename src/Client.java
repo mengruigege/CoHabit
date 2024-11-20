@@ -113,6 +113,9 @@ public class Client implements ClientService {
                         } else {
                             System.out.println("Invalid username or password");
                         }
+                        if (!loggedIn) {
+                            System.out.println("Please try again");
+                        }
                     }
                     break;
                 case "2":
@@ -313,15 +316,16 @@ public class Client implements ClientService {
         while (!exit) {
             System.out.println("\nSelect an option:");
             System.out.println("1. Send Message");
-            System.out.println("2. View Friend Requests");
-            System.out.println("3. Send Friend Request");
-            System.out.println("4. Remove Friend");
-            System.out.println("5. Block User");
-            System.out.println("6. Unblock User");
-            System.out.println("7. View Profile");
-            System.out.println("8. Update Profile");
-            System.out.println("9. Search roommates");
-            System.out.println("10. Disconnect and Exit");
+            System.out.println("2. View Message");
+            System.out.println("3. View Friend Requests");
+            System.out.println("4. Send Friend Request");
+            System.out.println("5. Remove Friend");
+            System.out.println("6. Block User");
+            System.out.println("7. Unblock User");
+            System.out.println("8. View Profile");
+            System.out.println("9. Update Profile");
+            System.out.println("10. Search roommates");
+            System.out.println("11. Disconnect and Exit");
 
             String choice2 = scanner.nextLine();
 
@@ -332,44 +336,47 @@ public class Client implements ClientService {
                     String receiver = scanner.nextLine();
                     System.out.print("Enter message: ");
                     String message = scanner.nextLine();
-                    //client.fetchMessages(client.getUsername(), receiver);
                     client.sendMessage(receiver, message);
                     break;
                 case "2":
+                    //To view incoming messages
+                    client.viewMessage(client.getUsername());
+                    break;
+                case "3":
                     //To view friend requests
                     client.viewFriendRequests(client.getUsername());
                     break;
-                case "3":
+                case "4":
                     //To send friend requests
                     System.out.print("Enter username to send friend request: ");
                     String friendRequestUsername = scanner.nextLine();
                     client.sendFriendRequest(client.getUsername(), friendRequestUsername);
                     break;
-                case "4":
+                case "5":
                     //To remove friend
                     System.out.print("Enter username to remove as friend: ");
                     String removedFriend = scanner.nextLine();
                     client.removeFriend(client.getUsername(), removedFriend);
                     break;
-                case "5":
+                case "6":
                     //To block a user
                     System.out.print("Enter username to block: ");
                     String blockedUser = scanner.nextLine();
                     client.blockUser(client.getUsername(), blockedUser);
                     break;
-                case "6":
+                case "7":
                     //To unblock a user
                     System.out.print("Enter username to unblock: ");
                     String unblockUser = scanner.nextLine();
                     client.unblockUser(client.getUsername(), unblockUser);
                     break;
-                case "7":
+                case "8":
                     //To view a profile
                     System.out.print("Enter a profile to view: ");
                     String profile = scanner.nextLine();
                     client.viewProfile(profile);
                     break;
-                case "8":
+                case "9":
                     //To update user profile
                     System.out.println("\nChoose a parameter to update:");
                     System.out.println("1. Username");
@@ -379,6 +386,7 @@ public class Client implements ClientService {
                     System.out.println("5. Description");
                     System.out.println("6. University");
                     System.out.println("7. Preferences");
+                    System.out.println("8. Profile Picture");
 
                     String selection = scanner.nextLine();
                     String oldUsername = client.getUsername();
@@ -428,6 +436,16 @@ public class Client implements ClientService {
                             System.out.print("How many hours per day do you spend in your room? ");
                             client.roomHours = Integer.parseInt(scanner.nextLine());
                             break;
+                        case "8":
+                            System.out.println("Enter the file path for your new profile picture (e.g., C:\\Users\\User\\picture.png):");
+                            String filePath = scanner.nextLine();
+
+                            if (client.setProfilePicture(filePath)) {
+                                System.out.println("Profile picture uploaded successfully.");
+                            } else {
+                                System.out.println("Failed to upload profile picture.");
+                            }
+                            break;
                         default:
                             System.out.println("Invalid selection.");
                     }
@@ -438,7 +456,7 @@ public class Client implements ClientService {
                         System.out.println("Profile update failed.");
                     }
                     break;
-                case "9":
+                case "10":
                     //To search for roommates based on preferences
                     System.out.println("\nHow would you like to search?");
                     System.out.println("1. By Parameter");
@@ -501,7 +519,7 @@ public class Client implements ClientService {
                             break;
                     }
                     break;
-                case "10":
+                case "11":
                     //To disconnect client from server
                     client.disconnect();
                     exit = true;
@@ -750,6 +768,10 @@ public class Client implements ClientService {
             System.out.println("Error sending message: " + e.getMessage());
             return false;
         }
+    }
+
+    public void viewMessage(String username) {
+
     }
 
     //To load chat history between two users
@@ -1145,8 +1167,46 @@ public class Client implements ClientService {
         }
     }
 
+    // To upload Profile Picture for the user
+    public boolean setProfilePicture(String filePath) {
+        if (!isConnected) {
+            System.out.println("Not connected to the server.");
+            return false;
+        }
+
+        File file = new File(filePath);
+        if (!file.exists() || file.isDirectory()) {
+            System.out.println("Invalid file path. Please check the file and try again.");
+            return false;
+        }
+
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            byte[] fileBytes = fileInputStream.readAllBytes();
+
+            // Inform the server about the request
+            out.println("uploadProfilePicture###" + username);
+            out.println(fileBytes.length); // Send the size of the file
+
+            // Send the actual file bytes
+            socket.getOutputStream().write(fileBytes);
+            socket.getOutputStream().flush();
+
+            // Wait for the server's response
+            String response = in.readLine();
+            if ("Profile picture updated".equals(response)) {
+                System.out.println("Profile picture updated successfully.");
+                return true;
+            } else {
+                System.out.println("Failed to update profile picture. Server response: " + response);
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error uploading profile picture: " + e.getMessage());
+            return false;
+        }
+    }
+
     //To update preferences of a user
-    
     public void updatePreferences(User user) {
         if (!isConnected) {
             System.out.println("Not connected to server.");

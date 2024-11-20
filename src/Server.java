@@ -598,6 +598,32 @@ public class Server {
                                     writer.println(server.searchByParameter(parameter, value));
                                 }
                             }
+
+                            // Receives message from client in the format uploadProfilePicture###username
+                            if (line.length() > 21 && line.substring(0, 21).contains("uploadProfilePicture")) {
+                                String[] parts = line.split("###");
+                                String username = parts[1];
+
+                                database.loadUsersFromFile();
+                                User user = database.findUserByName(username);
+
+                                if (user == null) {
+                                    writer.println("Error: User not found.");
+                                    continue;
+                                }
+
+                                try {
+                                    int fileSize = Integer.parseInt(reader.readLine()); // Read the size of the file
+                                    byte[] fileBytes = new byte[fileSize];
+                                    socket.getInputStream().read(fileBytes); // Read the file data
+
+                                    database.saveProfilePicture(user, fileBytes); // Save the profile picture in the database
+                                    writer.println("Profile picture updated");
+                                } catch (IOException | NumberFormatException e) {
+                                    writer.println("Error updating profile picture: " + e.getMessage());
+                                }
+                            }
+
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

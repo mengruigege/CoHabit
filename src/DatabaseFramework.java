@@ -24,8 +24,8 @@ public interface DatabaseFramework {
     ArrayList<String> loadFriendRequestsFromFile();
 
     // Profile picture management
-    void saveProfilePicture(User user);
-    void loadProfilePicture(User user);
+    void saveProfilePicture(User user, byte[] profilePicture);
+    byte[] loadProfilePicture(User user);
     void deleteProfilePicture(User user);
 
     // Message management

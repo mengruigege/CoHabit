@@ -747,32 +747,32 @@ public class Database implements DatabaseFramework {
         return messages; // Return the list of conversation messages
     }
 
-    // Saves the profile picture of a user to a file
-    public void saveProfilePicture(User user) {
-        byte[] pictureData = user.getProfilePicture();
-        if (pictureData == null) {
-            return; // Exit if no picture data is available
-        }
-        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
-        try (FileOutputStream fos = new FileOutputStream(pictureFile)) {
-            fos.write(pictureData);
+    public synchronized void saveProfilePicture(User user, byte[] profilePicture) {
+        if (user == null || profilePicture == null) return;
+
+        File profilePictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        try (FileOutputStream fos = new FileOutputStream(profilePictureFile)) {
+            fos.write(profilePicture);
+            System.out.println("Profile picture saved for user: " + user.getName());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error saving profile picture: " + e.getMessage());
         }
     }
 
+
     // Loads the profile picture of a user from a file
-    public void loadProfilePicture(User user) {
-        File pictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
-        if (pictureFile.exists()) {
-            try (FileInputStream fis = new FileInputStream(pictureFile)) {
-                byte[] pictureData = fis.readAllBytes();
-                user.setProfilePicture(pictureData); // Set the profile picture data to the user
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public synchronized byte[] loadProfilePicture(User user) {
+        File profilePictureFile = new File(PROFILE_PICTURE_FOLDER, user.getName() + ".png");
+        if (!profilePictureFile.exists()) return null;
+
+        try (FileInputStream fis = new FileInputStream(profilePictureFile)) {
+            return fis.readAllBytes();
+        } catch (IOException e) {
+            System.out.println("Error loading profile picture: " + e.getMessage());
+            return null;
         }
     }
+
 
     // Deletes the profile picture of a user
     public void deleteProfilePicture(User user) {
