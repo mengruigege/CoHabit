@@ -173,7 +173,7 @@ public class TestDatabase {
     public void testSaveProfilePictureForUser1() {
         byte[] samplePicture = {1, 2, 3};  // Mock data for profile picture
         user1.setProfilePicture(samplePicture);
-        database.saveProfilePicture(user1);
+        database.saveProfilePicture(user1, samplePicture);
 
         File pictureFile = new File("profile_pictures/Bob.png");
         assertTrue("Profile picture file should exist for user1", pictureFile.exists());
@@ -182,7 +182,7 @@ public class TestDatabase {
     @Test
     public void testSaveProfilePictureForUser2WithNoData() {
         user2.setProfilePicture(null);  // No picture data
-        database.saveProfilePicture(user2);
+        database.saveProfilePicture(user2, null);
 
         File pictureFile = new File("profile_pictures/Jim.png");
         assertFalse("No file should be created if profile picture is null for user2", pictureFile.exists());
@@ -194,9 +194,9 @@ public class TestDatabase {
         byte[] newPicture = {3, 4, 5};  // New picture data to overwrite
 
         user3.setProfilePicture(initialPicture);
-        database.saveProfilePicture(user3);
+        database.saveProfilePicture(user3, initialPicture);
         user3.setProfilePicture(newPicture);
-        database.saveProfilePicture(user3);
+        database.saveProfilePicture(user3, newPicture);
 
         File pictureFile = new File("profile_pictures/Alice.png");
         assertTrue("Profile picture file should exist after overwriting for user3", pictureFile.exists());
@@ -207,7 +207,7 @@ public class TestDatabase {
     public void testLoadProfilePictureForUser1() throws UsernameTakenException {
         byte[] samplePicture = {4, 5, 6};
         user1.setProfilePicture(samplePicture);
-        database.saveProfilePicture(user1);
+        database.saveProfilePicture(user1, samplePicture);
 
         User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "Test user Bob", "University A");
         database.loadProfilePicture(user1);
@@ -227,7 +227,7 @@ public class TestDatabase {
     public void testLoadProfilePictureForUser2WhenFileExists() throws UsernameTakenException {
         byte[] pictureData = {7, 8, 9};
         user2.setProfilePicture(pictureData);
-        database.saveProfilePicture(user2);
+        database.saveProfilePicture(user2, pictureData);
 
         User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
 
@@ -240,7 +240,7 @@ public class TestDatabase {
     public void testDeleteProfilePictureForUser1() {
         byte[] pictureData = {10, 11, 12};
         user1.setProfilePicture(pictureData);
-        database.saveProfilePicture(user1);
+        database.saveProfilePicture(user1, pictureData);
 
         File pictureFile = new File("profile_pictures/Bob.png");
         assertTrue("File should exist before deletion for user1", pictureFile.exists());
