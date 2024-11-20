@@ -576,27 +576,65 @@ Constructor
 
 7. ClientService.java
 
-* 
-* 
-*
-*
-*
+* boolean connect(String serverAddress, int port);
+* void disconnect();
+* boolean isConnected();
+* boolean login(String username, String password);
+* boolean register();
+* boolean updateProfile(String oldUsername);
+* void setUserInformation() throws IOException;
+* void setUserRegisterInformation(String username, String password, String email, String phoneNumber, String userDescription, String university);
+* void setPreferences(String bedTime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours);
+* void updatePreferences(User user);
+* boolean sendMessage(String receiver, String message);
+* String fetchMessages(String user, String receiver);
+* boolean sendFriendRequest(String user, String potentialFriend);
+* void viewFriendRequests(String user);
+* boolean acceptFriendRequest(String friend);
+* boolean declineFriendRequest(String username);
+* boolean addFriend(String user, String friend);
+* boolean removeFriend(String user, String friend);
+* boolean blockUser(String user, String blockedUser);
+* boolean unblockUser(String username, String blockedUser);
+* void viewBlockedUsers(String username);
+* void viewProfile(String username);
+* void viewFriendsList(String username);
+* void searchByParameter(String parameter, String value);
+* void exactMatch(User user);
+* void partialMatch(User user);
 
 8. ServerService.java
 
-* void start(int port)
-* void stop()
-* boolean authenticateUser(String username, String password)
-* boolean registerUser(User user)
-* boolean sendMessage(String sender, String receiver, String message)
-* ArrayList<String> getMessages(String user1, String user2)
-* boolean addFriend(String user1, String user2)
-* boolean sendFriendRequest(String sender, String receiver)
-* boolean respondToFriendRequest(String sender, String receiver, boolean accept)
-* ArrayList<String> getFriendRequests(String username)
-* boolean blockUser(String requester, String target)
-* User getUserProfile(String username)
-* boolean updateUserProfile(String username, User updatedProfile)
+* boolean blockUser(User user, User blockedUser);
+* boolean removeBlockedUser(User user, User blockedUser);
+* ArrayList<User> viewBlockedUsers(User user);
+* ArrayList<User> viewFriendsList(User user);
+* String viewProfile(String username);
+* String searchByParameter(String parameter, String value);
+* String partialMatch(User user);
+* String exactMatch(User user);
+* void setPreferences(User user, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours);
+* ArrayList<String> getNotifications(User user);
+* boolean markNotificationAsRead(User user, int notificationId);
+* boolean clearAllNotifications(User user);
+* boolean createGroup(User admin, String groupName);
+* boolean deleteGroup(User admin, String groupName);
+* boolean addUserToGroup(User admin, String groupName, User newMember);
+* boolean removeUserFromGroup(User admin, String groupName, User member);
+* ArrayList<User> viewGroupMembers(User user, String groupName);
+* boolean sendGroupMessage(User sender, String groupName, String message);
+* ArrayList<String> loadGroupMessages(User user, String groupName);
+* boolean deleteAccount(User user);
+* boolean updateAccountDetails(User user, String parameter, String newValue);
+* boolean resetPassword(String username, String oldPassword, String newPassword);
+* ArrayList<String> getUserActivityLog(User user);
+* boolean clearUserActivityLog(User user);
+* boolean reportUser(User reporter, User reported, String reason);
+* boolean muteUser(User moderator, User mutedUser, int durationMinutes);
+* boolean banUser(User moderator, User bannedUser);
+* boolean submitFeedback(User user, String feedback);
+* ArrayList<String> viewFeedback(User admin);
+
 
 ---
 
