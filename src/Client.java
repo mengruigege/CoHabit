@@ -340,7 +340,9 @@ public class Client implements ClientService {
                     break;
                 case "2":
                     //To view incoming messages
-                    client.viewMessage(client.getUsername());
+                    System.out.print("Enter the username of the person whose messages you want to view: ");
+                    String receiverUsername = scanner.nextLine();
+                    client.viewMessage(receiverUsername);
                     break;
                 case "3":
                     //To view friend requests
@@ -770,8 +772,30 @@ public class Client implements ClientService {
         }
     }
 
-    public void viewMessage(String username) {
+    public void viewMessage(String receiverUsername) {
+        if (!isConnected) {
+            System.out.println("Not connected to the server.");
+            return;
+        }
 
+        try {
+            // Send request to the server
+            out.println("loadMessages###" + username + "###" + receiverUsername);
+
+            // Read the response
+            String response = in.readLine();
+            if (response == null || response.equals("Message list is empty")) {
+                System.out.println("No messages found between you and " + receiverUsername);
+                return;
+            }
+
+            System.out.println("Messages with " + receiverUsername + ":");
+            for (String message : response.split("###")) {
+                System.out.println(message);
+            }
+        } catch (IOException e) {
+            System.out.println("Error retrieving messages: " + e.getMessage());
+        }
     }
 
     //To load chat history between two users

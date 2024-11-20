@@ -67,7 +67,7 @@ public class Server {
         String result = "";
 
         for (String s : messages) {
-            result += s + "\n";
+            result += s + "###";
         }
         return result;
     }
@@ -359,6 +359,29 @@ public class Server {
                                 } else {
                                     System.out.println("FAILURE");
                                     writer.println("Something went wrong");
+                                }
+                            }
+
+                            // Receives message from client in the format loadMessages###user###receiver
+                            if (line.length() > 13 && line.substring(0, 13).contains("loadMessages")) {
+                                String[] parts = line.split("###");
+                                String senderUsername = parts[1];
+                                String receiverUsername = parts[2];
+
+                                database.loadUsersFromFile();
+                                User sender = database.findUserByName(senderUsername);
+                                User receiver = database.findUserByName(receiverUsername);
+
+                                if (sender == null || receiver == null) {
+                                    writer.println("Error: One or both users not found.");
+                                    continue;
+                                }
+
+                                String messages = server.loadMessages(sender, receiver);
+                                if (messages == null || messages.isEmpty()) {
+                                    writer.println("Message list is empty");
+                                } else {
+                                    writer.println(messages);
                                 }
                             }
 
