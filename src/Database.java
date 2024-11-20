@@ -523,7 +523,7 @@ public class Database implements DatabaseFramework {
             System.err.println("Error parsing numeric values in data: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (UsernameTakenException | InvalidInput e ) {
+        } catch (UsernameTakenException | InvalidInput e) {
             throw new RuntimeException(e);
         }
     }
@@ -650,7 +650,7 @@ public class Database implements DatabaseFramework {
     public synchronized ArrayList<String> loadFriendRequestsFromFile() {
         ArrayList<String> friendRequests = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
-            String line ;
+            String line;
             while ((line = br.readLine()) != null) {
                 friendRequests.add(line); // Load each request as a line in the list
             }
@@ -824,3 +824,4 @@ public class Database implements DatabaseFramework {
         }
         return results;
     }
+}
