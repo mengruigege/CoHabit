@@ -1,12 +1,21 @@
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
+
+/**
+ * Team Project Phase 1 - CoHabit
+ * 
+ * This program works to implement a roommate search algorithm
+ *
+ * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng
+ * @version November 3rd, 2024
+ */
 
 public class TestClient {
     private Thread serverThread;
     private Client client;
+    
     @Before
     public void setUp() throws Exception {
         // Start the server in a separate thread
@@ -23,8 +32,10 @@ public class TestClient {
         Thread.sleep(1000);
 
         // Initialize the client with a properly created User
-        User user = new User("Bob","password123","bob@example.com","1234567890","Description for Bob","University Example");
-        User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
+        User user = new User("Bob", "password123", "bob@example.com", "1234567890", 
+                             "Description for Bob", "University Example");
+        User user2 = new User("Jim", "password234", "jim@gmail.com", 
+                              "2345678901", "Test user Jim", "University B");
         client = new Client(user);
 
         // Connect the client to the server
@@ -47,82 +58,84 @@ public class TestClient {
 
     // Test login
     @Test
-    public void testLogin_Successful() {
+    public void testLoginSuccessful() {
         assertTrue("Login should succeed with correct credentials.", client.login("Bob", "password123"));
     }
 
     @Test
-    public void testLogin_Failed_InvalidPassword() {
+    public void testLoginFailedInvalidPassword() {
         assertFalse("Login should fail with an incorrect password.", client.login("Bob", "wrongPassword"));
     }
 
     @Test
-    public void testLogin_Failed_NonExistentUser() {
+    public void testLoginFailedNonExistentUser() {
         assertFalse("Login should fail for a non-existent user.", client.login("NonExistentUser", "password123"));
     }
 
     // Test sending messages
     @Test
-    public void testSendMessage_Successful() {
+    public void testSendMessageSuccessful() {
         assertTrue("Message should be sent successfully.", client.sendMessage("Jim", "Hello there!"));
     }
 
     @Test
-    public void testSendMessage_Failed_NonExistentUser() {
-        assertFalse("Message sending should fail for a non-existent receiver.", client.sendMessage("UnknownUser", "Hello!"));
+    public void testSendMessageFailedNonExistentUser() {
+        assertFalse("Message sending should fail for a non-existent receiver.",
+                    client.sendMessage("UnknownUser", "Hello!"));
     }
 
     @Test
-    public void testSendMessage_EmptyMessage() {
+    public void testSendMessageEmptyMessage() {
         assertFalse("Empty messages should not be allowed.", client.sendMessage("Jim", ""));
     }
 
     // Test sending friend requests
     @Test
-    public void testSendFriendRequest_Successful() {
+    public void testSendFriendRequestSuccessful() {
 
         assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "Jim"));
     }
 
     @Test
-    public void testSendFriendRequest_Failed() {
-        assertFalse("Friend request should fail for a non-existent user.", client.sendFriendRequest("Bob", "UnknownUser"));
+    public void testSendFriendRequestFailed() {
+        assertFalse("Friend request should fail for a non-existent user.", 
+                    client.sendFriendRequest("Bob", "UnknownUser"));
     }
 
     // Test removing friends
     @Test
-    public void testRemoveFriend_Successful() {
+    public void testRemoveFriendSuccessful() {
         client.sendFriendRequest("Bob", "Jim");
         client.acceptFriendRequest("Jim");
         assertTrue("Removing friend should succeed for existing friends.", client.removeFriend("Bob", "Jim"));
     }
 
     @Test
-    public void testRemoveFriend_Failed() {
+    public void testRemoveFriendFailed() {
         assertFalse("Removing friend should fail for a non-friend.", client.removeFriend("Bob", "UnknownUser"));
     }
 
     // Test blocking users
     @Test
-    public void testBlockUser_Successful() {
+    public void testBlockUserSuccessful() {
         assertTrue("Blocking user should succeed.", client.blockUser("Bob", "Jim"));
     }
 
     @Test
-    public void testBlockUser_Failed() {
+    public void testBlockUserFailed() {
         assertFalse("Blocking user should fail for a non-existent user.", client.blockUser("Bob", "UnknownUser"));
     }
 
     // Test viewing profiles
     @Test
-    public void testViewProfile_Successful() {
+    public void testViewProfileSuccessful() {
         client.viewProfile("Bob");
         // Assuming the server returns the profile as a string
         System.out.println("Profile viewed successfully.");
     }
 
     @Test
-    public void testViewProfile_Failed() {
+    public void testViewProfileFailed() {
         client.viewProfile("UnknownUser");
         System.out.println("Profile viewing should fail for a non-existent user.");
     }
