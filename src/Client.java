@@ -610,7 +610,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("login," + usernameInput + "," + passwordInput);
+        out.println("login," + username + "," + password);
 
         try {
             String response = in.readLine(); //To read response from server
