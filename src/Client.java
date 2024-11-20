@@ -609,7 +609,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("login," + username + "," + password);
+        out.println("login," + usernameInput + "," + passwordInput);
 
         try {
             String response = in.readLine(); //To read response from server
