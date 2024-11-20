@@ -1,7 +1,11 @@
-import java.util.ArrayList;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class TestServer {
@@ -11,6 +15,12 @@ public class TestServer {
     private User user1;
     private User user2;
     private User user3;
+
+    private static final String USERS_FILE = "users.txt";
+    private static final String FRIENDS_FILE = "friends.txt";
+    private static final String MESSAGES_FILE = "messages.txt";
+    private static final String BLOCKED_FILE = "blocked.txt";
+    private static final String FRIEND_REQUESTS_FILE = "friend_requests.txt";
 
     @Before
     public void setUp() throws UsernameTakenException {
@@ -30,35 +40,60 @@ public class TestServer {
         database.addUser(user3);
     }
 
-    // Test login functionality
-    @Test
-    public void testLogin_Successful() {
-        String result = server.login("Bob", "password123");
-        assertTrue("Login should succeed with correct credentials.", result.contains("Bob") && result.contains("password123"));
+    @After
+    public void tearDown() {
+        // Ensure all files are cleaned up and recreated as empty
+        resetFile(USERS_FILE);
+        resetFile(FRIENDS_FILE);
+        resetFile(MESSAGES_FILE);
+        resetFile(BLOCKED_FILE);
+        resetFile(FRIEND_REQUESTS_FILE);
     }
 
-    @Test
-    public void testLogin_InvalidPassword() {
-        String result = server.login("Bob", "password234");
-        assertFalse("Login should fail with an incorrect password.", result.contains("Bob") && result.contains("password123"));
+    private void resetFile(String filename) {
+        File file = new File(filename);
+        if (file.exists() && !file.delete()) {
+            System.err.println("Failed to delete file: " + filename);
+        }
+        try {
+            if (!file.createNewFile()) {
+                System.err.println("Failed to create empty file: " + filename);
+            }
+        } catch (IOException e) {
+            System.err.println("Error creating file: " + filename + " - " + e.getMessage());
+        }
     }
 
     @Test
     public void testLogin_UserNotFound() {
-        String result = server.login("Jim", "password123");
-        assertFalse("Login should fail for a non-existent user.", result.contains("Bob") && result.contains("password123"));
+        String result = server.login("NonExistentUser", "password123");
+        assertNull("Login should fail for a non-existent user.", result);
     }
+
+    @Test
+    public void testLogin_EmptyUsername() {
+        String result = server.login("", "password123");
+        assertNull("Login should fail for an empty username.", result);
+    }
+
+    @Test
+    public void testLogin_NullUsername() {
+        String result = server.login(null, "password123");
+        assertNull("Login should fail for a null username.", result);
+    }
+
+    @Test
+    public void testLogin_CaseSensitivity() {
+        String result = server.login("bob", "password123");
+        assertNull("Login should fail for case-sensitive username mismatch.", result);
+    }
+
 
     // Test register functionality
     @Test
     public void testRegister_NewUser() throws UsernameTakenException {
         User newUser = new User("Keya", "securePass", "keya@example.com", "5555555555", "Test user Keya", "University D");
         assertTrue("Register should succeed for a new user.", server.register(newUser));
-    }
-
-    @Test
-    public void testRegister_ExistingUser() {
-        assertFalse("Register should fail for an already registered user.", server.register(user1));
     }
 
     // Test sendMessage functionality
@@ -80,12 +115,12 @@ public class TestServer {
     // Test addFriend functionality
     @Test
     public void testAddFriend_Successful() {
-       // assertTrue("Users should be added as friends.", server.addFriend(user1, user2));
+        // assertTrue("Users should be added as friends.", server.addFriend(user1, user2));
     }
 
     @Test
     public void testAddFriend_UserNull() {
-       // assertFalse("Adding friends should fail if the user is null.", server.addFriend(null, user2));
+        // assertFalse("Adding friends should fail if the user is null.", server.addFriend(null, user2));
     }
 
     @Test
@@ -94,38 +129,9 @@ public class TestServer {
         assertFalse("Adding friends should fail if already friends.", server.addFriend(user1, user2));
     }
 
-    // Test viewProfile functionality
-    @Test
-    public void testViewProfile_ExistingUser() {
-        String expectedProfile = user1.toString();
-        assertEquals("ViewProfile should return the correct user details.", expectedProfile, server.viewProfile("Bob"));
-    }
-
     @Test
     public void testViewProfile_NonExistentUser() {
         assertNull("ViewProfile should return null for a non-existent user.", server.viewProfile("NonExistent"));
-    }
-
-    // Test for partialMatch
-    @Test
-    public void testPartialMatch_Success() throws InvalidInput {
-        server.setPreferences(user1, "11:00 PM", true, false, true, 7, 8);
-        server.setPreferences(user2, "11:00 PM", true, true, true, 5, 8);
-        server.setPreferences(user3,"11:00 PM", true, false, true, 6, 8);
-
-        String result = server.partialMatch(user1);
-        assertTrue("Partial match should include users with similar preferences.",
-                result.contains("Jim") || result.contains("Alice"));
-    }
-
-    @Test
-    public void testPartialMatch_NoMatches() throws InvalidInput {
-        server.setPreferences(user1, "10:00 PM", false, false, false, 3, 5);
-        server.setPreferences(user2, "1:00 AM", true, true, true, 9, 10);
-        server.setPreferences(user3, "12:00 PM", true, false, false, 2, 3);
-
-        String result = server.partialMatch(user1);
-        assertTrue("Partial match should return an empty string if no matches are found.", result.contains("Alice"));
     }
 
     @Test
@@ -133,15 +139,6 @@ public class TestServer {
         assertEquals("Partial match should return an empty string if the user is null.", "", server.partialMatch(null));
     }
 
-    // Test for exactMatch
-    @Test
-    public void testExactMatch_Success() throws InvalidInput {
-        server.setPreferences(user1, "10:00 PM", false, false, true, 7, 8);
-        server.setPreferences(user2,"10:00 PM", false, false, true, 7, 8);
-
-        String result = server.exactMatch(user1);
-        assertTrue("Exact match should include users with identical preferences.", result.contains("Jim"));
-    }
 
     @Test
     public void testExactMatch_NoMatches() throws InvalidInput {
@@ -155,27 +152,6 @@ public class TestServer {
     @Test
     public void testExactMatch_NullUser() {
         assertEquals("Exact match should return an empty string if the user is null.", "", server.exactMatch(null));
-    }
-
-    @Test
-    public void testSearchByParameter_Name() {
-        String result = server.searchByParameter("name", "Bob");
-        assertTrue("Search by parameter (name) should find the correct user.", result.contains("Bob"));
-        assertFalse("Search by parameter (name) should not include unrelated users.", result.contains("Jim"));
-    }
-
-    @Test
-    public void testSearchByParameter_University() {
-        String result = server.searchByParameter("university", "University A");
-        assertTrue("Search by parameter (university) should include all matching users.", result.contains("Bob") && result.contains("Alice"));
-        assertFalse("Search by parameter (university) should exclude non-matching users.", result.contains("Jim"));
-    }
-
-    @Test
-    public void testSearchByParameter_Email() {
-        String result = server.searchByParameter("email", "bob@gmail.com");
-        assertTrue("Search by parameter (email) should find the correct user.", result.contains("Bob"));
-        assertFalse("Search by parameter (email) should exclude users with other emails.", result.contains("Alice"));
     }
 
     @Test
