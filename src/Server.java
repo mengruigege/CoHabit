@@ -133,7 +133,7 @@ public class Server {
     public  boolean blockUser(User user, User blockedUser) {
         if (user != null || blockedUser != null) {
             database.loadUsersFromFile();
-            if (!(user.getBlockedUsers().contains(blockedUser))) {
+            if (!(database.getBlockedUsers(user.getName()).contains(blockedUser))) {
                 database.blockUser(user.getName(), blockedUser.getName());
                 return true;
             }
@@ -143,7 +143,7 @@ public class Server {
     public  boolean removeBlockedUser(User user, User unblockUser) {
         if (user != null || unblockUser != null) {
             database.loadUsersFromFile();
-            if (user.getBlockedUsers().contains(unblockUser)) {
+            if (database.getBlockedUsers(user.getName()).contains(unblockUser)) {
                 database.unblockUser(user.getName(), unblockUser.getName());
                 return true;
             }
