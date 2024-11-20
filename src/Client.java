@@ -1108,7 +1108,7 @@ public class Client implements ClientService {
                 String[] tokens = response.split("###");
                 System.out.println("Exact Matches:\n");
                 for (String token : tokens) {
-                    System.out.println("\n" + token);
+                    System.out.println(token);
                 }
             }
         } catch (IOException e) {
@@ -1131,7 +1131,10 @@ public class Client implements ClientService {
             if (response.equals("No partial matches found")) {
                 System.out.println("No partial matches found for your preferences.");
             } else {
-                System.out.println("Partial Matches:\n" + response);
+                System.out.println("Partial Matches:\n");
+                for (String token : response.split("###")) {
+                    System.out.println(token);
+                }
             }
         } catch (IOException e) {
             System.out.println("Error finding partial matches: " + e.getMessage());

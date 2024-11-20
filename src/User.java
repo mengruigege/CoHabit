@@ -274,8 +274,8 @@ public class User implements Profile, FriendManageable, Blockable {
             count++;
         }
         return count;
-
     }
+
     public String getBedTime() {
         return bedTime;
     }

@@ -215,7 +215,7 @@ public class Server {
         String result = "";
         for (User users : partialmatches) {
             String username = users.getName();
-            result += username + "\n";
+            result += username + "###";
         }
         return result;
 
