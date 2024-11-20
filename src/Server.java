@@ -254,7 +254,7 @@ public class Server {
         String result = "";
         for (User users : matches) {
             String username = users.getName();
-            result += username + "\n";
+            result += username + "###";
         }
         return result;
     }

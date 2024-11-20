@@ -487,6 +487,7 @@ public class Client implements ClientService {
                                     client.searchByParameter("university", parameter);
                                     break;
                             }
+                            break;
                         case "2":
                             //To search for roommate based on exact match of preferences
                             client.exactMatch(user);
@@ -1083,7 +1084,10 @@ public class Client implements ClientService {
             if (response.equals("No matches found")) {
                 System.out.println("No users found with " + parameter + ": " + value);
             } else {
-                System.out.println("Users matching " + parameter + " = " + value + ":\n" + response);
+                System.out.println("Users matching " + parameter + " = " + value + ":\n");
+                for (String token : response.split("###")) {
+                    System.out.println(token);
+                }
             }
         } catch (IOException e) {
             System.out.println("Error searching users: " + e.getMessage());
