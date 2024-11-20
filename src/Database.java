@@ -395,7 +395,9 @@ public class Database implements DatabaseFramework {
     }
 
 
-    public synchronized boolean setPreferences(String username, String bedtime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) {
+    public synchronized boolean setPreferences(String username, String bedtime, 
+                                               boolean alcohol, boolean smoke, boolean guests, 
+                                               int tidy, int roomHours) {
         if (username == null || username.isEmpty()) {
             System.out.println("Invalid username.");
             return false;
@@ -410,7 +412,8 @@ public class Database implements DatabaseFramework {
 
         // Store preferences directly in a simple, clear format
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("preferences.txt", true))) {
-            writer.write(username + "," + bedtime + "," + alcohol + "," + smoke + "," + guests + "," + tidy + "," + roomHours);
+            writer.write(username + "," + bedtime + "," + 
+                         alcohol + "," + smoke + "," + guests + "," + tidy + "," + roomHours);
             writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
@@ -491,7 +494,6 @@ public class Database implements DatabaseFramework {
 
                 String[] data = line.split(",");
                 if (data.length != 12) {
-                    System.err.println("Invalid Data");
                     continue;
                 }
                 String name = data[0];
@@ -523,7 +525,7 @@ public class Database implements DatabaseFramework {
             System.err.println("Error parsing numeric values in data: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (UsernameTakenException | InvalidInput e) {
+        } catch (UsernameTakenException | InvalidInput e ) {
             throw new RuntimeException(e);
         }
     }
@@ -650,7 +652,7 @@ public class Database implements DatabaseFramework {
     public synchronized ArrayList<String> loadFriendRequestsFromFile() {
         ArrayList<String> friendRequests = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(FRIEND_REQUESTS_FILE))) {
-            String line;
+            String line ;
             while ((line = br.readLine()) != null) {
                 friendRequests.add(line); // Load each request as a line in the list
             }
