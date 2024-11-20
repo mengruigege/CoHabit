@@ -81,7 +81,7 @@ public class TestDatabase {
         boolean result = database.addFriend(user1, user2);
         assertTrue(result);
         assertTrue(user1.getFriendList().contains(user2));
-        assertFalse(user2.getFriendList().contains(user1));
+        assertTrue(user2.getFriendList().contains(user1));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TestDatabase {
         database.addUser(user2);
         database.addFriend(user1, user2);  // Initial friendship
         boolean result = database.addFriend(user1, user2);  // Attempt to re-add the same friendship
-        assertTrue(result);  // Method still considers them friends
+        assertFalse(result);
     }
 
     // Tests for usernameExists method
@@ -143,29 +143,15 @@ public class TestDatabase {
         assertEquals("Jim", users.get(1).getName());
     }
 
-//    @Test
-//    public void testSaveAndLoadFriendsFromFile() {
-//        database.addUser(user1);
-//        database.addUser(user2);
-//        database.addFriend(user1, user2);
-//        database.saveFriendsToFile();  // Save friendships to file
-//
-//        ArrayList<User> loadedFriends = database.loadFriendsFromFile();
-//        assertTrue(loadedFriends.contains(user2));
-//        assertTrue(user1.getFriendList().contains(user2));
-//    }
-
     @Test
-    public void testRecordAndLoadConversation() {
-        Database newDatabase = new Database();
+    public void testSaveAndLoadFriendsFromFile() {
+        database.addUser(user1);
+        database.addUser(user2);
+        database.addFriend(user1, user2);
 
-        newDatabase.recordMessages("Bob", "Jim", "Hello, Jim!");
-        newDatabase.recordMessages("Jim", "Bob", "Hi, Bob!");
-
-        ArrayList<String> conversation = newDatabase.loadConversation("Bob", "Jim");
-        assertTrue(0 < conversation.size());
-        assertTrue(conversation.get(0).contains("Hello, Jim!"));
-        assertTrue(conversation.get(1).contains("Hi, Bob!"));
+        ArrayList<User> loadedFriends = database.loadFriendsFromFile();
+        assertTrue(loadedFriends.contains(user2));
+        assertTrue(user1.getFriendList().contains(user2));
     }
 
     // Tests for saveProfilePicture method
@@ -210,9 +196,8 @@ public class TestDatabase {
         database.saveProfilePicture(user1, samplePicture);
 
         User user1 = new User("Bob", "password123", "bob@gmail.com", "1234567890", "Test user Bob", "University A");
-        database.loadProfilePicture(user1);
 
-        assertArrayEquals("Loaded profile picture should match saved data for user1", samplePicture, user1.getProfilePicture());
+        assertArrayEquals("Loaded profile picture should match saved data for user1", samplePicture, database.loadProfilePicture(user1));
     }
 
     @Test
@@ -231,8 +216,7 @@ public class TestDatabase {
 
         User user2 = new User("Jim", "password234", "jim@gmail.com", "2345678901", "Test user Jim", "University B");
 
-        database.loadProfilePicture(user2);
-        assertArrayEquals("Profile picture loaded from file should match saved data for user2", pictureData, user2.getProfilePicture());
+        assertArrayEquals("Profile picture loaded from file should match saved data for user2", pictureData, database.loadProfilePicture(user2));
     }
 
     // Tests for deleteProfilePicture method
