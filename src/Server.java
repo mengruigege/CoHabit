@@ -140,7 +140,7 @@ public class Server {
     public  boolean blockUser(User user, User blockedUser) {
         if (user != null || blockedUser != null) {
             database.loadUsersFromFile();
-            if (!(database.getBlockedUsers(user.getName()).contains(blockedUser))) {
+            if (!(user.getBlockedUsers().contains(blockedUser))) {
                 database.blockUser(user.getName(), blockedUser.getName());
                 return true;
             }
@@ -150,7 +150,7 @@ public class Server {
     public  boolean removeBlockedUser(User user, User unblockUser) {
         if (user != null || unblockUser != null) {
             database.loadUsersFromFile();
-            if (database.getBlockedUsers(user.getName()).contains(unblockUser)) {
+            if (user.getBlockedUsers().contains(unblockUser)) {
                 database.unblockUser(user.getName(), unblockUser.getName());
                 return true;
             }
@@ -291,7 +291,9 @@ public class Server {
 
                         }
 
-                        //format should be register#*username#*password#*email#*phoneNumber#*desciption#*university#*bedTime#*alcohol#*smoke#*guests#*tidy#*roomHours
+                        /** format should be register#*username#*password###email###phoneNumber###desciption
+                        * ###university###bedTime###alcohol###smoke###guests###tidy###roomHours */
+                        
                         if (line.length() > 8 && line.substring(0, 8).contains("register")) {
                             String[] parts = line.split("###");
                             try {
@@ -327,9 +329,8 @@ public class Server {
                             String message = parts[3];
                             if (server.sendMessage(sender, receiver, message)) {
                                 System.out.println("SUCCESS");
-                                writer.println("Successfully sent message"); //not sure what the output is here
-                            }
-                            else {
+                                writer.println("Successfully sent message"); 
+                            } else {
                                 System.out.println("FAILURE");
                                 writer.println("Something went wrong");
                             }
@@ -360,7 +361,7 @@ public class Server {
                             if (server.viewFriendRequests(user) == null) {
                                 writer.println("Friend requests are empty");
                             } else {
-                                writer.println(String.join(",", server.viewFriendRequests(user))); // do not use toSting();
+                                writer.println(String.join(",", server.viewFriendRequests(user))); 
                             }
                         }
 
@@ -383,14 +384,13 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User friend = database.findUserByName(parts[2]);
-                            if (server.addFriend(user,friend)) {
+                            if (server.addFriend(user, friend)) {
                                 System.out.println(user.getFriendList());
                                 for (User friend1 : user.getFriendList()) {
                                     System.out.println(friend1.getName());
                                 }
                                 writer.println("Successfully added friend");
-                            }
-                            else {
+                            } else {
                                 writer.println("Entered a nonexistent Person");
                             }
                         }
@@ -401,10 +401,9 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User friend = database.findUserByName(parts[2]);
-                            if (server.removeFriend(user,friend)) {
+                            if (server.removeFriend(user, friend)) {
                                 writer.println("Successfully removed friend");
-                            }
-                            else {
+                            } else {
                                 writer.println("Something went wrong");
                             }
                         }
@@ -440,10 +439,9 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User blockedUser = database.findUserByName(parts[2]);
-                            if (server.blockUser(user,blockedUser)) {
+                            if (server.blockUser(user, blockedUser)) {
                                 writer.println("Successfully blocked user");
-                            }
-                            else {
+                            } else {
                                 writer.println("Something went wrong");
                             }
                         }
@@ -454,7 +452,7 @@ public class Server {
                             database.loadUsersFromFile();
                             User user = database.findUserByName(parts[1]);
                             User blockedUser = database.findUserByName(parts[2]);
-                            if (server.removeBlockedUser(user,blockedUser)) {
+                            if (server.removeBlockedUser(user, blockedUser)) {
                                 writer.println("Successfully removed from blocked list");
                             } else {
                                 writer.println("Something went wrong");
@@ -485,7 +483,7 @@ public class Server {
                             }
                         }
 
-                        // format is updateProfile###username###password###email###phoneNumber###description###university###bedTime###alcohol###smoke###guests###tidy###roomHours
+                       
                         if (line.length() > 13 && line.substring(0, 13).contains("updateProfile")) {
                             String[] tokens = line.split("###");
                             if (tokens.length < 14) {
@@ -556,7 +554,7 @@ public class Server {
                         }
 
                         // format should be exactMatch,user
-                        if (line.length() > 10 && line.substring(0,10).contains("exactMatch")) {
+                        if (line.length() > 10 && line.substring(0, 10).contains("exactMatch")) {
                             String[] parts = line.split(",");
                             User user = database.findUserByName(parts[1]);
                             if (server.exactMatch(user) == null) {
