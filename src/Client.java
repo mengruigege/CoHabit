@@ -2,6 +2,15 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+/**
+ * Team Project Phase 2 - CoHabit
+ * <p>
+ * This program works to implement a roommate search algorithm
+ *
+ * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng
+ * @version November 3rd, 2024
+ */
+
 public class Client implements ClientService {
 
     private String username = "";
@@ -127,7 +136,8 @@ public class Client implements ClientService {
                         System.out.println("Enter your email:");
                         client.setEmail(scanner.nextLine());
 
-                        if (client.getEmail() == null || !client.getEmail().contains("@") || !client.getEmail().contains(".")) {
+                        if (client.getEmail() == null || !client.getEmail().contains("@") 
+                            || !client.getEmail().contains(".")) {
                             System.out.println("client.getEmail() is invalid");
                         } else if (client.getEmail().contains("###")) {
                             System.out.println("'###' is not allowed");
@@ -279,7 +289,9 @@ public class Client implements ClientService {
                             System.out.println("Invalid Input");
                         }
                     }
-                    client.setUserRegisterInformation(client.getUsername(), client.getPassword(), client.getEmail(), client.getPhone(), client.getUserDescription(), client.getUniversity());
+                    client.setUserRegisterInformation(client.getUsername(), client.getPassword(),
+                                                      client.getEmail(), client.getPhone(), 
+                                                      client.getUserDescription(), client.getUniversity());
                     client.setPreferences(bedTime, alcohol, smoking, guests, tidy, roomHours);
                     if (client.register()) {
                         loggedIn = true;
@@ -502,31 +514,31 @@ public class Client implements ClientService {
         return userDescription;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(String usernameInput) {
+        this.username = usernameInput;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String passwordInput) {
+        this.password = passwordInput;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail(String emailInput) {
+        this.email = emailInput;
     }
 
-    public void setPhone(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phoneNumberInput) {
+        this.phoneNumber = phoneNumberInput;
     }
 
-    public void setUniversity(String university) {
-        this.university = university;
+    public void setUniversity(String universityInput) {
+        this.university = universityInput;
     }
 
-    public void setUserDescription(String userDescription) {
-        this.userDescription = userDescription;
+    public void setUserDescription(String userDescriptionInput) {
+        this.userDescription = userDescriptionInput;
     }
 
-    public boolean connect(String serverAddress, int port) {
+    public boolean connect(String serverAddressInput, int port) {
         try {
             socket = new Socket(serverAddress, port);
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -558,7 +570,7 @@ public class Client implements ClientService {
         }
     }
 
-    public boolean login(String username, String password) {
+    public boolean login(String usernameInput, String passwordInput) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
@@ -596,14 +608,17 @@ public class Client implements ClientService {
         university = tokens[5];
     }
 
-    public void setUserRegisterInformation(String username, String password, String email,
-                                           String phoneNumber, String userDescription, String university) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.userDescription = userDescription;
-        this.university = university;
+    public void setUserRegisterInformation(String usernameInput, String passwordInput, 
+                                           String emailInput,
+                                           String phoneNumberInput, 
+                                           String userDescriptionInput, 
+                                           String universityInput) {
+        this.username = usernameInput;
+        this.password = passwordInput;
+        this.email = emailInput;
+        this.phoneNumber = phoneNumberInput;
+        this.userDescription = userDescriptionInput;
+        this.university = universityInput;
     }
 
     public boolean register() {
@@ -661,15 +676,15 @@ public class Client implements ClientService {
         }
     }
 
-    public void setPreferences(String bedTime, boolean alcohol, boolean smoke,
-                               boolean guests, int tidy, int roomHours) {
-        this.bedTime = bedTime;
-        this.alcohol = alcohol;
-        this.smoke = smoke;
-        this.guests = guests;
-        this.tidy = tidy;
-        this.roomHours = roomHours;
-        if (bedTime == null || tidy <= 0 || tidy > 10 || roomHours < 0) {
+    public void setPreferences(String bedTimeInput, boolean alcoholInput, boolean smokeInput,
+                               boolean guestsInput, int tidyInput, int roomHoursInput) {
+        this.bedTime = bedTimeInput;
+        this.alcohol = alcoholInput;
+        this.smoke = smokeInput;
+        this.guests = guestsInput;
+        this.tidy = tidyInput;
+        this.roomHours = roomHoursInput;
+        if (bedTimeInput == null || tidyInput <= 0 || tidyInput > 10 || roomHoursInput < 0) {
             System.out.println("Invalid Input");
         }
     }
@@ -813,13 +828,13 @@ public class Client implements ClientService {
         }
     }
 
-    public boolean declineFriendRequest(String username) {
+    public boolean declineFriendRequest(String usernameInput) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("declineFriendRequest," + username);
+        out.println("declineFriendRequest," + usernameInput);
 
         try {
             String response = in.readLine();
@@ -899,7 +914,7 @@ public class Client implements ClientService {
         }
     }
 
-    public void viewProfile(String username) {
+    public void viewProfile(String usernameInput) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return;
@@ -915,13 +930,13 @@ public class Client implements ClientService {
         }
     }
 
-    public void viewFriendsList(String username) {
+    public void viewFriendsList(String usernameInput) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return;
         }
 
-        out.println("viewFriendsList," + username);
+        out.println("viewFriendsList," + usernameInput);
 
         try {
             String response = in.readLine();
@@ -959,13 +974,13 @@ public class Client implements ClientService {
     }
 
 
-    public void viewBlockedUsers(String username) {
+    public void viewBlockedUsers(String usernameInput) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return;
         }
 
-        out.println("viewBlockedUsers," + username);
+        out.println("viewBlockedUsers," + usernameInput);
 
         try {
             String response = in.readLine();
@@ -984,7 +999,7 @@ public class Client implements ClientService {
 
                 switch (choice) {
                     case "1":
-                        if (unblockUser(username, blockedUser)) {
+                        if (unblockUser(usernameInput, blockedUser)) {
                             System.out.println("You have unblocked " + blockedUser);
                         } else {
                             System.out.println("Failed to unblock " + blockedUser);
