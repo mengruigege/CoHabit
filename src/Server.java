@@ -2,6 +2,13 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
+/** 
+ * This document was created for CS 180 PJ 5 Phase 2
+ *
+ * @version 1.0
+ * @author Andrew tang, Aidan Lefort, Keya Jadhav, Rithvik Siddenki, Rui Meng
+ */
+
 public class Server {
     private static Database database = new Database();
 
