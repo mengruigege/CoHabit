@@ -1,6 +1,0 @@
-Bob:Jim
-Jim:Bob
-Bob:Jim
-Jim:Bob
-Bob:Jim
-Jim:Bob

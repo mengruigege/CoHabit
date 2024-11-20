@@ -3,19 +3,26 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 /**
  * Team Project Phase 1 - CoHabit
- * 
+ *
  * This program works to implement a roommate search algorithm
  *
- * @author Aidan Lefort, Andrew Tang, Keya Jadhav, Rithvik Siddenki, Rui Meng
- * @version November 3rd, 2024
+ * @author ...
+ * @version ...
  */
 
 public class TestClient {
     private Thread serverThread;
     private Client client;
-    
+    private static final String USERS_FILE = "users.txt";
+    private static final String FRIENDS_FILE = "friends.txt";
+    private static final String MESSAGES_FILE = "messages.txt";
+    private static final String BLOCKED_FILE = "blocked.txt";
+    private static final String FRIEND_REQUESTS_FILE = "friend_requests.txt";
+
     @Before
     public void setUp() throws Exception {
         // Start the server in a separate thread
@@ -32,10 +39,8 @@ public class TestClient {
         Thread.sleep(1000);
 
         // Initialize the client with a properly created User
-        User user = new User("Bob", "password123", "bob@example.com", "1234567890", 
-                             "Description for Bob", "University Example");
-        User user2 = new User("Jim", "password234", "jim@gmail.com", 
-                              "2345678901", "Test user Jim", "University B");
+        User user = new User("Bob", "password123", "bob@example.com", "1234567890",
+                "Description for Bob", "University Example");
         client = new Client(user);
 
         // Connect the client to the server
@@ -46,6 +51,34 @@ public class TestClient {
     public void tearDown() throws Exception {
         client.disconnect();
         serverThread.interrupt(); // Stop the server thread
+
+        // Delete all files created during the tests
+        deleteTestFile(USERS_FILE);
+        deleteTestFile(FRIENDS_FILE);
+        deleteTestFile(MESSAGES_FILE);
+        deleteTestFile(BLOCKED_FILE);
+        deleteTestFile(FRIEND_REQUESTS_FILE);
+    }
+
+    private void deleteTestFile(String filename) {
+        File file = new File(filename);
+        if (file.exists() && !file.delete()) {
+            System.err.println("Failed to delete test file: " + filename);
+        }
+    }
+
+    private void deleteTestFolder(String folderName) {
+        File folder = new File(folderName);
+        if (folder.exists() && folder.isDirectory()) {
+            for (File file : folder.listFiles()) {
+                if (!file.delete()) {
+                    System.err.println("Failed to delete file in folder: " + file.getName());
+                }
+            }
+            if (!folder.delete()) {
+                System.err.println("Failed to delete test folder: " + folderName);
+            }
+        }
     }
 
     // Test connection
@@ -81,7 +114,7 @@ public class TestClient {
     @Test
     public void testSendMessageFailedNonExistentUser() {
         assertFalse("Message sending should fail for a non-existent receiver.",
-                    client.sendMessage("UnknownUser", "Hello!"));
+                client.sendMessage("UnknownUser", "Hello!"));
     }
 
     @Test
@@ -92,14 +125,13 @@ public class TestClient {
     // Test sending friend requests
     @Test
     public void testSendFriendRequestSuccessful() {
-
         assertTrue("Friend request should be sent successfully.", client.sendFriendRequest("Bob", "Jim"));
     }
 
     @Test
     public void testSendFriendRequestFailed() {
-        assertFalse("Friend request should fail for a non-existent user.", 
-                    client.sendFriendRequest("Bob", "UnknownUser"));
+        assertFalse("Friend request should fail for a non-existent user.",
+                client.sendFriendRequest("Bob", "UnknownUser"));
     }
 
     // Test removing friends
