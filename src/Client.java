@@ -1105,7 +1105,11 @@ public class Client implements ClientService {
             if (response.equals("No exact matches found")) {
                 System.out.println("No exact matches found for your preferences.");
             } else {
-                System.out.println("Exact Matches:\n" + response);
+                String[] tokens = response.split("###");
+                System.out.println("Exact Matches:\n");
+                for (String token : tokens) {
+                    System.out.println("\n" + token);
+                }
             }
         } catch (IOException e) {
             System.out.println("Error finding exact matches: " + e.getMessage());

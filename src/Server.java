@@ -236,7 +236,7 @@ public class Server {
         String result = "";
         for (User users : exactmatches) {
             String username = users.getName();
-            result += username + "\n";
+            result += username + "###";
         }
         return result;
     }
