@@ -229,16 +229,14 @@ public class Database implements DatabaseFramework {
                 if (parts.length == 2) {
                     String currentUser = parts[0].trim();
                     if (currentUser.equals(username)) {
-                        String[] blockedList = parts[1].split(",");
-                        blockedUsers.addAll(Arrays.asList(blockedList));
-                        break; // Exit loop once the user is found
+                        String blockedUser = parts[1];
+                        blockedUsers.add(blockedUser);
                     }
                 }
             }
         } catch (IOException e) {
             System.out.println("Error reading blocked file: " + e.getMessage());
         }
-
         return blockedUsers;
     }
 
