@@ -652,12 +652,23 @@ Constructor
 | public   | `deleteProfilePicture(User user)`  | Deletes user's profile picture file.       |
 
   
-* Methods addes to User.java
+* Methods added to User.java
 
 | Modifier | Function Name                | Description                                                                                      |
 |----------|------------------------------|--------------------------------------------------------------------------------------------------|
 | public   | `setDescription(String userDesc)` | Sets the user's description.                                                                |
 | public   | `getProfilePicture()`        | Retrieves the user's profile picture data as a byte array.                                       |
+
+* Methods added to Client.java
+
+| Modifier | Function Name              | Description                                                                                       |
+|----------|----------------------------|---------------------------------------------------------------------------------------------------|
+| public   | `setProfilePicture(String filePath)` | Uploads a profile picture to the server, validating the file and handling communication to update the picture. |
+
+* Methods added to Server.java
+
+Added implementation to main method.
+
 
 ---
 
