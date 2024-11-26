@@ -36,7 +36,6 @@ public class Client implements ClientService {
     private final int serverPort = 1102;
 
     //constructor
-    
     public Client(User user) {
         if (user != null && user.getName() != null && user.getPassword() != null
                 && user.getEmail() != null && user.getPhoneNumber() != null &&
@@ -72,8 +71,7 @@ public class Client implements ClientService {
 
         boolean loggedIn = false;
 
-        //To check if user wants to log in or register
-        
+        // To check if user wants to log in or register
         while (!loggedIn) {
             System.out.println("\nSelect an option:");
             System.out.println("1. Login");

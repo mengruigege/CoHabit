@@ -14,7 +14,6 @@ public class Server {
 
     // method to check if the login was successful or not
     public String login(String username, String password) {
-        
         database.loadUsersFromFile();
         User user;
         user = database.findUserByName(username);

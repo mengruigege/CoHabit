@@ -26,7 +26,6 @@ public interface DatabaseFramework {
 
     // Block management
     ArrayList<User> loadBlockedFromFile();
-    void saveBlockedToFile();
 
     // Friend requests
     void addFriendRequest(User sender, User receiver);
@@ -42,6 +41,6 @@ public interface DatabaseFramework {
     ArrayList<String> loadConversation(String user1, String user2);
 
     // File handling for users
-    void loadUsersFromFile();
+    void loadUsersFromFile() throws InvalidInput, UsernameTakenException;
     void saveUsersToFile();
 }

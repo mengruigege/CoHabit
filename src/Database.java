@@ -13,13 +13,18 @@ import java.io.*;
 
 public class Database implements DatabaseFramework {
     private static ArrayList<User> allUsers = new ArrayList<>();
+    private static HashMap<User, ArrayList<User>> allFriends = new HashMap<>();
+    private static HashMap<User, ArrayList<String>> allMessages = new HashMap<>();
+    private static HashMap<User, ArrayList<User>> allBlocked = new HashMap<>();
+    private static HashMap<User, ArrayList<User>> allFriendRequests = new HashMap<>();
+
     private static final String USERS_FILE = "users.txt";
-    private static final String PREFERENCES_FILE = "preferences.txt";
     private static final String FRIENDS_FILE = "friends.txt";
     private static final String MESSAGES_FILE = "messages.txt";
     private static final String BLOCKED_FILE = "blocked.txt";
     private static final String FRIEND_REQUESTS_FILE = "friend_requests.txt";
     private static final String PROFILE_PICTURE_FOLDER = "profile_pictures";
+
     private static final Object LOCK = new Object();
 
     // Constructor to initialize the Database object
@@ -28,6 +33,218 @@ public class Database implements DatabaseFramework {
             this.allUsers = new ArrayList<>();
         }
     }
+
+    // Centralized method to read data from a file
+    private synchronized ArrayList<String> readFile(String filePath) {
+        ArrayList<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + filePath + " - " + e.getMessage());
+        }
+        return lines;
+    }
+
+    // Centralized method to write data to a file
+    private synchronized void writeFile(String filePath, ArrayList<String> data) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : data) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + filePath + " - " + e.getMessage());
+        }
+    }
+
+    // Centralized method to append data to a file
+    private synchronized void appendToFile(String filePath, String data) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            writer.write(data);
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error appending to file: " + filePath + " - " + e.getMessage());
+        }
+    }
+
+    // load methods for internal class use
+    private synchronized void loadUsers() throws InvalidInput, UsernameTakenException {
+        allUsers.clear(); // Clear existing data
+        List<String> lines = readFile(USERS_FILE);
+
+        for (String line : lines) {
+            String[] data = line.split(",");
+            if (data.length != 12) continue; // Ensure correct number of fields
+
+            String name = data[0];
+            String password = data[1];
+            String email = data[2];
+            String phoneNumber = data[3];
+            String description = data[4];
+            String university = data[5];
+
+            String bedtime = data[6];
+            boolean alcohol = Boolean.parseBoolean(data[7]);
+            boolean smoke = Boolean.parseBoolean(data[8]);
+            boolean guests = Boolean.parseBoolean(data[9]);
+            int tidy = Integer.parseInt(data[10]);
+            int roomHours = Integer.parseInt(data[11]);
+
+            User user = new User(name, password, email, phoneNumber, description, university);
+            user.setPreferences(bedtime, alcohol, smoke, guests, tidy, roomHours);
+            allUsers.add(user);
+        }
+    }
+
+    private synchronized void loadFriends() {
+        allFriends.clear(); // Clear existing data
+        List<String> lines = readFile(FRIENDS_FILE);
+
+        for (String line : lines) {
+            String[] data = line.split(":");
+            if (data.length != 2) continue;
+
+            User user = findUserByName(data[0]);
+            if (user == null) continue;
+
+            String[] friendNames = data[1].split(",");
+            ArrayList<User> friends = new ArrayList<>();
+            for (String friendName : friendNames) {
+                User friend = findUserByName(friendName.trim());
+                if (friend != null) {
+                    friends.add(friend);
+                }
+            }
+            allFriends.put(user, friends);
+        }
+    }
+
+    private synchronized void loadBlocked() {
+        allBlocked.clear(); // Clear existing data
+        List<String> lines = readFile(BLOCKED_FILE);
+
+        for (String line : lines) {
+            String[] data = line.split(":");
+            if (data.length != 2) continue;
+
+            User user = findUserByName(data[0]);
+            if (user == null) continue;
+
+            String[] blockedNames = data[1].split(",");
+            ArrayList<User> blocked = new ArrayList<>();
+            for (String blockedName : blockedNames) {
+                User blockedUser = findUserByName(blockedName.trim());
+                if (blockedUser != null) {
+                    blocked.add(blockedUser);
+                }
+            }
+            allBlocked.put(user, blocked);
+        }
+    }
+
+    private synchronized void loadFriendRequests() {
+        allFriendRequests.clear(); // Clear existing data
+        List<String> lines = readFile(FRIEND_REQUESTS_FILE);
+
+        for (String line : lines) {
+            String[] data = line.split(":");
+            if (data.length != 2) continue;
+
+            User receiver = findUserByName(data[0]);
+            if (receiver == null) continue;
+
+            String[] requesterNames = data[1].split(",");
+            ArrayList<User> requesters = new ArrayList<>();
+            for (String requesterName : requesterNames) {
+                User requester = findUserByName(requesterName.trim());
+                if (requester != null) {
+                    requesters.add(requester);
+                }
+            }
+            allFriendRequests.put(receiver, requesters);
+        }
+    }
+
+    private synchronized void loadMessages() {
+        allMessages.clear(); // Clear existing data
+        List<String> lines = readFile(MESSAGES_FILE);
+
+        for (String line : lines) {
+            String[] data = line.split(":");
+            if (data.length != 2) continue;
+
+            User user = findUserByName(data[0]);
+            if (user == null) continue;
+
+            ArrayList<String> messages = new ArrayList<>(Arrays.asList(data[1].split("\\|")));
+            allMessages.put(user, messages);
+        }
+    }
+
+    private synchronized void saveUsers() {
+        ArrayList<String> lines = new ArrayList<>();
+        for (User user : allUsers) {
+            lines.add(user.toString()); // Assuming User has a proper toString method
+        }
+        writeFile(USERS_FILE, lines);
+    }
+
+    private synchronized void saveFriends() {
+        ArrayList<String> lines = new ArrayList<>();
+        for (Map.Entry<User, ArrayList<User>> entry : allFriends.entrySet()) {
+            User user = entry.getKey();
+            ArrayList<User> friends = entry.getValue();
+            List<String> friendNames = new ArrayList<>();
+            for (User friend : friends) {
+                friendNames.add(friend.getName());
+            }
+            lines.add(user.getName() + ":" + String.join(",", friendNames));
+        }
+        writeFile(FRIENDS_FILE, lines);
+    }
+
+    private synchronized void saveBlocked() {
+        ArrayList<String> lines = new ArrayList<>();
+        for (Map.Entry<User, ArrayList<User>> entry : allBlocked.entrySet()) {
+            User user = entry.getKey();
+            ArrayList<User> blockedUsers = entry.getValue();
+            List<String> blockedNames = new ArrayList<>();
+            for (User blocked : blockedUsers) {
+                blockedNames.add(blocked.getName());
+            }
+            lines.add(user.getName() + ":" + String.join(",", blockedNames));
+        }
+        writeFile(BLOCKED_FILE, lines);
+    }
+
+    private synchronized void saveFriendRequests() {
+        ArrayList<String> lines = new ArrayList<>();
+        for (Map.Entry<User, ArrayList<User>> entry : allFriendRequests.entrySet()) {
+            User receiver = entry.getKey();
+            ArrayList<User> requesters = entry.getValue();
+            List<String> requesterNames = new ArrayList<>();
+            for (User requester : requesters) {
+                requesterNames.add(requester.getName());
+            }
+            lines.add(receiver.getName() + ":" + String.join(",", requesterNames));
+        }
+        writeFile(FRIEND_REQUESTS_FILE, lines);
+    }
+
+    public synchronized void saveMessages() {
+        ArrayList<String> lines = new ArrayList<>();
+        for (Map.Entry<User, ArrayList<String>> entry : allMessages.entrySet()) {
+            User user = entry.getKey();
+            ArrayList<String> messages = entry.getValue();
+            lines.add(user.getName() + ":" + String.join("|", messages));
+        }
+        writeFile(MESSAGES_FILE, lines);
+    }
+
+
 
     // Adds a user to the database if the username is not already taken
     // Returns true if successful, false otherwise
@@ -411,149 +628,6 @@ public class Database implements DatabaseFramework {
         return isUnblocked;
     }
 
-
-    public synchronized boolean setPreferences(String username, String bedtime, 
-                                               boolean alcohol, boolean smoke, boolean guests, 
-                                               int tidy, int roomHours) {
-        if (username == null || username.isEmpty()) {
-            System.out.println("Invalid username.");
-            return false;
-        }
-
-        // Find the user
-        User user = findUserByName(username);
-        if (user == null) {
-            System.out.println("User not found: " + username);
-            return false;
-        }
-
-        // Store preferences directly in a simple, clear format
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("preferences.txt", true))) {
-            writer.write(username + "," + bedtime + "," + 
-                         alcohol + "," + smoke + "," + guests + "," + tidy + "," + roomHours);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    // Updates or adds preferences for a specific user in the preferences file
-
-    public synchronized void updatePreferences(String username, ArrayList<String> preferences) {
-        File tempFile = new File("temp_preferences.txt");
-        File originalFile = new File(PREFERENCES_FILE);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(PREFERENCES_FILE));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-
-            String line;
-            boolean updated = false; // Tracks if the user's preferences were updated
-
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",", 2);
-                if (parts.length > 0 && parts[0].equals(username)) {
-                    // Replace the existing preferences for the user
-                    writer.write(username + "," + String.join(",", preferences));
-                    writer.newLine();
-                    updated = true;
-                } else {
-                    writer.write(line);
-                    writer.newLine();
-                }
-            }
-
-            // If user not found, add new preferences
-            if (!updated) {
-                writer.write(username + "," + String.join(",", preferences));
-                writer.newLine();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Replace the original file with the updated file
-        if (!originalFile.delete() || !tempFile.renameTo(originalFile)) {
-            System.out.println("Failed to update preferences file.");
-        }
-    }
-
-    // Loads the preferences for a specific user from the preferences file
-
-    public synchronized ArrayList<String> loadPreferences(String username) {
-        ArrayList<String> preferences = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(PREFERENCES_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",", 2);
-                if (parts.length == 2 && parts[0].equals(username)) {
-                     // If the username matches, parse and add the preferences
-                    String[] prefs = parts[1].split(",");
-                    for (String pref : prefs) {
-                        preferences.add(pref);
-                    }
-                    return preferences; // Return preferences once found
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("No preferences found for user: " + username);
-        return preferences; // Return an empty list if no preferences are found
-    }
-
-    // Loads users from a file and populates the allUsers list
-    public synchronized void loadUsersFromFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
-            String line;
-            ArrayList<User> users = new ArrayList<>();
-            while ((line = br.readLine()) != null) {
-
-                String[] data = line.split(",");
-                if (data.length != 12) { // Ensure the line has the expected number of fields
-                    continue;
-                }
-                String name = data[0];
-                String password = data[1];
-                String email = data[2];
-                String phoneNumber = data[3];
-                String description = data[4];
-                String university = data[5];
-
-                String bedTime = data[6];
-                boolean alcohol = Boolean.parseBoolean(data[7]);
-                boolean smoke = Boolean.parseBoolean(data[8]);
-                boolean guests = Boolean.parseBoolean(data[9]);
-                int tidy = Integer.parseInt(data[10]);
-                int roomHours = Integer.parseInt(data[11]);
-
-                // Create a User object and set preferences
-                
-                User user = new User(name, password, email, phoneNumber, description, university);
-                user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
-
-                try {
-                    loadProfilePicture(user);
-                } catch (Exception e) {
-                    System.out.println("Error loading profile picture for user: " + e.getMessage());
-                }
-                users.add(user);
-            }
-            allUsers = users; // Replace the allUsers list with the newly loaded users
-        } catch (NumberFormatException e) {
-            System.err.println("Error parsing numeric values in data: " + e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (UsernameTakenException | InvalidInput e ) {
-            throw new RuntimeException(e);
-        }
-    }
-
     // Saves all users to the USERS_FILE
     public synchronized void saveUsersToFile() {
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(USERS_FILE, true))) {
@@ -596,35 +670,6 @@ public class Database implements DatabaseFramework {
         return friends;
     }
 
-    // Loads all users' friends from the FRIENDS_FILE
-    public synchronized ArrayList<User> loadFriendsFromFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader(FRIENDS_FILE))) {
-            String line;
-            ArrayList<User> friendList = new ArrayList<>();
-            while ((line = br.readLine()) != null) {
-                String[] tokens = line.split(":");
-                if (tokens.length == 2) {
-                    String username = tokens[0];
-                    String[] friends = tokens[1].split(",");
-
-                    User user = findUserByName(username);
-
-                    if (user != null) {
-                        for (String friend : friends) {
-                            User friendUser = findUserByName(friend);
-                            if (friendUser != null) {
-                                friendList.add(friendUser);
-                            }
-                        }
-                    }
-                }
-            }
-            return friendList;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     // Loads blocked users from the BLOCKED_FILE
     public synchronized ArrayList<User> loadBlockedFromFile() {
@@ -656,26 +701,6 @@ public class Database implements DatabaseFramework {
         }
     }
 
-    // Saves the current state of blocked users to the BLOCKED_FILE
-    public synchronized void saveBlockedToFile() {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(BLOCKED_FILE))) {
-            for (User user : allUsers) {
-                String line = user.getName() + ":";
-
-                for (User friend : user.getFriendList()) {
-                    line += friend.getName() + ",";
-                }
-
-                if (line.endsWith(",")) {
-                    line = line.substring(0, line.length() - 1);
-                }
-                pw.println(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     // Loads all pending friend requests from the file
     public synchronized ArrayList<String> loadFriendRequestsFromFile() {
         ArrayList<String> friendRequests = new ArrayList<>();
@@ -688,29 +713,6 @@ public class Database implements DatabaseFramework {
             e.printStackTrace();
         }
         return friendRequests;
-    }
-
-    // Saves all friend requests for all users to the FRIEND_REQUESTS_FILE
-    public synchronized boolean saveFriendRequest() {
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(FRIEND_REQUESTS_FILE))) {
-            for (User user : allUsers) {
-                if (user.getOutgoingFriendRequest() != null) {
-                    for (User userRequested : user.getOutgoingFriendRequest()) {
-                        pw.println(user.getName() + ":" + userRequested.getName());
-                    }
-                }
-
-                if (user.getIncomingFriendRequest() != null) {
-                    for (User requestSender : user.getIncomingFriendRequest()) {
-                        pw.println(requestSender.getName() + ":" + user.getName());
-                    }
-                }
-            }
-            return true; // Successfully saved requests
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false; // Failed to save requests
-        }
     }
 
     // Records a message exchanged between two users in the MESSAGES_FILE
@@ -844,7 +846,7 @@ public class Database implements DatabaseFramework {
     }
 
     // Finds users who partially match with the main user
-    public synchronized ArrayList<User> partialMatch(User mainUser) {
+    public synchronized ArrayList<User> partialMatch(User mainUser) throws UsernameTakenException, InvalidInput {
         if (mainUser == null) {
             System.out.println("Main user cannot be null.");
             return new ArrayList<>();
