@@ -58,7 +58,6 @@ public class Client implements ClientService {
     }
 
     //main method
-    
     public static void main(String[] args) throws InvalidInput, UsernameTakenException, IOException {
         Scanner scanner = new Scanner(System.in);
         User user = null;
