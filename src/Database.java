@@ -255,10 +255,10 @@ public class Database implements DatabaseFramework {
         return true;
     }
 
-    public synchronized void addFriend(User user1, User user2) {
+    public synchronized boolean addFriend(User user1, User user2) {
         if (user1 == null || user2 == null) {
             System.out.println("Invalid users provided.");
-            return;
+            return false;
         }
 
         // Add each other as friends
@@ -267,31 +267,50 @@ public class Database implements DatabaseFramework {
 
         saveFriends(); // Save immediately to file
         System.out.println("Friendship added between: " + user1.getName() + " and " + user2.getName());
+        return true;
     }
 
-    public synchronized void blockUser(User blocker, User blocked) {
+    public synchronized boolean blockUser(User blocker, User blocked) {
         if (blocker == null || blocked == null) {
             System.out.println("Invalid users provided.");
-            return;
+            return false;
         }
 
         allBlocked.computeIfAbsent(blocker, k -> new ArrayList<>()).add(blocked);
 
         saveBlocked(); // Save immediately to file
         System.out.println(blocker.getName() + " has blocked " + blocked.getName());
+        return true;
     }
 
 
-    public synchronized void sendFriendRequest(User sender, User receiver) {
+    public synchronized boolean sendFriendRequest(User sender, User receiver) {
         if (sender == null || receiver == null) {
             System.out.println("Invalid users provided.");
-            return;
+            return false;
         }
 
         allFriendRequests.computeIfAbsent(receiver, k -> new ArrayList<>()).add(sender);
 
         saveFriendRequests(); // Save immediately to file
         System.out.println(sender.getName() + " sent a friend request to " + receiver.getName());
+        return true;
+    }
+
+    public synchronized boolean sendMessage(User sender, User receiver, String message) {
+        if (sender == null || receiver == null || message == null || message.isEmpty()) {
+            System.out.println("Invalid input provided.");
+            return false;
+        }
+
+        String formattedMessage = sender.getName() + " -> " + receiver.getName() + ": " + message;
+
+        allMessages.computeIfAbsent(sender, k -> new ArrayList<>()).add(formattedMessage);
+        allMessages.computeIfAbsent(receiver, k -> new ArrayList<>()).add(formattedMessage);
+
+        saveMessages(); // Save immediately to file
+        System.out.println("Message sent: " + formattedMessage);
+        return true;
     }
 
     public synchronized boolean removeUser(User user) {
@@ -326,10 +345,10 @@ public class Database implements DatabaseFramework {
         return true;
     }
 
-    public synchronized void removeFriend(User user1, User user2) {
+    public synchronized boolean removeFriend(User user1, User user2) {
         if (user1 == null || user2 == null) {
             System.out.println("Invalid users provided.");
-            return;
+            return false;
         }
 
         // Remove each other from friends list
@@ -338,24 +357,60 @@ public class Database implements DatabaseFramework {
 
         saveFriends(); // Save immediately to file
         System.out.println("Friendship removed between: " + user1.getName() + " and " + user2.getName());
+        return true;
     }
 
-    public synchronized void unblockUser(User blocker, User unblocked) {
+    public synchronized boolean unblockUser(User blocker, User unblocked) {
         if (blocker == null || unblocked == null) {
             System.out.println("Invalid users provided.");
-            return;
+            return false;
         }
 
         allBlocked.getOrDefault(blocker, new ArrayList<>()).remove(unblocked);
 
         saveBlocked(); // Save immediately to file
         System.out.println(blocker.getName() + " has unblocked " + unblocked.getName());
+        return true;
     }
 
-    public synchronized void rejectFriendRequest(User receiver, User sender) {
+    public synchronized boolean acceptFriendRequest(User receiver, User sender) {
         if (receiver == null || sender == null) {
             System.out.println("Invalid users provided.");
-            return;
+            return false;
+        }
+
+        // Check if the sender is in the receiver's friend request list
+        ArrayList<User> requests = allFriendRequests.getOrDefault(receiver, new ArrayList<>());
+        if (!requests.contains(sender)) {
+            System.out.println("No friend request from " + sender.getName() + " to accept.");
+            return false;
+        }
+
+        // Add each other as friends
+        boolean addedAsFriend = addFriend(receiver, sender);
+        if (!addedAsFriend) {
+            System.out.println("Failed to add " + sender.getName() + " as a friend to " + receiver.getName());
+            return false;
+        }
+
+        // Remove the sender from the receiver's friend requests
+        requests.remove(sender);
+        if (requests.isEmpty()) {
+            allFriendRequests.remove(receiver);
+        } else {
+            allFriendRequests.put(receiver, requests);
+        }
+
+        saveFriendRequests(); // Persist updated friend requests
+        saveFriends(); // Persist updated friends list
+        System.out.println(receiver.getName() + " accepted a friend request from " + sender.getName());
+        return true;
+    }
+
+    public synchronized boolean rejectFriendRequest(User receiver, User sender) {
+        if (receiver == null || sender == null) {
+            System.out.println("Invalid users provided.");
+            return false;
         }
 
         ArrayList<User> requests = allFriendRequests.getOrDefault(receiver, new ArrayList<>());
@@ -365,7 +420,54 @@ public class Database implements DatabaseFramework {
         } else {
             System.out.println("No friend request from " + sender.getName() + " to reject.");
         }
+        return true;
     }
+
+    public synchronized ArrayList<User> getAllUsers() {
+        // Return a copy of the list to prevent external modifications
+        return new ArrayList<>(allUsers);
+    }
+
+    public synchronized ArrayList<User> getFriend(User user) {
+        if (user == null) {
+            System.out.println("Invalid user.");
+            return new ArrayList<>();
+        }
+
+        // Fetch the friend list for the given user
+        return new ArrayList<>(allFriends.getOrDefault(user, new ArrayList<>()));
+    }
+
+    public synchronized ArrayList<User> getBlocked(User user) {
+        if (user == null) {
+            System.out.println("Invalid user.");
+            return new ArrayList<>();
+        }
+
+        // Fetch the blocked list for the given user
+        return new ArrayList<>(allBlocked.getOrDefault(user, new ArrayList<>()));
+    }
+
+    public synchronized ArrayList<String> getMessage(User user) {
+        if (user == null) {
+            System.out.println("Invalid user.");
+            return new ArrayList<>();
+        }
+
+        // Fetch messages for the given user
+        return new ArrayList<>(allMessages.getOrDefault(user, new ArrayList<>()));
+    }
+
+    public synchronized ArrayList<User> getFriendRequests(User user) {
+        if (user == null) {
+            System.out.println("Invalid user.");
+            return new ArrayList<>();
+        }
+
+        // Fetch friend requests for the given user
+        return new ArrayList<>(allFriendRequests.getOrDefault(user, new ArrayList<>()));
+    }
+
 
     // Checks if a username already exists in the database
     public synchronized boolean usernameExists(String username) {

@@ -17,19 +17,20 @@ public interface DatabaseFramework {
     User findUserByName(String name);  // Finds a user by their name
 
     // Friendship Management
-    void addFriend(User user1, User user2);  // Adds a friend relationship between two users
-    void removeFriend(User user1, User user2);  // Removes the friendship between two users
+    boolean addFriend(User user1, User user2);  // Adds a friend relationship between two users
+    boolean removeFriend(User user1, User user2);  // Removes the friendship between two users
 
     // Block Management
-    void blockUser(User blocker, User blocked);  // Blocks a user
-    void unblockUser(User blocker, User unblocked);  // Unblocks a user
+    boolean blockUser(User blocker, User blocked);  // Blocks a user
+    boolean unblockUser(User blocker, User unblocked);  // Unblocks a user
 
     // Friend Request Management
-    void sendFriendRequest(User sender, User receiver);  // Sends a friend request from one user to another
-    void rejectFriendRequest(User receiver, User sender);  // Rejects a pending friend request
+    boolean sendFriendRequest(User sender, User receiver);  // Sends a friend request from one user to another
+    boolean acceptFriendRequest(User receiver, User sender);  // Rejects a pending friend request
+    boolean rejectFriendRequest(User receiver, User sender);  // Rejects a pending friend request
 
     // Messaging Management
-    void saveMessages();  // Saves messages in the database (implementation can vary depending on the message system)
+    boolean sendMessage(User sender, User receiver, String message);
 
     // Profile Picture Management
     void saveProfilePicture(User user, byte[] profilePicture);  // Saves a user's profile picture

@@ -11,6 +11,10 @@ import java.util.ArrayList;
 
 public class Server implements ServerService, Runnable {
     private static Database database = new Database();
+    private static final String DELIMITER = "<<END>>";
+    private static final String SUCCESS = "SUCCESS";
+    private static final String FAILURE = "FAILURE";
+
 
     // method to check if the login was successful or not
     public String login(String username, String password) {
@@ -26,17 +30,15 @@ public class Server implements ServerService, Runnable {
             return "";
         }
         if (user.getPassword().equals(password) && user.getName().equals(username)) {
-            return user.getName() + "###" + user.getPassword() + "###" + user.getEmail() +
-                    "###" + user.getPhoneNumber() + "###" + user.getDescription() + "###" + user.getUniversity();
+            return user.getName() + DELIMITER + user.getPassword() + DELIMITER + user.getEmail() +
+                    DELIMITER + user.getPhoneNumber() + DELIMITER + user.getDescription() + DELIMITER + user.getUniversity();
         }
         return null;
     }
 
     // method used to add the new register user to the database and return true if successful
     public boolean register(User user) {
-        database.loadUsersFromFile();
         if (database.addUser(user)) {
-            database.saveUsersToFile();
             return true;
         } else {
             return false;
@@ -45,14 +47,7 @@ public class Server implements ServerService, Runnable {
 
     //method to send messages between two users
     public static boolean sendMessage(User sender, User reciever, String message) {
-        if (reciever == null) {
-            return false;
-        }
-        ArrayList<String> messages = database.loadConversation(sender.getName(), reciever.getName());
-        String senderName = sender.getName();
-        String recieverName = reciever.getName();
-        database.recordMessages(senderName, recieverName, message);
-        System.out.println("RETURNING TRUE"); //sends response to client
+        database.sendMessage(sender, reciever, message);
         return true;
     }
 
@@ -65,26 +60,18 @@ public class Server implements ServerService, Runnable {
         String result = "";
 
         for (String s : messages) {
-            result += s + "###";
+            result += s + DELIMITER;
         }
         return result;
     }
 
     //method to send friend request to another user
     public boolean sendFriendRequest(User user, User potentialFriend) {
-        database.loadUsersFromFile();
-        if (user == null || potentialFriend == null) {
-            return false;
-        }
-        
-        database.addFriendRequest(user, potentialFriend); 
-        
-        return true;
+        return database.sendFriendRequest(user, potentialFriend);
     }
 
     //method to view all friend requests of a user
     public ArrayList<String> viewFriendRequests(User user) {
-        database.loadUsersFromFile();
         if (user == null || database.loadFriendRequestsFromFile() == null) {
             return null;
         }
@@ -104,8 +91,6 @@ public class Server implements ServerService, Runnable {
     //method to decline friend requests
     public  boolean declineFriendRequest(User user, User declinedUser) {
         if (user != null && declinedUser != null) {
-            database.loadUsersFromFile();
-            database.loadFriendRequestsFromFile();
             database.removeFriendRequest(user, declinedUser);
             
             return true;
@@ -117,7 +102,6 @@ public class Server implements ServerService, Runnable {
     //method to accept a friend request
     public boolean addFriend(User user, User friend) {
         if (user != null && friend != null) {
-            database.loadUsersFromFile();
 
             if (!(user.getFriendList().contains(friend))) {
                 database.addFriend(user, friend);
@@ -132,7 +116,6 @@ public class Server implements ServerService, Runnable {
     //method to remove a friend from friend list
     public  boolean removeFriend(User user, User removedFriend) {
         if (user != null && removedFriend != null) {
-            database.loadUsersFromFile();
             if (database.getFriendsFromFile(user.getName()).contains(removedFriend.getName())) {
                 database.removeFriend(user, removedFriend);
                 database.removeFriend(removedFriend, user); 
@@ -158,7 +141,6 @@ public class Server implements ServerService, Runnable {
     //method to unblock a user
     public boolean removeBlockedUser(User user, User unblockUser) {
         if (user != null || unblockUser != null) {
-            database.loadUsersFromFile();
             if (database.getBlockedUsers(user.getName()).contains(unblockUser.getName())) {
                 database.unblockUser(user.getName(), unblockUser.getName());
                 return true;
@@ -170,8 +152,6 @@ public class Server implements ServerService, Runnable {
     //method to view all blocked users
     public  ArrayList<User> viewBlockedUsers(User user) {
         if (user != null) {
-            database.loadBlockedFromFile();
-            database.loadBlockedFromFile();
             return user.getBlockedUsers();
         }
         return null;
@@ -180,8 +160,6 @@ public class Server implements ServerService, Runnable {
     //method to view all friends of a user
     public  ArrayList<User> viewFriendsList(User user) {
         if (user != null) {
-            database.loadFriendsFromFile();
-            database.loadFriendsFromFile();
             return user.getFriendList();
         } else {
             return null;
@@ -190,7 +168,6 @@ public class Server implements ServerService, Runnable {
 
     //method to view a user's profile
     public  String viewProfile(String username) {
-        database.loadUsersFromFile();
         User user = database.findUserByName(username);
         if (user != null) {
             return user.toString();
@@ -205,7 +182,6 @@ public class Server implements ServerService, Runnable {
             return "";
         }
 
-        database.loadUsersFromFile();
         ArrayList<User> partialmatches = database.partialMatch(user);
         if (partialmatches.isEmpty()) {
             return "";
@@ -213,7 +189,7 @@ public class Server implements ServerService, Runnable {
         String result = "";
         for (User users : partialmatches) {
             String username = users.getName();
-            result += username + "###";
+            result += username + DELIMITER;
         }
         return result;
 
@@ -224,7 +200,7 @@ public class Server implements ServerService, Runnable {
         if (user == null) {
             return "";
         }
-        database.loadUsersFromFile();
+
         ArrayList<User> exactmatches = database.exactMatch(user);
 
         if (exactmatches == null) {
@@ -234,17 +210,17 @@ public class Server implements ServerService, Runnable {
         String result = "";
         for (User users : exactmatches) {
             String username = users.getName();
-            result += username + "###";
+            result += username + DELIMITER;
         }
         return result;
     }
 
     //Method to search roommates by a specific preference
-    public  String searchByParameter(String parameter, String value) {
+    public  String searchByParameter(String parameter, String value) throws UsernameTakenException, InvalidInput {
         if (parameter == null || parameter.isEmpty() || value == null || value.isEmpty()) {
             return "";
         }
-        database.loadUsersFromFile();
+
         ArrayList<User> matches = database.searchByParameter(parameter, value);
         if (matches == null) {
             return "";
@@ -252,7 +228,7 @@ public class Server implements ServerService, Runnable {
         String result = "";
         for (User users : matches) {
             String username = users.getName();
-            result += username + "###";
+            result += username + DELIMITER;
         }
         return result;
     }
@@ -265,12 +241,10 @@ public class Server implements ServerService, Runnable {
         }
 
         try {
-            database.loadUsersFromFile();
             User existingUser = database.findUserByName(user.getName());
 
             if (existingUser != null) {
                 existingUser.setPreferences(bedtime, alcohol, smoke, guests, tidy, roomHours);
-                database.saveUsersToFile(); // Save updated user preferences back to the database
                 System.out.println("Preferences successfully updated for user: " + user.getName());
             } else {
                 System.out.println("User not found in the database.");
@@ -281,8 +255,8 @@ public class Server implements ServerService, Runnable {
     }
 
     //main method for computation
-    public static void main(String[] args) {
-        database.loadUsersFromFile();
+    public static void main(String[] args) throws UsernameTakenException, InvalidInput {
+        database.initializeDatabase();
         Server server = new Server();
 
         //connect server to client via socket
@@ -301,7 +275,7 @@ public class Server implements ServerService, Runnable {
                             
                             //receives message from client in the format "login, username, password"
                             if (line.startsWith("login")) {
-                                String[] parts = line.split(",");
+                                String[] parts = line.split(DELIMITER);
 
                                 String username = parts[1];
                                 String password = parts[2];
@@ -319,7 +293,7 @@ public class Server implements ServerService, Runnable {
                              * ###university###bedTime###alcohol###smoke###guests###tidy###roomHours */
 
                             if (line.startsWith("register")) {
-                                String[] parts = line.split("###");
+                                String[] parts = line.split(DELIMITER);
                                 try {
                                     User user = new User(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
                                     boolean alcohol = Boolean.parseBoolean(parts[8]);
@@ -345,8 +319,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in format sendMessage###sender###reciever###message
                             if (line.startsWith("sendMessage")) {
-                                String[] parts = line.split("###");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User sender = database.findUserByName(parts[1]);
                                 User receiver = database.findUserByName(parts[2]);
 
@@ -362,11 +335,10 @@ public class Server implements ServerService, Runnable {
 
                             // Receives message from client in the format loadMessages###user###receiver
                             if (line.startsWith("loadMessages")) {
-                                String[] parts = line.split("###");
+                                String[] parts = line.split(DELIMITER);
                                 String senderUsername = parts[1];
                                 String receiverUsername = parts[2];
 
-                                database.loadUsersFromFile();
                                 User sender = database.findUserByName(senderUsername);
                                 User receiver = database.findUserByName(receiverUsername);
 
@@ -385,8 +357,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format sendFriendRequest,user,potentialFriend
                             if (line.startsWith("sendFriendRequest")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User potentialfriend = database.findUserByName(parts[2]);
                                 if (server.sendFriendRequest(user, potentialfriend)) {
@@ -399,20 +370,18 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format viewFriendRequests,user
                             if (line.startsWith("viewFriendRequests")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.viewFriendRequests(user) == null) {
                                     writer.println("Friend requests are empty");
                                 } else {
-                                    writer.println(String.join(",", server.viewFriendRequests(user)));
+                                    writer.println(String.join(DELIMITER, server.viewFriendRequests(user)));
                                 }
                             }
 
                             // receives message from client in the format declineFriendRequest,user,declinedUser
                             if (line.startsWith("declineFriendRequest")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User declinedUser = database.findUserByName(parts[2]);
                                 if (server.declineFriendRequest(user, declinedUser)) {
@@ -424,8 +393,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format addFriend,user,friend
                             if (line.startsWith("acceptFriendRequest")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User friend = database.findUserByName(parts[2]);
                                 if (server.addFriend(user, friend)) {
@@ -441,8 +409,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format removeFriend,user,removedFriend
                             if (line.startsWith("removeFriend")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User friend = database.findUserByName(parts[2]);
                                 if (server.removeFriend(user, friend)) {
@@ -454,8 +421,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format viewFriendsList,user
                             if (line.startsWith("viewFriendsList")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.viewFriendsList(user) == null) {
                                     writer.println("Friend list is empty");
@@ -466,7 +432,7 @@ public class Server implements ServerService, Runnable {
 
                             //  receives message from client in the format loadMessages,user,reciever
                             if (line.startsWith("loadMessages")) {
-                                String[] parts = line.split(",");
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User reciever = database.findUserByName(parts[2]);
                                 if (server.loadMessages(user, reciever) == null) {
@@ -479,8 +445,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format blockUser,user,blockedUser
                             if (line.startsWith("blockUser")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User blockedUser = database.findUserByName(parts[2]);
                                 if (server.blockUser(user, blockedUser)) {
@@ -492,8 +457,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format removeBlockedUser,user,blockedUser
                             if (line.startsWith("removeBlockedUser")) {
-                                String[] parts = line.split(",");
-                                database.loadUsersFromFile();
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User blockedUser = database.findUserByName(parts[2]);
                                 if (server.removeBlockedUser(user, blockedUser)) {
@@ -506,7 +470,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format viewBlockedUsers,user
                             if (line.startsWith("viewBlockedUsers")) {
-                                String[] parts = line.split(",");
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.viewBlockedUsers(user) == null) {
                                     writer.println("Blocked list is empty");
@@ -517,7 +481,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format viewProfile,username
                             if (line.startsWith("viewProfile")) {
-                                String[] parts = line.split(",");
+                                String[] parts = line.split(DELIMITER);
                                 String username = parts[1];
                                 String viewProfile = server.viewProfile(username);
                                 if (viewProfile != null) {
@@ -529,7 +493,7 @@ public class Server implements ServerService, Runnable {
 
 
                             if (line.startsWith("updateProfile")) {
-                                String[] tokens = line.split("###");
+                                String[] tokens = line.split(DELIMITER);
                                 if (tokens.length < 14) {
                                     writer.println("Error: Missing fields for updating profile.");
                                     continue;
@@ -557,7 +521,6 @@ public class Server implements ServerService, Runnable {
                                     continue;
                                 }
 
-                                database.loadUsersFromFile();
                                 User user = database.findUserByName(oldUsername); // Lookup using the old username
 
                                 if (user == null) {
@@ -578,7 +541,6 @@ public class Server implements ServerService, Runnable {
                                     user.setDescription(description);
                                     user.setUniversity(university);
                                     user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
-                                    database.saveUsersToFile(); // Save the updated user profile
                                     writer.println("Profile Updated");
                                 } catch (Exception e) {
                                     writer.println("Error updating profile: " + e.getMessage());
@@ -587,7 +549,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format partialMatch,user
                             if (line.startsWith("partialMatch")) {
-                                String[] parts = line.split(",");
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.partialMatch(user) == null) {
                                     writer.println("No partial matches found");
@@ -599,7 +561,7 @@ public class Server implements ServerService, Runnable {
 
                             // receives message from client in the format exactMatch,user
                             if (line.startsWith("exactMatch")) {
-                                String[] parts = line.split(",");
+                                String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.exactMatch(user) == null) {
                                     writer.println("No exact matches found");
@@ -609,7 +571,7 @@ public class Server implements ServerService, Runnable {
                             }
                             // receives message from client in the format searchByParameter,parameter,value
                             if (line.startsWith("searchByParameter")) {
-                                String[] parts = line.split(",");
+                                String[] parts = line.split(DELIMITER);
                                 String parameter = parts[1];
                                 String value = parts[2];
                                 if (server.searchByParameter(parameter, value) == null) {
@@ -621,10 +583,9 @@ public class Server implements ServerService, Runnable {
 
                             // Receives message from client in the format uploadProfilePicture###username
                             if (line.startsWith("uploadProfilePicture")) {
-                                String[] parts = line.split("###");
+                                String[] parts = line.split(DELIMITER);
                                 String username = parts[1];
 
-                                database.loadUsersFromFile();
                                 User user = database.findUserByName(username);
 
                                 if (user == null) {

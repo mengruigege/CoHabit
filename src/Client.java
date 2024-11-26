@@ -15,12 +15,12 @@ import java.util.Scanner;
 
 public class Client implements ClientService {
 
-    private String username = "";
-    private String password = "";
-    private String email = "";
-    private String phoneNumber = "";
-    private String userDescription = "";
-    private String university = "";
+    private String username;
+    private String password;
+    private String email;
+    private String phoneNumber;
+    private String userDescription;
+    private String university;
 
     private String bedTime;
     private boolean alcohol;
