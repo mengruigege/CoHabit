@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -11,36 +10,34 @@ import java.util.ArrayList;
  */
 
 public interface DatabaseFramework {
+   // User Management
+    boolean addUser(User user);  // Adds a new user to the database
+    boolean removeUser(User user);  // Removes a user from the database
+    boolean usernameExists(String username);  // Checks if a username already exists
+    User findUserByName(String name);  // Finds a user by their name
 
-    // User management
-    boolean addUser(User user);
-    boolean deleteUser(User user);
-    boolean usernameExists(String username);
-    User findUserByName(String name);
-    ArrayList<User> getAllUsers();
+    // Friendship Management
+    void addFriend(User user1, User user2);  // Adds a friend relationship between two users
+    void removeFriend(User user1, User user2);  // Removes the friendship between two users
 
-    // Friend management
-    boolean addFriend(User user1, User user2);
-    boolean removeFriend(User user1, User user2);
-    ArrayList<User> loadFriendsFromFile();
+    // Block Management
+    void blockUser(User blocker, User blocked);  // Blocks a user
+    void unblockUser(User blocker, User unblocked);  // Unblocks a user
 
-    // Block management
-    ArrayList<User> loadBlockedFromFile();
+    // Friend Request Management
+    void sendFriendRequest(User sender, User receiver);  // Sends a friend request from one user to another
+    void rejectFriendRequest(User receiver, User sender);  // Rejects a pending friend request
 
-    // Friend requests
-    void addFriendRequest(User sender, User receiver);
-    ArrayList<String> loadFriendRequestsFromFile();
+    // Messaging Management
+    void saveMessages();  // Saves messages in the database (implementation can vary depending on the message system)
 
-    // Profile picture management
-    void saveProfilePicture(User user, byte[] profilePicture);
-    byte[] loadProfilePicture(User user);
-    void deleteProfilePicture(User user);
+    // Profile Picture Management
+    void saveProfilePicture(User user, byte[] profilePicture);  // Saves a user's profile picture
+    byte[] loadProfilePicture(User user);  // Loads a user's profile picture
+    void deleteProfilePicture(User user);  // Deletes a user's profile picture
 
-    // Message management
-    void recordMessages(String sender, String receiver, String message);
-    ArrayList<String> loadConversation(String user1, String user2);
-
-    // File handling for users
-    void loadUsersFromFile() throws InvalidInput, UsernameTakenException;
-    void saveUsersToFile();
+    // Search and Matching
+    ArrayList<User> searchByParameter(String parameter, String value) throws UsernameTakenException, InvalidInput;  // Searches for users based on a parameter and value
+    ArrayList<User> exactMatch(User user);  // Finds users who exactly match a given user's attributes
+    ArrayList<User> partialMatch(User user);  // Finds users who partially match a given user's attributes
 }
