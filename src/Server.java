@@ -9,12 +9,11 @@ import java.util.ArrayList;
  * @author Andrew tang, Aidan Lefort, Keya Jadhav, Rithvik Siddenki, Rui Meng
  */
 
-public class Server {
+public class Server implements ServerService, Runnable {
     private static Database database = new Database();
 
     // method to check if the login was successful or not
     public String login(String username, String password) {
-        database.loadUsersFromFile();
         User user;
         user = database.findUserByName(username);
         if (user == null) {

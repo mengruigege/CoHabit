@@ -1,4 +1,5 @@
 
+import javax.management.modelmbean.ModelMBeanInfo;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -34,6 +35,7 @@ public class Client implements ClientService {
     private BufferedReader in;
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
+    private static final String DELIMITER = "<<END>>";
 
     //constructor
     public Client(User user) {
@@ -57,7 +59,7 @@ public class Client implements ClientService {
     }
 
     //main method
-    public static void main(String[] args) throws InvalidInput, UsernameTakenException, IOException {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         User user = null;
         Client client = new Client(user);
@@ -68,7 +70,6 @@ public class Client implements ClientService {
         }
 
         boolean exit = false;
-
         boolean loggedIn = false;
 
         // To check if user wants to log in or register
@@ -123,8 +124,8 @@ public class Client implements ClientService {
 
                         if (client.getUsername() == null) {
                             System.out.println("Username is invalid");
-                        } else if (client.getUsername().contains("###")) {
-                            System.out.println("'###' is not allowed");
+                        } else if (client.getUsername().contains(DELIMITER)) {
+                            System.out.println(DELIMITER + " is not allowed");
                         } else {
                             break;
                         }
@@ -135,8 +136,8 @@ public class Client implements ClientService {
 
                         if (client.getPassword() == null) {
                             System.out.println("Password is invalid");
-                        } else if (client.getPassword().contains("###")) {
-                            System.out.println("'###' is not allowed");
+                        } else if (client.getPassword().contains(DELIMITER)) {
+                            System.out.println(DELIMITER + " is not allowed");
                         } else {
                             break;
                         }
@@ -148,8 +149,8 @@ public class Client implements ClientService {
                         if (client.getEmail() == null || !client.getEmail().contains("@") 
                             || !client.getEmail().contains(".")) {
                             System.out.println("client.getEmail() is invalid");
-                        } else if (client.getEmail().contains("###")) {
-                            System.out.println("'###' is not allowed");
+                        } else if (client.getEmail().contains(DELIMITER)) {
+                            System.out.println(DELIMITER + " is not allowed");
                         } else {
                             break;
                         }
@@ -166,8 +167,8 @@ public class Client implements ClientService {
 
                         if (client.getPhone() == null) {
                             System.out.println("Phone number is invalid");
-                        } else if (client.getPhone().contains("###")) {
-                            System.out.println("'###' is not allowed");
+                        } else if (client.getPhone().contains(DELIMITER)) {
+                            System.out.println(DELIMITER + " is not allowed");
                         } else if (client.getPhone().length() != 10) {
                             System.out.println("Phone number is invalid");
                         } else if (notInt) {
@@ -182,8 +183,8 @@ public class Client implements ClientService {
 
                         if (client.getUserDescription() == null) {
                             System.out.println("Description is invalid");
-                        } else if (client.getUserDescription().contains("###")) {
-                            System.out.println("'###' is not allowed");
+                        } else if (client.getUserDescription().contains(DELIMITER)) {
+                            System.out.println(DELIMITER + " is not allowed");
                         } else {
                             break;
                         }
@@ -194,8 +195,8 @@ public class Client implements ClientService {
 
                         if (client.getUniversity() == null) {
                             System.out.println("University is invalid");
-                        } else if (client.getPassword().contains("###")) {
-                            System.out.println("'###' is not allowed");
+                        } else if (client.getPassword().contains(DELIMITER)) {
+                            System.out.println(DELIMITER + " is not allowed");
                         } else {
                             break;
                         }
@@ -243,10 +244,10 @@ public class Client implements ClientService {
                         System.out.println("Do you smoke? (y/n)");
                         answer = scanner.nextLine();
 
-                        if (answer.equals("y")) {
+                        if (answer.equalsIgnoreCase("y")) {
                             smoking = true;
                             break;
-                        } else if (answer.equals("n")) {
+                        } else if (answer.equalsIgnoreCase("n")) {
                             smoking = false;
                             break;
                         } else {
@@ -627,7 +628,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("login," + usernameInput + "," + passwordInput);
+        out.println("login" + DELIMITER + usernameInput + DELIMITER + passwordInput);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -647,7 +648,7 @@ public class Client implements ClientService {
     //To set user information
     public void setUserInformation() throws IOException {
         String information = in.readLine(); //To read response from server
-        String[] tokens = information.split("###");
+        String[] tokens = information.split(DELIMITER);
         if (tokens.length != 6) {
             System.out.println("Error! Invalid User Information");
             return;
@@ -680,10 +681,10 @@ public class Client implements ClientService {
             System.out.println("Not connected to server.");
             return false;
         }
-        out.println("register###" + username + "###" + password + "###" + email + "###"
-                + phoneNumber + "###" + userDescription + "###" + university + "###" +
-                bedTime + "###" + alcohol + "###" + smoke + "###" + guests + "###" +
-                tidy + "###" + roomHours);
+        out.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
+                + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER +
+                bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER +
+                tidy + DELIMITER + roomHours);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -711,10 +712,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("updateProfile###" + oldUsername + "###" + username + "###" + password + "###" + email + "###"
-                + phoneNumber + "###" + userDescription + "###" + university + "###" +
-                bedTime + "###" + alcohol + "###" + smoke + "###" + guests + "###" +
-                tidy + "###" + roomHours);
+        out.println("updateProfile" + DELIMITER + oldUsername + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
+                + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER +
+                bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER +
+                tidy + DELIMITER + roomHours);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -752,7 +753,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("sendMessage###" + username + "###" + receiver + "###" + message);
+        out.println("sendMessage" + DELIMITER + username + DELIMITER + receiver + DELIMITER + message);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -777,7 +778,7 @@ public class Client implements ClientService {
 
         try {
             // Send request to the server
-            out.println("loadMessages###" + username + "###" + receiverUsername);
+            out.println("loadMessages" + DELIMITER + username + DELIMITER + receiverUsername);
 
             // Read the response
             String response = in.readLine();
@@ -802,7 +803,7 @@ public class Client implements ClientService {
             return null;
         }
 
-        out.println("loadMessages," + username + "," + receiver + "," + receiver);
+        out.println("loadMessages" + DELIMITER + username + DELIMITER + receiver + DELIMITER + receiver);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -818,14 +819,14 @@ public class Client implements ClientService {
     }
 
     //To send friend requests to other users
-    
+
     public boolean sendFriendRequest(String user, String potentialFriend) {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return false;
         }
 
-        out.println("sendFriendRequest," + user + "," + potentialFriend);
+        out.println("sendFriendRequest" + DELIMITER + user + DELIMITER + potentialFriend);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -850,7 +851,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewFriendRequests," + user);
+        out.println("viewFriendRequests" + DELIMITER + user);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -900,7 +901,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("acceptFriendRequest," + this.username + "," + friend);
+        out.println("acceptFriendRequest" + DELIMITER + this.username + DELIMITER + friend);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -924,7 +925,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("declineFriendRequest," + usernameInput);
+        out.println("declineFriendRequest" + DELIMITER + usernameInput);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -942,7 +943,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("addFriend," + user + "," + friend);
+        out.println("addFriend" + DELIMITER + user + DELIMITER + friend);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -966,7 +967,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("removeFriend," + user + "," + friend);
+        out.println("removeFriend" + DELIMITER + user + DELIMITER + friend);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -990,7 +991,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("blockUser," + user + "," + blockedUser);
+        out.println("blockUser" + DELIMITER + user + DELIMITER + blockedUser);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1014,7 +1015,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewProfile," + username);
+        out.println("viewProfile" + DELIMITER + username);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1031,7 +1032,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewFriendsList," + usernameInput);
+        out.println("viewFriendsList" + DELIMITER + usernameInput);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1052,7 +1053,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("removeBlockedUser," + user + "," + blockedUser);
+        out.println("removeBlockedUser" + DELIMITER + user + DELIMITER + blockedUser);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1076,7 +1077,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewBlockedUsers," + usernameInput);
+        out.println("viewBlockedUsers" + DELIMITER + usernameInput);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1120,7 +1121,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("searchByParameter," + parameter + "," + value);
+        out.println("searchByParameter" + DELIMITER + parameter + DELIMITER + value);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1145,7 +1146,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("exactMatch," + username);
+        out.println("exactMatch" + DELIMITER + username);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1171,7 +1172,7 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("partialMatch," + username);
+        out.println("partialMatch" + DELIMITER + username);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -1205,7 +1206,7 @@ public class Client implements ClientService {
             byte[] fileBytes = fileInputStream.readAllBytes();
 
             // Inform the server about the request
-            out.println("uploadProfilePicture###" + username);
+            out.println("uploadProfilePicture" + DELIMITER + username);
             out.println(fileBytes.length); // Send the size of the file
 
             // Send the actual file bytes
@@ -1224,28 +1225,6 @@ public class Client implements ClientService {
         } catch (IOException e) {
             System.out.println("Error uploading profile picture: " + e.getMessage());
             return false;
-        }
-    }
-
-    //To update preferences of a user
-    public void updatePreferences(User user) {
-        if (!isConnected) {
-            System.out.println("Not connected to server.");
-            return;
-        }
-
-        String preferences = user.getPreferences();
-        out.println("updatePreferences," + username + "," + preferences.replace(",", "###"));
-
-        try {
-            String response = in.readLine(); //To read response from server
-            if ("Preferences Updated".equals(response)) {
-                System.out.println("Your preferences have been updated.");
-            } else {
-                System.out.println("Failed to update preferences.");
-            }
-        } catch (IOException e) {
-            System.out.println("Error updating preferences: " + e.getMessage());
         }
     }
 }

@@ -59,15 +59,6 @@ public class Database implements DatabaseFramework {
         }
     }
 
-    // Centralized method to append data to a file
-    private synchronized void appendToFile(String file, String data) {
-        try (PrintWriter writer = new PrintWriter(new FileOutputStream(file, true))) {
-            writer.println(data);
-        } catch (IOException e) {
-            System.out.println("Error appending to file: " + file + " - " + e.getMessage());
-        }
-    }
-
     // Initialization
     public void initializeDatabase() throws UsernameTakenException, InvalidInput {
         loadUsers();
