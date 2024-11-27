@@ -52,17 +52,8 @@ public class Server implements ServerService, Runnable {
     }
 
     //method to load messages between two users
-    public String loadMessages(User user, User reciever) {
-        if (user == null || reciever == null) {
-            return null;
-        }
-        ArrayList<String> messages = database.loadConversation(user.getName(), reciever.getName());
-        String result = "";
-
-        for (String s : messages) {
-            result += s + DELIMITER;
-        }
-        return result;
+    public String loadMessages(User user1, User user2) {
+        return database.getMessage(user1, user2);
     }
 
     //method to send friend request to another user
@@ -127,86 +118,25 @@ public class Server implements ServerService, Runnable {
 
     //method to check how many preferences of two users match, and return users in a descending order of matches
     public  String partialMatch(User user) {
-        ArrayList<User> partialmatches = database.partialMatch(user);
-        if (partialmatches.isEmpty()) {
-            return null;
-        }
-
-        String result = "";
-        for (User users : partialmatches) {
-            String username = users.getName();
-            result += username + DELIMITER;
-        }
-        return result;
-
+        return database.partialMatch(user, DELIMITER);
     }
 
     //method to retrieve list of users who have the exact same preferences
     public String exactMatch(User user) {
-        if (user == null) {
-            return "";
-        }
-
-        ArrayList<User> exactmatches = database.exactMatch(user);
-
-        if (exactmatches == null) {
-            return "";
-        }
-
-        String result = "";
-        for (User users : exactmatches) {
-            String username = users.getName();
-            result += username + DELIMITER;
-        }
-        return result;
+        return database.exactMatch(user, DELIMITER);
     }
 
     //Method to search roommates by a specific preference
-    public  String searchByParameter(String parameter, String value) throws UsernameTakenException, InvalidInput {
-        if (parameter == null || parameter.isEmpty() || value == null || value.isEmpty()) {
-            return "";
-        }
-
-        ArrayList<User> matches = database.searchByParameter(parameter, value);
-        if (matches == null) {
-            return "";
-        }
-        String result = "";
-        for (User users : matches) {
-            String username = users.getName();
-            result += username + DELIMITER;
-        }
-        return result;
-    }
-
-    //method to set preferences of a user
-    public synchronized void setPreferences(User user, String bedtime, boolean alcohol,
-                                            boolean smoke, boolean guests, int tidy, int roomHours) {
-        if (user == null) {
-            return;
-        }
-
-        try {
-            User existingUser = database.findUserByName(user.getName());
-
-            if (existingUser != null) {
-                existingUser.setPreferences(bedtime, alcohol, smoke, guests, tidy, roomHours);
-                System.out.println("Preferences successfully updated for user: " + user.getName());
-            } else {
-                System.out.println("User not found in the database.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error updating preferences");
-        }
+    public  String searchByParameter(String parameter, String value) {
+        return database.searchByParameter(parameter, value, DELIMITER);
     }
 
     //main method for computation
     public static void main(String[] args) throws UsernameTakenException, InvalidInput {
-        database.initializeDatabase();
         Server server = new Server();
+        database.initializeDatabase();
 
         //connect server to client via socket
-        
         try (ServerSocket serverSocket = new ServerSocket(1102)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
@@ -216,8 +146,7 @@ public class Server implements ServerService, Runnable {
                          PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
                         while (true) {
                             String line = reader.readLine();
-                            if (line == null) 
-                                break;
+                            if (line == null) break;
                             
                             //receives message from client in the format "login, username, password"
                             if (line.startsWith("login")) {
@@ -228,16 +157,12 @@ public class Server implements ServerService, Runnable {
 
                                 String userInformation = server.login(username, password);
                                 if (userInformation != null && !userInformation.isEmpty()) { // not sure about this
-                                    writer.println("Successful login");
                                     writer.println(userInformation);
-                                } else writer.println("Wrong username or password");
+                                } else writer.println(FAILURE);
 
                             }
 
-                            /** receives message from client in the format  
-                             * register###username###password###email###phoneNumber###desciption
-                             * ###university###bedTime###alcohol###smoke###guests###tidy###roomHours */
-
+                            // receives message from client in the format
                             if (line.startsWith("register")) {
                                 String[] parts = line.split(DELIMITER);
                                 try {
@@ -253,9 +178,9 @@ public class Server implements ServerService, Runnable {
                                         writer.println(e.getMessage()); 
                                     }
                                     if (server.register(user)) {
-                                        writer.println("successful registration");
+                                        writer.println(SUCCESS);
                                     } else {
-                                        writer.println("registration failed (possibly username taken)");
+                                        writer.println(FAILURE);
                                     }
                                 } catch (UsernameTakenException e) {
                                     writer.println("Enter a different username");
@@ -271,11 +196,9 @@ public class Server implements ServerService, Runnable {
 
                                 String message = parts[3];
                                 if (server.sendMessage(sender, receiver, message)) {
-                                    System.out.println("SUCCESS");
-                                    writer.println("Successfully sent message");
+                                    writer.println(SUCCESS);
                                 } else {
-                                    System.out.println("FAILURE");
-                                    writer.println("Something went wrong");
+                                    writer.println(FAILURE);
                                 }
                             }
 
@@ -289,13 +212,13 @@ public class Server implements ServerService, Runnable {
                                 User receiver = database.findUserByName(receiverUsername);
 
                                 if (sender == null || receiver == null) {
-                                    writer.println("Error: One or both users not found.");
+                                    writer.println(FAILURE);
                                     continue;
                                 }
 
                                 String messages = server.loadMessages(sender, receiver);
                                 if (messages == null || messages.isEmpty()) {
-                                    writer.println("Message list is empty");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(messages);
                                 }
@@ -307,9 +230,9 @@ public class Server implements ServerService, Runnable {
                                 User user = database.findUserByName(parts[1]);
                                 User potentialfriend = database.findUserByName(parts[2]);
                                 if (server.sendFriendRequest(user, potentialfriend)) {
-                                    writer.println("Successfully sent friend request");
+                                    writer.println(SUCCESS);
                                 } else {
-                                    writer.println("Friend request failed (possibly already sent a friend request)");
+                                    writer.println(FAILURE);
                                 }
 
                             }
@@ -319,7 +242,7 @@ public class Server implements ServerService, Runnable {
                                 String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.viewFriendRequests(user) == null) {
-                                    writer.println("Friend requests are empty");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(String.join(DELIMITER, server.viewFriendRequests(user)));
                                 }
@@ -331,9 +254,9 @@ public class Server implements ServerService, Runnable {
                                 User receiver = database.findUserByName(parts[1]);
                                 User sender = database.findUserByName(parts[2]);
                                 if (server.declineFriendRequest(receiver, sender)) {
-                                    writer.println("You declined friend request declined");
+                                    writer.println(SUCCESS);
                                 } else {
-                                    writer.println("Could not decline friend request successfully");
+                                    writer.println(FAILURE);
                                 }
                             }
 
@@ -347,9 +270,9 @@ public class Server implements ServerService, Runnable {
                                     for (User friend1 : user.getFriendList()) {
                                         System.out.println(friend1.getName());
                                     }
-                                    writer.println("Successfully added friend");
+                                    writer.println(SUCCESS);
                                 } else {
-                                    writer.println("Entered a nonexistent Person");
+                                    writer.println(FAILURE);
                                 }
                             }
 
@@ -359,9 +282,9 @@ public class Server implements ServerService, Runnable {
                                 User user = database.findUserByName(parts[1]);
                                 User friend = database.findUserByName(parts[2]);
                                 if (server.removeFriend(user, friend)) {
-                                    writer.println("Successfully removed friend");
+                                    writer.println(SUCCESS);
                                 } else {
-                                    writer.println("Something went wrong");
+                                    writer.println(FAILURE);
                                 }
                             }
 
@@ -370,7 +293,7 @@ public class Server implements ServerService, Runnable {
                                 String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.viewFriendsList(user) == null) {
-                                    writer.println("Friend list is empty");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(server.viewFriendsList(user));
                                 }
@@ -382,7 +305,7 @@ public class Server implements ServerService, Runnable {
                                 User user = database.findUserByName(parts[1]);
                                 User reciever = database.findUserByName(parts[2]);
                                 if (server.loadMessages(user, reciever) == null) {
-                                    writer.println("Message list is empty");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(server.loadMessages(user, reciever));
                                 }
@@ -395,9 +318,9 @@ public class Server implements ServerService, Runnable {
                                 User user = database.findUserByName(parts[1]);
                                 User blockedUser = database.findUserByName(parts[2]);
                                 if (server.blockUser(user, blockedUser)) {
-                                    writer.println("Successfully blocked user");
+                                    writer.println(SUCCESS);
                                 } else {
-                                    writer.println("Something went wrong");
+                                    writer.println(FAILURE);
                                 }
                             }
 
@@ -406,10 +329,10 @@ public class Server implements ServerService, Runnable {
                                 String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User blockedUser = database.findUserByName(parts[2]);
-                                if (server.removeBlockedUser(user, blockedUser)) {
-                                    writer.println("Successfully removed from blocked list");
+                                if (server.unblockUser(user, blockedUser)) {
+                                    writer.println(SUCCESS);
                                 } else {
-                                    writer.println("Something went wrong");
+                                    writer.println(FAILURE);
                                 }
 
                             }
@@ -419,7 +342,7 @@ public class Server implements ServerService, Runnable {
                                 String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.viewBlockedUsers(user) == null) {
-                                    writer.println("Blocked list is empty");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(server.viewBlockedUsers(user));
                                 }
@@ -433,15 +356,14 @@ public class Server implements ServerService, Runnable {
                                 if (viewProfile != null) {
                                     writer.println(viewProfile);
                                 } else {
-                                    writer.println("Something went wrong");
+                                    writer.println(FAILURE);
                                 }
                             }
-
 
                             if (line.startsWith("updateProfile")) {
                                 String[] tokens = line.split(DELIMITER);
                                 if (tokens.length < 14) {
-                                    writer.println("Error: Missing fields for updating profile.");
+                                    writer.println(FAILURE);
                                     continue;
                                 }
 
@@ -463,19 +385,19 @@ public class Server implements ServerService, Runnable {
                                     tidy = Integer.parseInt(tokens[12]);
                                     roomHours = Integer.parseInt(tokens[13]);
                                 } catch (NumberFormatException e) {
-                                    writer.println("Error: Invalid numeric values for tidy or roomHours.");
+                                    writer.println(FAILURE);
                                     continue;
                                 }
 
                                 User user = database.findUserByName(oldUsername); // Lookup using the old username
 
                                 if (user == null) {
-                                    writer.println("Error: User not found.");
+                                    writer.println(FAILURE);
                                     continue;
                                 }
 
                                 if (!password.equals(user.getPassword())) {
-                                    writer.println("Error: Incorrect password.");
+                                    writer.println(FAILURE);
                                     continue;
                                 }
 
@@ -487,9 +409,9 @@ public class Server implements ServerService, Runnable {
                                     user.setDescription(description);
                                     user.setUniversity(university);
                                     user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
-                                    writer.println("Profile Updated");
+                                    writer.println(SUCCESS);
                                 } catch (Exception e) {
-                                    writer.println("Error updating profile: " + e.getMessage());
+                                    writer.println(FAILURE);
                                 }
                             }
 
@@ -498,7 +420,7 @@ public class Server implements ServerService, Runnable {
                                 String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.partialMatch(user) == null) {
-                                    writer.println("No partial matches found");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(server.partialMatch(user));
                                 }
@@ -510,7 +432,7 @@ public class Server implements ServerService, Runnable {
                                 String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 if (server.exactMatch(user) == null) {
-                                    writer.println("No exact matches found");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(server.exactMatch(user));
                                 }
@@ -521,7 +443,7 @@ public class Server implements ServerService, Runnable {
                                 String parameter = parts[1];
                                 String value = parts[2];
                                 if (server.searchByParameter(parameter, value) == null) {
-                                    writer.println("No matches found");
+                                    writer.println(FAILURE);
                                 } else {
                                     writer.println(server.searchByParameter(parameter, value));
                                 }
@@ -535,7 +457,7 @@ public class Server implements ServerService, Runnable {
                                 User user = database.findUserByName(username);
 
                                 if (user == null) {
-                                    writer.println("Error: User not found.");
+                                    writer.println(FAILURE);
                                     continue;
                                 }
 
@@ -545,9 +467,9 @@ public class Server implements ServerService, Runnable {
                                     socket.getInputStream().read(fileBytes); // Read the file data
 
                                     database.saveProfilePicture(user, fileBytes); // Save the profile picture in the database
-                                    writer.println("Profile picture updated");
+                                    writer.println(SUCCESS);
                                 } catch (IOException | NumberFormatException e) {
-                                    writer.println("Error updating profile picture: " + e.getMessage());
+                                    writer.println(FAILURE);
                                 }
                             }
 

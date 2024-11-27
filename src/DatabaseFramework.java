@@ -38,7 +38,7 @@ public interface DatabaseFramework {
     void deleteProfilePicture(User user);  // Deletes a user's profile picture
 
     // Search and Matching
-    ArrayList<User> searchByParameter(String parameter, String value) throws UsernameTakenException, InvalidInput;  // Searches for users based on a parameter and value
-    ArrayList<User> exactMatch(User user);  // Finds users who exactly match a given user's attributes
-    ArrayList<User> partialMatch(User user);  // Finds users who partially match a given user's attributes
+    String searchByParameter(String parameter, String value, String delimiter) throws UsernameTakenException, InvalidInput;  // Searches for users based on a parameter and value
+    String exactMatch(User user, String delimiter);  // Finds users who exactly match a given user's attributes
+    String partialMatch(User user, String delimiter);  // Finds users who partially match a given user's attributes
 }

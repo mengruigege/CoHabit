@@ -26,6 +26,8 @@ public class User implements Profile, FriendManageable, Blockable {
     private int tidy;
     private int roomHours;
 
+    private static final String DELIMITER = "<<END>>";
+
     private Relationships relationships = new Relationships();
 
     //Constructs a newly allocated User object with the specified field values.
@@ -302,9 +304,9 @@ public class User implements Profile, FriendManageable, Blockable {
 
     //Returns a string representation of the user object
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s,%s,%b,%b,%b,%d,%d", this.name,
+        return String.join(DELIMITER, this.name,
                 this.password, this.email, this.phoneNumber, this.description,
-                this.university, bedTime, alcohol, smoke, guests,
-                tidy, roomHours);
+                this.university, bedTime, String.valueOf(alcohol), String.valueOf(smoke), String.valueOf(guests),
+                String.valueOf(tidy), String.valueOf(roomHours));
     }
 }

@@ -185,7 +185,7 @@ public class Database implements DatabaseFramework {
     private synchronized void saveUsers() {
         ArrayList<String> lines = new ArrayList<>();
         for (User user : allUsers) {
-            lines.add(user.toString()); // Assuming User has a proper toString method
+            lines.add(user.toString());
         }
         writeFile(USERS_FILE, lines);
     }
@@ -502,14 +502,24 @@ public class Database implements DatabaseFramework {
         return blockedUserNames;
     }
 
-    public synchronized ArrayList<String> getMessage(User user) {
-        if (user == null) {
-            System.out.println("Invalid user.");
+    public synchronized ArrayList<String> getMessage(User user1, User user2) {
+        if (user1 == null || user2 == null) {
+            System.out.println("Invalid users provided.");
             return new ArrayList<>();
         }
 
-        // Fetch messages for the given user
-        return new ArrayList<>(allMessages.getOrDefault(user, new ArrayList<>()));
+        ArrayList<String> userMessages = allMessages.getOrDefault(user1, new ArrayList<>());
+        ArrayList<String> result = new ArrayList<>();
+
+        // Filter messages that involve both user1 and user2
+        for (String message : userMessages) {
+            if (message.contains(user1.getName() + " -> " + user2.getName()) ||
+                    message.contains(user2.getName() + " -> " + user1.getName())) {
+                result.add(message);
+            }
+        }
+
+        return result;
     }
 
     public synchronized ArrayList<String> getFriendRequests(User user) {
@@ -625,35 +635,34 @@ public class Database implements DatabaseFramework {
 
 
     // Searches users based on a specified parameter and value
-    public synchronized ArrayList<User> searchByParameter(String parameter, String value) throws UsernameTakenException, InvalidInput {
-        ArrayList<User> matchingUsers = new ArrayList<>();
-
-        // Null and edge-case handling
+    public synchronized String searchByParameter(String parameter, String value, String delimiter) {
         if (parameter == null || value == null || value.isEmpty()) {
             System.out.println("Invalid parameter or value for search.");
-            return matchingUsers; // Return empty list
+            return ""; // Return an empty string
         }
+
+        String result = "";
 
         for (User user : allUsers) {
             switch (parameter.toLowerCase()) {
                 case "name":
                     if (value.equals(user.getName())) {
-                        matchingUsers.add(user);
+                        result += user.getName() + delimiter;
                     }
                     break;
                 case "email":
                     if (value.equals(user.getEmail())) {
-                        matchingUsers.add(user);
+                        result += user.getName() + delimiter;
                     }
                     break;
                 case "phone":
                     if (value.equals(user.getPhoneNumber())) {
-                        matchingUsers.add(user);
+                        result += user.getName() + delimiter;
                     }
                     break;
                 case "university":
                     if (value.equals(user.getUniversity())) {
-                        matchingUsers.add(user);
+                        result += user.getName() + delimiter;
                     }
                     break;
                 default:
@@ -662,52 +671,85 @@ public class Database implements DatabaseFramework {
             }
         }
 
-        return matchingUsers; // Return the list of matching users
-    }
-
-    // Finds users who are an exact match with the main user
-    public synchronized ArrayList<User> exactMatch(User user) {
-        ArrayList<User> results = new ArrayList<>();
-
-        if (user == null) {
-            System.err.println("Main user cannot be null.");
-            return results; // Return empty list
+        // Remove the last delimiter if matches were found
+        if (!result.isEmpty()) {
+            result = result.substring(0, result.length() - delimiter.length());
         }
 
+        return result; // Return the list as a delimited string
+    }
+
+
+    public synchronized String exactMatch(User user, String delimiter) {
+        if (user == null) {
+            System.err.println("Main user cannot be null.");
+            return ""; // Return an empty string
+        }
+
+        String result = "";
+
         for (User user1 : allUsers) {
-            if (!user1.getName().equals(user1.getName()) && user1.perfectMatch(user1)) {
-                results.add(user1);
+            if (!user.getName().equals(user1.getName()) && user.perfectMatch(user1)) {
+                result += user1.getName() + delimiter;
             }
         }
 
-        return results; // Return the list of exact matches
-    }
-
-
-    public synchronized ArrayList<User> partialMatch(User user) {
-        ArrayList<User> results = new ArrayList<>();
-
-        if (user == null) {
-            System.out.println("Main user cannot be null.");
-            return results; // Return empty list
+        // Remove the last delimiter if matches were found
+        if (!result.isEmpty()) {
+            result = result.substring(0, result.length() - delimiter.length());
         }
 
-        TreeMap<Integer, ArrayList<User>> rankedMatches = new TreeMap<>(Collections.reverseOrder());
+        return result; // Return the list as a delimited string
+    }
 
+    public synchronized String partialMatch(User user, String delimiter) {
+        if (user == null) {
+            System.out.println("Main user cannot be null.");
+            return null; // Return an empty string
+        }
+
+        ArrayList<User> matchedUsers = new ArrayList<>();
+        ArrayList<Integer> matchScores = new ArrayList<>();
+
+        // Calculate match scores for each user
         for (User user1 : allUsers) {
-            if (!user1.getName().equals(user1.getName())) {
-                int score = user1.partialMatch(user1); // Assuming this method exists in User
+            if (!user.getName().equals(user1.getName())) {
+                int score = user.partialMatch(user1); // Assuming this method exists in User
                 if (score > 0) {
-                    rankedMatches.putIfAbsent(score, new ArrayList<>());
-                    rankedMatches.get(score).add(user1);
+                    matchedUsers.add(user1);
+                    matchScores.add(score);
                 }
             }
         }
 
-        for (ArrayList<User> matchGroup : rankedMatches.values()) {
-            results.addAll(matchGroup); // Add users sorted by score
+        // Sort the matched users by scores (descending order)
+        for (int i = 0; i < matchScores.size() - 1; i++) {
+            for (int j = i + 1; j < matchScores.size(); j++) {
+                if (matchScores.get(i) < matchScores.get(j)) {
+                    // Swap scores
+                    int tempScore = matchScores.get(i);
+                    matchScores.set(i, matchScores.get(j));
+                    matchScores.set(j, tempScore);
+
+                    // Swap corresponding users
+                    User tempUser = matchedUsers.get(i);
+                    matchedUsers.set(i, matchedUsers.get(j));
+                    matchedUsers.set(j, tempUser);
+                }
+            }
         }
 
-        return results;
+        // Build the result string
+        String result = "";
+        for (User match : matchedUsers) {
+            result += match.getName() + delimiter;
+        }
+
+        // Remove trailing delimiter
+        if (!result.isEmpty()) {
+            result = result.substring(0, result.length() - delimiter.length());
+        }
+
+        return result; // Return the list as a delimited string
     }
 }
