@@ -32,6 +32,7 @@ public class Client implements ClientService {
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
+    private Scanner scanner;
 
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
@@ -41,25 +42,64 @@ public class Client implements ClientService {
     private static final String FAILURE = "FAILURE";
 
     //constructor
-    public Client(User user) {
-        if (user != null && user.getName() != null && user.getPassword() != null
-                && user.getEmail() != null && user.getPhoneNumber() != null &&
-                user.getDescription() != null && user.getUniversity() != null) {
-            this.username = user.getName();
-            this.password = user.getPassword();
-            this.email = user.getEmail();
-            this.phoneNumber = user.getPhoneNumber();
-            this.userDescription = user.getDescription();
-            this.university = user.getUniversity();
-        } else {
-            this.username = null;
-            this.password = null;
-            this.email = null;
-            this.phoneNumber = null;
-            this.userDescription = null;
-            this.university = null;
+    public Client(String serverAddress, int serverPort) {
+        try {
+            socket = new Socket(serverAddress, serverPort);
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new PrintWriter(socket.getOutputStream(), true);
+            scanner = new Scanner(System.in);
+            System.out.println("Connected to " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+        } catch (IOException e) {
+            System.out.println("Could not connect to " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
         }
     }
+
+    public static void main(String[] args) {
+        Client client = new Client("localhost", 1102);
+        client.start();
+    }
+
+    public void start() {
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("Select an option:\n1. Login\n2. Register\n3. Exit");
+            String choice1 = scanner.nextLine();
+            switch (choice1) {
+                case "1":
+                    if (login()) {
+                        mainScreen();
+                    }
+                    break;
+                case "2":
+                    if (register()) {
+                        mainScreen();
+                    }
+                    break;
+                case "3":
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid option, please try again");
+            }
+        }
+        close();
+    }
+
+    public void close() {
+        try {
+            if (socket != null) socket.close();
+            if (reader != null) reader.close();
+            if (writer != null) writer.close();
+            if (scanner != null) scanner.close();
+        } catch (IOException e) {
+            System.out.println("Could not close client" + e.getMessage());
+        }
+    }
+
+    public void mainScreen() {
+        boolean exit = false;
+    }
+
 
     //main method
     public static void main(String[] args) throws IOException {
@@ -635,7 +675,7 @@ public class Client implements ClientService {
 
         try {
             String response = reader.readLine(); //To read response from server
-            if ("Successful login".equals(response)) {
+            if (response.equals(SUCCESS)) {
                 System.out.println("Login successful.");
                 return true;
             } else {

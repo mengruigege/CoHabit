@@ -396,31 +396,20 @@ public class Server implements ServerService, Runnable {
 
     // method to check if the login was successful or not
     public String login(String username, String password) {
-        User user;
-        user = database.findUserByName(username);
+        User user = database.findUserByName(username);
         if (user == null) {
             return null;
         }
-        if (!(password.equals(user.getPassword()))) {
-            return "";
-        }
-        if (!(username.equals(user.getName()))) {
-            return "";
-        }
+
         if (user.getPassword().equals(password) && user.getName().equals(username)) {
-            return user.getName() + DELIMITER + user.getPassword() + DELIMITER + user.getEmail() +
-                    DELIMITER + user.getPhoneNumber() + DELIMITER + user.getDescription() + DELIMITER + user.getUniversity();
+            return user.toString();
         }
         return null;
     }
 
     // method used to add the new register user to the database and return true if successful
     public boolean register(User user) {
-        if (database.addUser(user)) {
-            return true;
-        } else {
-            return false;
-        }
+        return database.addUser(user);
     }
 
     //method to send messages between two users
@@ -440,12 +429,7 @@ public class Server implements ServerService, Runnable {
 
     //method to view all friend requests of a user
     public ArrayList<String> viewFriendRequests(User user) {
-        ArrayList<String> friendRequests = database.getFriendRequests(user);
-        if (friendRequests == null) {
-            return null;
-        } else {
-            return friendRequests;
-        }
+        return database.getFriendRequests(user);
     }
 
     //method to decline friend requests
@@ -455,7 +439,7 @@ public class Server implements ServerService, Runnable {
     
     //method to accept a friend request
     public boolean acceptFriendRequest(User receiver, User sender) {
-        return database.acceptFriendRequest(receiver, sender friend);
+        return database.acceptFriendRequest(receiver, sender);
     }
 
     //method to remove a friend from friend list
