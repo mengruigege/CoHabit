@@ -63,8 +63,8 @@ public class Client implements ClientService {
         boolean exit = false;
         while (!exit) {
             System.out.println("Select an option:\n1. Login\n2. Register\n3. Exit");
-            String choice1 = scanner.nextLine();
-            switch (choice1) {
+            String choice = scanner.nextLine();
+            switch (choice) {
                 case "1":
                     if (login()) {
                         mainScreen();
@@ -98,14 +98,236 @@ public class Client implements ClientService {
 
     public void mainScreen() {
         boolean exit = false;
+        String choice;
+
+        while (!exit) {
+            System.out.println("\nSelect an option:");
+            System.out.println("1. Send Message");
+            System.out.println("2. View Message");
+            System.out.println("3. View Friend Requests");
+            System.out.println("4. Send Friend Request");
+            System.out.println("5. Remove Friend");
+            System.out.println("6. Block User");
+            System.out.println("7. Unblock User");
+            System.out.println("8. View Profile");
+            System.out.println("9. Update Profile");
+            System.out.println("10. Search roommates");
+            System.out.println("11. Disconnect and Exit");
+            choice = scanner.nextLine();
+        }
+
+        switch (choice) {
+            case "1":
+                sendMessage();
+                break;
+            case "2":
+                viewMessage();
+                break;
+            case "3":
+                viewFriendRequests();
+                break;
+            case "4":
+                sendFriendRequest();
+                break;
+            case "5":
+                removeFriend();
+                break;
+            case "6":
+                blockUser();
+                break;
+            case "7":
+                unblockUser();
+                break;
+            case "8":
+                viewProfile();
+                break;
+            case "9":
+                updateProfile();
+                break;
+            case "10":
+                searchRoommates();
+                break;
+            case "11":
+                disconnect();
+                break;
+            default:
+                System.out.println("Invalid option, please try again");
+        }
+    }
+
+    public boolean login() {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        System.out.print("Enter your username: ");
+        String usernameInput = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String passwordInput = scanner.nextLine();
+
+        // Send login request
+        writer.println("login" + DELIMITER + usernameInput + DELIMITER + passwordInput);
+
+        try {
+            String response = reader.readLine();
+            if (response == null || response.equals(FAILURE)) {
+                System.out.println("Login failed. Please check your username and password.");
+                return false;
+            }
+
+            // Parse user information on success
+            String[] userInfo = response.split(DELIMITER);
+            if (userInfo.length != 6) {
+                System.out.println("Error: Invalid response from server.");
+                return false;
+            }
+
+            // Set user data
+            username = userInfo[0];
+            password = userInfo[1];
+            email = userInfo[2];
+            phoneNumber = userInfo[3];
+            userDescription = userInfo[4];
+            university = userInfo[5];
+
+            System.out.println("Login successful. Welcome, " + username + "!");
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error during login: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean register() {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        System.out.print("Create a username: ");
+        username = scanner.nextLine();
+        System.out.print("Create a password: ");
+        password = scanner.nextLine();
+        System.out.print("Enter your email: ");
+        email = scanner.nextLine();
+        System.out.print("Enter your phone number: ");
+        phoneNumber = scanner.nextLine();
+        System.out.print("Enter a brief description about yourself: ");
+        userDescription = scanner.nextLine();
+        System.out.print("Enter your university: ");
+        university = scanner.nextLine();
+        System.out.print("What is your average bedtime (e.g., 22:30)? ");
+        bedTime = scanner.nextLine();
+        System.out.print("Do you drink alcohol? (yes/no): ");
+        alcohol = scanner.nextLine().equalsIgnoreCase("yes");
+        System.out.print("Do you smoke? (yes/no): ");
+        smoke = scanner.nextLine().equalsIgnoreCase("yes");
+        System.out.print("Are you comfortable with guests? (yes/no): ");
+        guests = scanner.nextLine().equalsIgnoreCase("yes");
+        System.out.print("How tidy are you (1-10)? ");
+        tidy = Integer.parseInt(scanner.nextLine());
+        System.out.print("How many hours do you spend in your room daily? ");
+        roomHours = Integer.parseInt(scanner.nextLine());
+
+        // Send registration request
+        writer.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
+                + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER +
+                bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER +
+                tidy + DELIMITER + roomHours);
+
+        try {
+            String response = reader.readLine();
+            if (response.equals(SUCCESS)) {
+                System.out.println("Registration successful. Welcome, " + username + "!");
+                return true;
+            } else {
+                System.out.println("Registration failed: " + response);
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error during registration: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean sendMessage() {
+        if (!isConnected) {
+            System.out.println("Not connected to server.");
+            return false;
+        }
+
+        System.out.print("Enter the username of the recipient: ");
+        String recipient = scanner.nextLine();
+        System.out.print("Enter your message: ");
+        String message = scanner.nextLine();
+
+        // Send message to server
+        writer.println("sendMessage" + DELIMITER + username + DELIMITER + recipient + DELIMITER + message);
+
+        try {
+            String response = reader.readLine();
+            if (response.equals(SUCCESS)) {
+                System.out.println("Message sent to " + recipient);
+                return true;
+            } else {
+                System.out.println("Failed to send message: " + response);
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Error sending message: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void viewMessage() {
+        if (!isConnected) {
+            System.out.println("Not connected to the server.");
+            return;
+        }
+
+        System.out.print("Enter the username to view messages with: ");
+        String recipient = scanner.nextLine();
+
+        // Request message history from server
+        writer.println("getMessageHistory" + DELIMITER + username + DELIMITER + recipient);
+
+        try {
+            String response = reader.readLine();
+            if (response == null || response.equals(FAILURE)) {
+                System.out.println("No messages found with " + recipient);
+            } else {
+                System.out.println("Messages with " + recipient + ":");
+                for (String message : response.split(DELIMITER)) {
+                    System.out.println(message);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error retrieving messages: " + e.getMessage());
+        }
+    }
+
+
+
+    public void disconnect() {
+        if (!isConnected) {
+            System.out.println("Not connected to the server.");
+            return;
+        }
+
+        try {
+            socket.close();
+            isConnected = false;
+            System.out.println("Disconnected from the server.");
+        } catch (IOException e) {
+            System.out.println("Error disconnecting: " + e.getMessage());
+        }
     }
 
 
     //main method
     public static void main(String[] args) throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        User user = null;
-        Client client = new Client(user);
+        Client client = new Client("localhost", 1102);
 
         if (!client.connect(client.serverAddress, client.serverPort)) {
             System.out.println("Failed to connect to the server. Exiting.");
@@ -627,7 +849,7 @@ public class Client implements ClientService {
     }
 
     //To connect client to server
-    
+
     public boolean connect(String serverAddressInput, int port) {
         try {
             socket = new Socket(serverAddress, port);
@@ -649,7 +871,7 @@ public class Client implements ClientService {
     }
 
     //To disconnect client from server
-    
+
     public void disconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
