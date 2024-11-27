@@ -14,7 +14,385 @@ public class Server implements ServerService, Runnable {
     private static final String DELIMITER = "<<END>>";
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
+    private final Socket clientSocket;
 
+    public Server(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+
+    @Override
+    public void run() {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)) {
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) break;
+
+                //receives message from client in the format "login, username, password"
+                if (line.startsWith("login")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    String username = parts[1];
+                    String password = parts[2];
+
+                    String userInformation = login(username, password);
+                    if (userInformation != null && !userInformation.isEmpty()) { // not sure about this
+                        writer.println(userInformation);
+                    } else writer.println(FAILURE);
+
+                }
+
+                // receives message from client in the format
+                if (line.startsWith("register")) {
+                    String[] parts = line.split(DELIMITER);
+                    try {
+                        User user = new User(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
+                        boolean alcohol = Boolean.parseBoolean(parts[8]);
+                        boolean smoke = Boolean.parseBoolean(parts[9]);
+                        boolean guests = Boolean.parseBoolean(parts[10]);
+                        int tidy = Integer.parseInt(parts[11]);
+                        int roomHours = Integer.parseInt(parts[12]);
+                        try {
+                            user.setPreferences(parts[7], alcohol, smoke, guests, tidy, roomHours);
+                        } catch (Exception e) {
+                            writer.println("Invalid registration data");
+                        }
+
+                        if (register(user)) {
+                            writer.println(SUCCESS);
+                        } else {
+                            writer.println("Registration failed");
+                        }
+                    } catch (UsernameTakenException e) {
+                        writer.println("Username is taken");
+                    }
+
+                }
+
+                // receives message from client in format sendMessage###sender###reciever###message
+                if (line.startsWith("sendMessage")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User sender = database.findUserByName(parts[1]);
+                    User receiver = database.findUserByName(parts[2]);
+                    String message = parts[3];
+
+                    if (sendMessage(sender, receiver, message)) {
+                        writer.println(SUCCESS);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+                }
+
+                // Receives message from client in the format loadMessages###user###receiver
+                if (line.startsWith("getMessageHistory")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    String senderUsername = parts[1];
+                    String receiverUsername = parts[2];
+
+                    User sender = database.findUserByName(senderUsername);
+                    User receiver = database.findUserByName(receiverUsername);
+                    ArrayList<String> messages = getMessageHistory(sender, receiver);
+
+                    if (messages == null || messages.isEmpty()) {
+                        writer.println(FAILURE);
+                    } else {
+                        writer.println(String.join(DELIMITER, messages));
+                    }
+                }
+
+                // receives message from client in the format sendFriendRequest,user,potentialFriend
+                if (line.startsWith("sendFriendRequest")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User sender = database.findUserByName(parts[1]);
+                    User receiver = database.findUserByName(parts[2]);
+
+                    if (sendFriendRequest(sender, receiver)) {
+                        writer.println(SUCCESS);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+
+                }
+
+                // receives message from client in the format viewFriendRequests,user
+                if (line.startsWith("viewFriendRequests")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+
+                    if (viewFriendRequests(user) == null) {
+                        writer.println(FAILURE);
+                    } else {
+                        writer.println(String.join(DELIMITER, viewFriendRequests(user)));
+                    }
+                }
+
+                // receives message from client in the format declineFriendRequest,user,declinedUser
+                if (line.startsWith("declineFriendRequest")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User receiver = database.findUserByName(parts[1]);
+                    User sender = database.findUserByName(parts[2]);
+
+                    if (declineFriendRequest(receiver, sender)) {
+                        writer.println(SUCCESS);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+                }
+
+                // receives message from client in the format acceptFriendRequest,user,friend
+                if (line.startsWith("acceptFriendRequest")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+                    User friend = database.findUserByName(parts[2]);
+
+                    if (acceptFriendRequest(user, friend)) {
+                        writer.println(SUCCESS);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+                }
+
+                // receives message from client in the format removeFriend,user,removedFriend
+                if (line.startsWith("removeFriend")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+                    User friend = database.findUserByName(parts[2]);
+
+                    if (removeFriend(user, friend)) {
+                        writer.println(SUCCESS);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+                }
+
+                // receives message from client in the format viewFriendsList,user
+                if (line.startsWith("viewFriendsList")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+
+                    ArrayList<String> friendList = viewFriendsList(user);
+                    if (friendList == null) {
+                        writer.println(FAILURE);
+                    } else {
+                        writer.println(String.join(DELIMITER, friendList));
+                    }
+                }
+
+                // receives message from client in the format blockUser,user,blockedUser
+                if (line.startsWith("blockUser")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+                    User blockedUser = database.findUserByName(parts[2]);
+
+                    if (blockUser(user, blockedUser)) {
+                        writer.println(SUCCESS);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+                }
+
+                // receives message from client in the format removeBlockedUser,user,blockedUser
+                if (line.startsWith("removeBlockedUser")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+                    User blockedUser = database.findUserByName(parts[2]);
+
+                    if (unblockUser(user, blockedUser)) {
+                        writer.println(SUCCESS);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+
+                }
+
+                // receives message from client in the format viewBlockedUsers,user
+                if (line.startsWith("viewBlockedUsers")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+
+                    ArrayList<String> blockedUserList = viewBlockedUsers(user);
+                    if (blockedUserList == null) {
+                        writer.println(FAILURE);
+                    } else {
+                        writer.println(blockedUserList);
+                    }
+                }
+
+                // receives message from client in the format viewProfile,username
+                if (line.startsWith("viewProfile")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    String username = parts[1];
+                    String viewProfile = viewProfile(username);
+
+                    if (viewProfile != null) {
+                        writer.println(viewProfile);
+                    } else {
+                        writer.println(FAILURE);
+                    }
+                }
+
+                if (line.startsWith("updateProfile")) {
+                    String[] tokens = line.split(DELIMITER);
+                    if (tokens.length != 14) {
+                        writer.println(FAILURE);
+                        continue;
+                    }
+
+                    String oldUsername = tokens[1]; // Old username for lookup
+                    String newUsername = tokens[2]; // New username (if updated)
+                    String password = tokens[3];
+                    String email = tokens[4];
+                    String phoneNumber = tokens[5];
+                    String description = tokens[6];
+                    String university = tokens[7];
+                    String bedTime = tokens[8];
+                    boolean alcohol = Boolean.parseBoolean(tokens[9]);
+                    boolean smoke = Boolean.parseBoolean(tokens[10]);
+                    boolean guests = Boolean.parseBoolean(tokens[11]);
+                    int tidy;
+                    int roomHours;
+
+                    try {
+                        tidy = Integer.parseInt(tokens[12]);
+                        roomHours = Integer.parseInt(tokens[13]);
+                    } catch (NumberFormatException e) {
+                        writer.println(FAILURE);
+                        continue;
+                    }
+
+                    User user = database.findUserByName(oldUsername); // Lookup using the old username
+
+                    if (user == null) {
+                        writer.println(FAILURE);
+                        continue;
+                    }
+
+                    if (!password.equals(user.getPassword())) {
+                        writer.println(FAILURE);
+                        continue;
+                    }
+
+                    // Update the user's profile
+                    try {
+                        user.setName(newUsername); // Update the username
+                        user.setEmail(email);
+                        user.setPhoneNumber(phoneNumber);
+                        user.setDescription(description);
+                        user.setUniversity(university);
+                        user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
+                        writer.println(SUCCESS);
+                    } catch (Exception e) {
+                        writer.println(FAILURE);
+                    }
+                }
+
+                // receives message from client in the format partialMatch,user
+                if (line.startsWith("partialMatch")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+                    String result = partialMatch(user);
+
+                    if (result == null) {
+                        writer.println(FAILURE);
+                    } else {
+                        writer.println(result);
+                    }
+
+                }
+
+                // receives message from client in the format exactMatch,user
+                if (line.startsWith("exactMatch")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    User user = database.findUserByName(parts[1]);
+                    String result = exactMatch(user);
+
+                    if (result == null) {
+                        writer.println(FAILURE);
+                    } else {
+                        writer.println(result);
+                    }
+                }
+
+                // receives message from client in the format searchByParameter,parameter,value
+                if (line.startsWith("searchByParameter")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    String parameter = parts[1];
+                    String value = parts[2];
+                    String result = searchByParameter(parameter, value);
+
+                    if (result == null) {
+                        writer.println(FAILURE);
+                    } else {
+                        writer.println(result);
+                    }
+                }
+
+                // Receives message from client in the format uploadProfilePicture###username
+                if (line.startsWith("uploadProfilePicture")) {
+                    String[] parts = line.split(DELIMITER);
+
+                    String username = parts[1];
+
+                    User user = database.findUserByName(username);
+
+                    if (user == null) {
+                        writer.println(FAILURE);
+                        continue;
+                    }
+
+                    try {
+                        int fileSize = Integer.parseInt(reader.readLine()); // Read the size of the file
+                        byte[] fileBytes = new byte[fileSize];
+                        clientSocket.getInputStream().read(fileBytes); // Read the file data
+
+                        database.saveProfilePicture(user, fileBytes); // Save the profile picture in the database
+                        writer.println(SUCCESS);
+                    } catch (IOException | NumberFormatException e) {
+                        writer.println(FAILURE);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws UsernameTakenException, InvalidInput {
+        database.initializeDatabase();
+
+        try (ServerSocket serverSocket = new ServerSocket(1102)) {
+            System.out.println("Server started. Waiting for connection...");
+
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client connected: " + clientSocket.getRemoteSocketAddress());
+                new Thread(new Server(clientSocket)).start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     // method to check if the login was successful or not
     public String login(String username, String password) {
@@ -46,19 +424,18 @@ public class Server implements ServerService, Runnable {
     }
 
     //method to send messages between two users
-    public static boolean sendMessage(User sender, User reciever, String message) {
-        database.sendMessage(sender, reciever, message);
-        return true;
+    public boolean sendMessage(User sender, User reciever, String message) {
+        return database.sendMessage(sender, reciever, message);
     }
 
     //method to load messages between two users
-    public String loadMessages(User user1, User user2) {
+    public ArrayList<String> getMessageHistory(User user1, User user2) {
         return database.getMessage(user1, user2);
     }
 
     //method to send friend request to another user
-    public boolean sendFriendRequest(User user, User potentialFriend) {
-        return database.sendFriendRequest(user, potentialFriend);
+    public boolean sendFriendRequest(User sender, User receiver) {
+        return database.sendFriendRequest(sender, receiver);
     }
 
     //method to view all friend requests of a user
@@ -129,358 +506,5 @@ public class Server implements ServerService, Runnable {
     //Method to search roommates by a specific preference
     public  String searchByParameter(String parameter, String value) {
         return database.searchByParameter(parameter, value, DELIMITER);
-    }
-
-    //main method for computation
-    public static void main(String[] args) throws UsernameTakenException, InvalidInput {
-        Server server = new Server();
-        database.initializeDatabase();
-
-        //connect server to client via socket
-        try (ServerSocket serverSocket = new ServerSocket(1102)) {
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                new Thread(() -> {
-                    try (Socket socket = clientSocket;
-                         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
-                        while (true) {
-                            String line = reader.readLine();
-                            if (line == null) break;
-                            
-                            //receives message from client in the format "login, username, password"
-                            if (line.startsWith("login")) {
-                                String[] parts = line.split(DELIMITER);
-
-                                String username = parts[1];
-                                String password = parts[2];
-
-                                String userInformation = server.login(username, password);
-                                if (userInformation != null && !userInformation.isEmpty()) { // not sure about this
-                                    writer.println(userInformation);
-                                } else writer.println(FAILURE);
-
-                            }
-
-                            // receives message from client in the format
-                            if (line.startsWith("register")) {
-                                String[] parts = line.split(DELIMITER);
-                                try {
-                                    User user = new User(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
-                                    boolean alcohol = Boolean.parseBoolean(parts[8]);
-                                    boolean smoke = Boolean.parseBoolean(parts[9]);
-                                    boolean guests = Boolean.parseBoolean(parts[10]);
-                                    int tidy = Integer.parseInt(parts[11]);
-                                    int roomHours = Integer.parseInt(parts[12]);
-                                    try {
-                                        user.setPreferences(parts[7], alcohol, smoke, guests, tidy, roomHours);
-                                    } catch (Exception e) {
-                                        writer.println(e.getMessage()); 
-                                    }
-                                    if (server.register(user)) {
-                                        writer.println(SUCCESS);
-                                    } else {
-                                        writer.println(FAILURE);
-                                    }
-                                } catch (UsernameTakenException e) {
-                                    writer.println("Enter a different username");
-                                }
-
-                            }
-
-                            // receives message from client in format sendMessage###sender###reciever###message
-                            if (line.startsWith("sendMessage")) {
-                                String[] parts = line.split(DELIMITER);
-                                User sender = database.findUserByName(parts[1]);
-                                User receiver = database.findUserByName(parts[2]);
-
-                                String message = parts[3];
-                                if (server.sendMessage(sender, receiver, message)) {
-                                    writer.println(SUCCESS);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                            // Receives message from client in the format loadMessages###user###receiver
-                            if (line.startsWith("loadMessages")) {
-                                String[] parts = line.split(DELIMITER);
-                                String senderUsername = parts[1];
-                                String receiverUsername = parts[2];
-
-                                User sender = database.findUserByName(senderUsername);
-                                User receiver = database.findUserByName(receiverUsername);
-
-                                if (sender == null || receiver == null) {
-                                    writer.println(FAILURE);
-                                    continue;
-                                }
-
-                                String messages = server.loadMessages(sender, receiver);
-                                if (messages == null || messages.isEmpty()) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(messages);
-                                }
-                            }
-
-                            // receives message from client in the format sendFriendRequest,user,potentialFriend
-                            if (line.startsWith("sendFriendRequest")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                User potentialfriend = database.findUserByName(parts[2]);
-                                if (server.sendFriendRequest(user, potentialfriend)) {
-                                    writer.println(SUCCESS);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-
-                            }
-
-                            // receives message from client in the format viewFriendRequests,user
-                            if (line.startsWith("viewFriendRequests")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                if (server.viewFriendRequests(user) == null) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(String.join(DELIMITER, server.viewFriendRequests(user)));
-                                }
-                            }
-
-                            // receives message from client in the format declineFriendRequest,user,declinedUser
-                            if (line.startsWith("declineFriendRequest")) {
-                                String[] parts = line.split(DELIMITER);
-                                User receiver = database.findUserByName(parts[1]);
-                                User sender = database.findUserByName(parts[2]);
-                                if (server.declineFriendRequest(receiver, sender)) {
-                                    writer.println(SUCCESS);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                            // receives message from client in the format acceptFriendRequest,user,friend
-                            if (line.startsWith("acceptFriendRequest")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                User friend = database.findUserByName(parts[2]);
-                                if (server.acceptFriendRequest(user, friend)) {
-                                    System.out.println(user.getFriendList());
-                                    for (User friend1 : user.getFriendList()) {
-                                        System.out.println(friend1.getName());
-                                    }
-                                    writer.println(SUCCESS);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                            // receives message from client in the format removeFriend,user,removedFriend
-                            if (line.startsWith("removeFriend")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                User friend = database.findUserByName(parts[2]);
-                                if (server.removeFriend(user, friend)) {
-                                    writer.println(SUCCESS);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                            // receives message from client in the format viewFriendsList,user
-                            if (line.startsWith("viewFriendsList")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                if (server.viewFriendsList(user) == null) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(server.viewFriendsList(user));
-                                }
-                            }
-
-                            //  receives message from client in the format loadMessages,user,reciever
-                            if (line.startsWith("loadMessages")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                User reciever = database.findUserByName(parts[2]);
-                                if (server.loadMessages(user, reciever) == null) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(server.loadMessages(user, reciever));
-                                }
-
-                            }
-
-                            // receives message from client in the format blockUser,user,blockedUser
-                            if (line.startsWith("blockUser")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                User blockedUser = database.findUserByName(parts[2]);
-                                if (server.blockUser(user, blockedUser)) {
-                                    writer.println(SUCCESS);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                            // receives message from client in the format removeBlockedUser,user,blockedUser
-                            if (line.startsWith("removeBlockedUser")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                User blockedUser = database.findUserByName(parts[2]);
-                                if (server.unblockUser(user, blockedUser)) {
-                                    writer.println(SUCCESS);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-
-                            }
-
-                            // receives message from client in the format viewBlockedUsers,user
-                            if (line.startsWith("viewBlockedUsers")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                if (server.viewBlockedUsers(user) == null) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(server.viewBlockedUsers(user));
-                                }
-                            }
-
-                            // receives message from client in the format viewProfile,username
-                            if (line.startsWith("viewProfile")) {
-                                String[] parts = line.split(DELIMITER);
-                                String username = parts[1];
-                                String viewProfile = server.viewProfile(username);
-                                if (viewProfile != null) {
-                                    writer.println(viewProfile);
-                                } else {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                            if (line.startsWith("updateProfile")) {
-                                String[] tokens = line.split(DELIMITER);
-                                if (tokens.length < 14) {
-                                    writer.println(FAILURE);
-                                    continue;
-                                }
-
-                                String oldUsername = tokens[1]; // Old username for lookup
-                                String newUsername = tokens[2]; // New username (if updated)
-                                String password = tokens[3];
-                                String email = tokens[4];
-                                String phoneNumber = tokens[5];
-                                String description = tokens[6];
-                                String university = tokens[7];
-                                String bedTime = tokens[8];
-                                boolean alcohol = Boolean.parseBoolean(tokens[9]);
-                                boolean smoke = Boolean.parseBoolean(tokens[10]);
-                                boolean guests = Boolean.parseBoolean(tokens[11]);
-                                int tidy;
-                                int roomHours;
-
-                                try {
-                                    tidy = Integer.parseInt(tokens[12]);
-                                    roomHours = Integer.parseInt(tokens[13]);
-                                } catch (NumberFormatException e) {
-                                    writer.println(FAILURE);
-                                    continue;
-                                }
-
-                                User user = database.findUserByName(oldUsername); // Lookup using the old username
-
-                                if (user == null) {
-                                    writer.println(FAILURE);
-                                    continue;
-                                }
-
-                                if (!password.equals(user.getPassword())) {
-                                    writer.println(FAILURE);
-                                    continue;
-                                }
-
-                                // Update the user's profile
-                                try {
-                                    user.setName(newUsername); // Update the username
-                                    user.setEmail(email);
-                                    user.setPhoneNumber(phoneNumber);
-                                    user.setDescription(description);
-                                    user.setUniversity(university);
-                                    user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
-                                    writer.println(SUCCESS);
-                                } catch (Exception e) {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                            // receives message from client in the format partialMatch,user
-                            if (line.startsWith("partialMatch")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                if (server.partialMatch(user) == null) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(server.partialMatch(user));
-                                }
-
-                            }
-
-                            // receives message from client in the format exactMatch,user
-                            if (line.startsWith("exactMatch")) {
-                                String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                if (server.exactMatch(user) == null) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(server.exactMatch(user));
-                                }
-                            }
-                            // receives message from client in the format searchByParameter,parameter,value
-                            if (line.startsWith("searchByParameter")) {
-                                String[] parts = line.split(DELIMITER);
-                                String parameter = parts[1];
-                                String value = parts[2];
-                                if (server.searchByParameter(parameter, value) == null) {
-                                    writer.println(FAILURE);
-                                } else {
-                                    writer.println(server.searchByParameter(parameter, value));
-                                }
-                            }
-
-                            // Receives message from client in the format uploadProfilePicture###username
-                            if (line.startsWith("uploadProfilePicture")) {
-                                String[] parts = line.split(DELIMITER);
-                                String username = parts[1];
-
-                                User user = database.findUserByName(username);
-
-                                if (user == null) {
-                                    writer.println(FAILURE);
-                                    continue;
-                                }
-
-                                try {
-                                    int fileSize = Integer.parseInt(reader.readLine()); // Read the size of the file
-                                    byte[] fileBytes = new byte[fileSize];
-                                    socket.getInputStream().read(fileBytes); // Read the file data
-
-                                    database.saveProfilePicture(user, fileBytes); // Save the profile picture in the database
-                                    writer.println(SUCCESS);
-                                } catch (IOException | NumberFormatException e) {
-                                    writer.println(FAILURE);
-                                }
-                            }
-
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            }
-        }   catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

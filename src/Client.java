@@ -1,5 +1,4 @@
 
-import javax.management.modelmbean.ModelMBeanInfo;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -31,11 +30,15 @@ public class Client implements ClientService {
 
     private boolean isConnected;
     private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private PrintWriter writer;
+    private BufferedReader reader;
+
     private final String serverAddress = "localhost";
     private final int serverPort = 1102;
+
     private static final String DELIMITER = "<<END>>";
+    private static final String SUCCESS = "SUCCESS";
+    private static final String FAILURE = "FAILURE";
 
     //constructor
     public Client(User user) {
@@ -588,8 +591,8 @@ public class Client implements ClientService {
     public boolean connect(String serverAddressInput, int port) {
         try {
             socket = new Socket(serverAddress, port);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new PrintWriter(socket.getOutputStream(), true);
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             isConnected = true;
             System.out.println("Connected to the server at " + serverAddress + ":" + port);
             return true;
@@ -610,8 +613,8 @@ public class Client implements ClientService {
     public void disconnect() {
         try {
             if (socket != null && !socket.isClosed()) {
-                out.close();
-                in.close();
+                writer.close();
+                reader.close();
                 socket.close();
                 isConnected = false;
                 System.out.println("Disconnected from the server.");
@@ -628,10 +631,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("login" + DELIMITER + usernameInput + DELIMITER + passwordInput);
+        writer.println("login" + DELIMITER + usernameInput + DELIMITER + passwordInput);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successful login".equals(response)) {
                 System.out.println("Login successful.");
                 return true;
@@ -647,7 +650,7 @@ public class Client implements ClientService {
 
     //To set user information
     public void setUserInformation() throws IOException {
-        String information = in.readLine(); //To read response from server
+        String information = reader.readLine(); //To read response from server
         String[] tokens = information.split(DELIMITER);
         if (tokens.length != 6) {
             System.out.println("Error! Invalid User Information");
@@ -681,14 +684,14 @@ public class Client implements ClientService {
             System.out.println("Not connected to server.");
             return false;
         }
-        out.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
+        writer.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
                 + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER +
                 bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER +
                 tidy + DELIMITER + roomHours);
 
         try {
-            String response = in.readLine(); //To read response from server
-            if ("successful registration".equals(response)) {
+            String response = reader.readLine(); //To read response from server
+            if (response.equals(SUCCESS)) {
                 System.out.println("User registered: " + username);
                 return true;
             } else {
@@ -702,7 +705,7 @@ public class Client implements ClientService {
     }
 
     public String getMessage() throws IOException {
-        return in.readLine();
+        return reader.readLine();
     }
 
     //To update a user's profile
@@ -712,13 +715,13 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("updateProfile" + DELIMITER + oldUsername + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
+        writer.println("updateProfile" + DELIMITER + oldUsername + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
                 + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER +
                 bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER +
                 tidy + DELIMITER + roomHours);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Profile Updated".equals(response)) {
                 System.out.println("Profile Updated: " + username);
                 return true;
@@ -753,10 +756,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("sendMessage" + DELIMITER + username + DELIMITER + receiver + DELIMITER + message);
+        writer.println("sendMessage" + DELIMITER + username + DELIMITER + receiver + DELIMITER + message);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successfully sent message".equals(response)) {
                 System.out.println("Message sent to " + receiver);
                 return true;
@@ -778,10 +781,10 @@ public class Client implements ClientService {
 
         try {
             // Send request to the server
-            out.println("loadMessages" + DELIMITER + username + DELIMITER + receiverUsername);
+            writer.println("loadMessages" + DELIMITER + username + DELIMITER + receiverUsername);
 
             // Read the response
-            String response = in.readLine();
+            String response = reader.readLine();
             if (response == null || response.equals("Message list is empty")) {
                 System.out.println("No messages found between you and " + receiverUsername);
                 return;
@@ -803,10 +806,10 @@ public class Client implements ClientService {
             return null;
         }
 
-        out.println("loadMessages" + DELIMITER + username + DELIMITER + receiver + DELIMITER + receiver);
+        writer.println("loadMessages" + DELIMITER + username + DELIMITER + receiver + DELIMITER + receiver);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Message List is Empty".equals(response)) {
                 return null;
             } else {
@@ -826,10 +829,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("sendFriendRequest" + DELIMITER + user + DELIMITER + potentialFriend);
+        writer.println("sendFriendRequest" + DELIMITER + user + DELIMITER + potentialFriend);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successfully sent friend request".equals(response)) {
                 System.out.println("Friend request sent to " + potentialFriend);
                 return true;
@@ -851,10 +854,10 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewFriendRequests" + DELIMITER + user);
+        writer.println("viewFriendRequests" + DELIMITER + user);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if (response == null || response.isEmpty() || "No friend requests".equals(response)) {
                 System.out.println("You have no pending friend requests.");
                 return;
@@ -901,10 +904,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("acceptFriendRequest" + DELIMITER + this.username + DELIMITER + friend);
+        writer.println("acceptFriendRequest" + DELIMITER + this.username + DELIMITER + friend);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successfully added friend".equals(response)) {
                 System.out.println(friend + " is now your friend.");
                 return true;
@@ -925,10 +928,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("declineFriendRequest" + username + DELIMITER + usernameInput);
+        writer.println("declineFriendRequest" + username + DELIMITER + usernameInput);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             return "Successfully declined friend request".equals(response);
         } catch (IOException e) {
             System.out.println("Error declining friend request: " + e.getMessage());
@@ -943,10 +946,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("acceptFriendRequest" + DELIMITER + user + DELIMITER + friend);
+        writer.println("acceptFriendRequest" + DELIMITER + user + DELIMITER + friend);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successfully added friend".equals(response)) {
                 System.out.println(friend + " is now your friend.");
                 return true;
@@ -967,10 +970,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("removeFriend" + DELIMITER + user + DELIMITER + friend);
+        writer.println("removeFriend" + DELIMITER + user + DELIMITER + friend);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successfully removed friend".equals(response)) {
                 System.out.println(friend + " has been removed from your friend list.");
                 return true;
@@ -991,10 +994,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("blockUser" + DELIMITER + user + DELIMITER + blockedUser);
+        writer.println("blockUser" + DELIMITER + user + DELIMITER + blockedUser);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successfully blocked user".equals(response)) {
                 System.out.println(blockedUser + " has been blocked.");
                 return true;
@@ -1015,10 +1018,10 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewProfile" + DELIMITER + username);
+        writer.println("viewProfile" + DELIMITER + username);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             System.out.println("Profile data: " + response);
         } catch (IOException e) {
             System.out.println("Error viewing profile: " + e.getMessage());
@@ -1032,10 +1035,10 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewFriendsList" + DELIMITER + usernameInput);
+        writer.println("viewFriendsList" + DELIMITER + usernameInput);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if (response.equals("Friend list is empty")) {
                 System.out.println("You have no friends yet.");
             } else {
@@ -1053,10 +1056,10 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("removeBlockedUser" + DELIMITER + user + DELIMITER + blockedUser);
+        writer.println("removeBlockedUser" + DELIMITER + user + DELIMITER + blockedUser);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if ("Successfully removed from blocked list".equals(response)) {
                 System.out.println(blockedUser + " has been unblocked.");
                 return true;
@@ -1077,10 +1080,10 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("viewBlockedUsers" + DELIMITER + usernameInput);
+        writer.println("viewBlockedUsers" + DELIMITER + usernameInput);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if (response == null) {
                 System.out.println("You have not blocked anyone.");
                 return;
@@ -1121,10 +1124,10 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("searchByParameter" + DELIMITER + parameter + DELIMITER + value);
+        writer.println("searchByParameter" + DELIMITER + parameter + DELIMITER + value);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if (response.equals("No matches found")) {
                 System.out.println("No users found with " + parameter + ": " + value);
             } else {
@@ -1146,10 +1149,10 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("exactMatch" + DELIMITER + username);
+        writer.println("exactMatch" + DELIMITER + username);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if (response.equals("No exact matches found")) {
                 System.out.println("No exact matches found for your preferences.");
             } else {
@@ -1172,10 +1175,10 @@ public class Client implements ClientService {
             return;
         }
 
-        out.println("partialMatch" + DELIMITER + username);
+        writer.println("partialMatch" + DELIMITER + username);
 
         try {
-            String response = in.readLine(); //To read response from server
+            String response = reader.readLine(); //To read response from server
             if (response.equals("No partial matches found")) {
                 System.out.println("No partial matches found for your preferences.");
             } else {
@@ -1206,15 +1209,15 @@ public class Client implements ClientService {
             byte[] fileBytes = fileInputStream.readAllBytes();
 
             // Inform the server about the request
-            out.println("uploadProfilePicture" + DELIMITER + username);
-            out.println(fileBytes.length); // Send the size of the file
+            writer.println("uploadProfilePicture" + DELIMITER + username);
+            writer.println(fileBytes.length); // Send the size of the file
 
             // Send the actual file bytes
             socket.getOutputStream().write(fileBytes);
             socket.getOutputStream().flush();
 
             // Wait for the server's response
-            String response = in.readLine();
+            String response = reader.readLine();
             if ("Profile picture updated".equals(response)) {
                 System.out.println("Profile picture updated successfully.");
                 return true;

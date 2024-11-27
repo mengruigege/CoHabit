@@ -10,29 +10,55 @@ import java.util.*;
  */
 
 public interface ServerService {
-    void start(int port);                                  // Start the server
+    // Verifies login credentials and returns user data on success
+    String login(String username, String password);
 
-    void stop();                                           // Stop the server
+    // Registers a new user and adds them to the database
+    boolean register(User user);
 
-    boolean authenticateUser(String username, String password); // Authenticate user credentials
+    // Sends a message from one user to another
+    boolean sendMessage(User sender, User receiver, String message);
 
-    boolean registerUser(User user);                            // Register a new user
+    // Retrieves message history between two users
+    ArrayList<String> getMessageHistory(User user1, User user2);
 
-    boolean sendMessage(String sender, String receiver, String message);  // Send a message
+    // Sends a friend request from one user to another
+    boolean sendFriendRequest(User sender, User receiver);
 
-    ArrayList<String> getMessages(String user1, String user2);            // Retrieve message history
+    // Retrieves pending friend requests for a user
+    ArrayList<String> viewFriendRequests(User user);
 
-    boolean addFriend(String user1, String user2);                // Add a friend
+    // Declines a friend request from a specific user
+    boolean declineFriendRequest(User receiver, User sender);
 
-    boolean sendFriendRequest(String sender, String receiver);    // Send a friend request
+    // Accepts a friend request and adds the sender to the friend list
+    boolean acceptFriendRequest(User receiver, User sender);
 
-    boolean respondToFriendRequest(String sender, String receiver, boolean accept); // Respond to request
+    // Removes a friend from the user's friend list
+    boolean removeFriend(User remover, User removed);
 
-    ArrayList<String> getFriendRequests(String username);         // Retrieve pending friend requests
+    // Blocks a specific user
+    boolean blockUser(User blocker, User blocked);
 
-    boolean blockUser(String requester, String target);           // Block a user
+    // Unblocks a previously blocked user
+    boolean unblockUser(User unblocker, User unblocked);
 
-    User getUserProfile(String username);                         // Get user profile
+    // Retrieves the list of blocked users for a user
+    ArrayList<String> viewBlockedUsers(User user);
 
-    boolean updateUserProfile(String username, User updatedProfile); // Update profile
+    // Retrieves the list of friends for a user
+    ArrayList<String> viewFriendsList(User user);
+
+    // Returns the profile information of a specific user
+    String viewProfile(String username);
+
+    // Retrieves users with partial preference matches
+    String partialMatch(User user);
+
+    // Retrieves users with exact preference matches
+    String exactMatch(User user);
+
+    // Searches users based on a specific parameter and value
+    String searchByParameter(String parameter, String value);
 }
+
