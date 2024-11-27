@@ -925,7 +925,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("declineFriendRequest" + DELIMITER + usernameInput);
+        out.println("declineFriendRequest" + username + DELIMITER + usernameInput);
 
         try {
             String response = in.readLine(); //To read response from server
@@ -943,7 +943,7 @@ public class Client implements ClientService {
             return false;
         }
 
-        out.println("addFriend" + DELIMITER + user + DELIMITER + friend);
+        out.println("acceptFriendRequest" + DELIMITER + user + DELIMITER + friend);
 
         try {
             String response = in.readLine(); //To read response from server

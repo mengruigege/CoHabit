@@ -82,7 +82,7 @@ public class TestDatabase {
         assertTrue(users.contains(user1));  // user1 should still be present
     }
 
-    // Tests for addFriend method
+    // Tests for acceptFriendRequest method
     @Test
     public void testAddFriendSuccessfully() {
         database.addUser(user1);

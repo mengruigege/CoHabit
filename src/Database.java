@@ -261,14 +261,26 @@ public class Database implements DatabaseFramework {
             return false;
         }
 
+        // Check if they are already friends
+        ArrayList<User> user1Friends = allFriends.getOrDefault(user1, new ArrayList<>());
+        if (user1Friends.contains(user2)) {
+            System.out.println("Users are already friends.");
+            return false; // Return false because they are already friends
+        }
+
         // Add each other as friends
-        allFriends.computeIfAbsent(user1, k -> new ArrayList<>()).add(user2);
-        allFriends.computeIfAbsent(user2, k -> new ArrayList<>()).add(user1);
+        user1Friends.add(user2);
+        allFriends.put(user1, user1Friends);
+
+        ArrayList<User> user2Friends = allFriends.getOrDefault(user2, new ArrayList<>());
+        user2Friends.add(user1);
+        allFriends.put(user2, user2Friends);
 
         saveFriends(); // Save immediately to file
         System.out.println("Friendship added between: " + user1.getName() + " and " + user2.getName());
         return true;
     }
+
 
     public synchronized boolean blockUser(User blocker, User blocked) {
         if (blocker == null || blocked == null) {
@@ -276,13 +288,21 @@ public class Database implements DatabaseFramework {
             return false;
         }
 
-        allBlocked.computeIfAbsent(blocker, k -> new ArrayList<>()).add(blocked);
+        // Check if the user is already blocked
+        ArrayList<User> blockedUsers = allBlocked.getOrDefault(blocker, new ArrayList<>());
+        if (blockedUsers.contains(blocked)) {
+            System.out.println(blocker.getName() + " has already blocked " + blocked.getName());
+            return false; // Return false because the user is already blocked
+        }
+
+        // Add to the blocked list
+        blockedUsers.add(blocked);
+        allBlocked.put(blocker, blockedUsers);
 
         saveBlocked(); // Save immediately to file
         System.out.println(blocker.getName() + " has blocked " + blocked.getName());
         return true;
     }
-
 
     public synchronized boolean sendFriendRequest(User sender, User receiver) {
         if (sender == null || receiver == null) {
@@ -290,7 +310,16 @@ public class Database implements DatabaseFramework {
             return false;
         }
 
-        allFriendRequests.computeIfAbsent(receiver, k -> new ArrayList<>()).add(sender);
+        // Check if a friend request already exists
+        ArrayList<User> requests = allFriendRequests.getOrDefault(receiver, new ArrayList<>());
+        if (requests.contains(sender)) {
+            System.out.println("Friend request from " + sender.getName() + " to " + receiver.getName() + " already exists.");
+            return false; // Return false because the friend request already exists
+        }
+
+        // Add the friend request
+        requests.add(sender);
+        allFriendRequests.put(receiver, requests);
 
         saveFriendRequests(); // Save immediately to file
         System.out.println(sender.getName() + " sent a friend request to " + receiver.getName());
@@ -366,7 +395,20 @@ public class Database implements DatabaseFramework {
             return false;
         }
 
-        allBlocked.getOrDefault(blocker, new ArrayList<>()).remove(unblocked);
+        // Get the list of blocked users for the blocker
+        ArrayList<User> blockedUsers = allBlocked.getOrDefault(blocker, new ArrayList<>());
+
+        // Check if the unblocked user exists in the blocked list
+        if (!blockedUsers.contains(unblocked)) {
+            System.out.println(unblocked.getName() + " is not in the blocked list of " + blocker.getName());
+            return false; // Return false because the user is not blocked
+        }
+
+        // Remove the unblocked user from the blocker's blocked list
+        blockedUsers.remove(unblocked);
+
+        // Update the map with the modified blocked list
+        allBlocked.put(blocker, blockedUsers);
 
         saveBlocked(); // Save immediately to file
         System.out.println(blocker.getName() + " has unblocked " + unblocked.getName());
@@ -428,24 +470,36 @@ public class Database implements DatabaseFramework {
         return new ArrayList<>(allUsers);
     }
 
-    public synchronized ArrayList<User> getFriend(User user) {
+    public synchronized ArrayList<String> getFriends(User user) {
         if (user == null) {
             System.out.println("Invalid user.");
-            return new ArrayList<>();
+            return new ArrayList<>(); // Return an empty list
         }
 
-        // Fetch the friend list for the given user
-        return new ArrayList<>(allFriends.getOrDefault(user, new ArrayList<>()));
+        ArrayList<User> friends = allFriends.getOrDefault(user, new ArrayList<>());
+        ArrayList<String> friendNames = new ArrayList<>();
+
+        for (User friend : friends) {
+            friendNames.add(friend.getName());
+        }
+
+        return friendNames;
     }
 
-    public synchronized ArrayList<User> getBlocked(User user) {
+    public synchronized ArrayList<String> getBlockedUsers(User user) {
         if (user == null) {
             System.out.println("Invalid user.");
-            return new ArrayList<>();
+            return new ArrayList<>(); // Return an empty list
         }
 
-        // Fetch the blocked list for the given user
-        return new ArrayList<>(allBlocked.getOrDefault(user, new ArrayList<>()));
+        ArrayList<User> blockedUsers = allBlocked.getOrDefault(user, new ArrayList<>());
+        ArrayList<String> blockedUserNames = new ArrayList<>();
+
+        for (User blocked : blockedUsers) {
+            blockedUserNames.add(blocked.getName());
+        }
+
+        return blockedUserNames;
     }
 
     public synchronized ArrayList<String> getMessage(User user) {
@@ -458,15 +512,22 @@ public class Database implements DatabaseFramework {
         return new ArrayList<>(allMessages.getOrDefault(user, new ArrayList<>()));
     }
 
-    public synchronized ArrayList<User> getFriendRequests(User user) {
+    public synchronized ArrayList<String> getFriendRequests(User user) {
         if (user == null) {
             System.out.println("Invalid user.");
-            return new ArrayList<>();
+            return new ArrayList<>(); // Return an empty list
         }
 
-        // Fetch friend requests for the given user
-        return new ArrayList<>(allFriendRequests.getOrDefault(user, new ArrayList<>()));
+        ArrayList<User> friendRequests = allFriendRequests.getOrDefault(user, new ArrayList<>());
+        ArrayList<String> friendRequestNames = new ArrayList<>();
+
+        for (User requester : friendRequests) {
+            friendRequestNames.add(requester.getName());
+        }
+
+        return friendRequestNames;
     }
+
 
 
     // Checks if a username already exists in the database

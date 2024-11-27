@@ -32,7 +32,7 @@ public class TestFriendList {
         relationships = new Relationships(user1, database);
     }
 
-    // Tests for addFriend method
+    // Tests for acceptFriendRequest method
     @Test
     public void testAddFriendSuccessfully() {
         assertTrue(relationships.addFriend(user2));

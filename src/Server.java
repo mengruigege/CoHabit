@@ -72,98 +72,47 @@ public class Server implements ServerService, Runnable {
 
     //method to view all friend requests of a user
     public ArrayList<String> viewFriendRequests(User user) {
-        if (user == null || database.loadFriendRequestsFromFile() == null) {
+        ArrayList<String> friendRequests = database.getFriendRequests(user);
+        if (friendRequests == null) {
             return null;
+        } else {
+            return friendRequests;
         }
-        ArrayList<String> friendRequestNames = database.loadFriendRequestsFromFile();
-        int i = 0;
-        ArrayList<String> actualFriendRequestNames = new ArrayList<>();
-
-        for (String friendRequestName : friendRequestNames) {
-            if (friendRequestName.split(":")[1].equals(user.getName())) {
-                actualFriendRequestNames.add(friendRequestName.split(":")[0]);
-            }
-        }
-
-        return actualFriendRequestNames;
     }
 
     //method to decline friend requests
-    public  boolean declineFriendRequest(User user, User declinedUser) {
-        if (user != null && declinedUser != null) {
-            database.removeFriendRequest(user, declinedUser);
-            
-            return true;
-        } else {
-            return false;
-        }
+    public boolean declineFriendRequest(User receiver, User sender) {
+        return database.rejectFriendRequest(receiver, sender);
     }
     
     //method to accept a friend request
-    public boolean addFriend(User user, User friend) {
-        if (user != null && friend != null) {
-
-            if (!(user.getFriendList().contains(friend))) {
-                database.addFriend(user, friend);
-                database.addFriend(friend, user);
-                database.removeFriendRequest(user, friend);
-                return true;
-            }
-        }
-        return false;
+    public boolean acceptFriendRequest(User receiver, User sender) {
+        return database.acceptFriendRequest(receiver, sender friend);
     }
 
     //method to remove a friend from friend list
-    public  boolean removeFriend(User user, User removedFriend) {
-        if (user != null && removedFriend != null) {
-            if (database.getFriendsFromFile(user.getName()).contains(removedFriend.getName())) {
-                database.removeFriend(user, removedFriend);
-                database.removeFriend(removedFriend, user); 
-                return true;
-            }
-        }
-        return false;
+    public  boolean removeFriend(User remover, User removed) {
+        return database.removeFriend(remover, removed);
     }
 
     //method to block a user
-    public  boolean blockUser(User user, User blockedUser) {
-        if (user != null || blockedUser != null) {
-            database.loadUsersFromFile();
-            //if user is not on current user's blocked list, he or she is added
-            if (!(database.getBlockedUsers(user.getName()).contains(blockedUser.getName()))) { 
-                database.blockUser(user.getName(), blockedUser.getName());
-                return true;
-            }
-        }
-        return false;
+    public  boolean blockUser(User blocker, User blocked) {
+        return database.blockUser(blocker, blocked);
     }
 
     //method to unblock a user
-    public boolean removeBlockedUser(User user, User unblockUser) {
-        if (user != null || unblockUser != null) {
-            if (database.getBlockedUsers(user.getName()).contains(unblockUser.getName())) {
-                database.unblockUser(user.getName(), unblockUser.getName());
-                return true;
-            }
-        }
-        return false;
+    public boolean unblockUser(User unblocker, User unblocked) {
+        return database.unblockUser(unblocker, unblocked);
     }
 
     //method to view all blocked users
-    public  ArrayList<User> viewBlockedUsers(User user) {
-        if (user != null) {
-            return user.getBlockedUsers();
-        }
-        return null;
+    public ArrayList<String> viewBlockedUsers(User user) {
+        return database.getBlockedUsers(user);
     }
 
     //method to view all friends of a user
-    public  ArrayList<User> viewFriendsList(User user) {
-        if (user != null) {
-            return user.getFriendList();
-        } else {
-            return null;
-        }
+    public ArrayList<String> viewFriendsList(User user) {
+        return database.getFriends(user);
     }
 
     //method to view a user's profile
@@ -178,14 +127,11 @@ public class Server implements ServerService, Runnable {
 
     //method to check how many preferences of two users match, and return users in a descending order of matches
     public  String partialMatch(User user) {
-        if (user == null) {
-            return "";
-        }
-
         ArrayList<User> partialmatches = database.partialMatch(user);
         if (partialmatches.isEmpty()) {
-            return "";
+            return null;
         }
+
         String result = "";
         for (User users : partialmatches) {
             String username = users.getName();
@@ -382,21 +328,21 @@ public class Server implements ServerService, Runnable {
                             // receives message from client in the format declineFriendRequest,user,declinedUser
                             if (line.startsWith("declineFriendRequest")) {
                                 String[] parts = line.split(DELIMITER);
-                                User user = database.findUserByName(parts[1]);
-                                User declinedUser = database.findUserByName(parts[2]);
-                                if (server.declineFriendRequest(user, declinedUser)) {
+                                User receiver = database.findUserByName(parts[1]);
+                                User sender = database.findUserByName(parts[2]);
+                                if (server.declineFriendRequest(receiver, sender)) {
                                     writer.println("You declined friend request declined");
                                 } else {
-                                    writer.println("Could not decline friend request sucessfully");
+                                    writer.println("Could not decline friend request successfully");
                                 }
                             }
 
-                            // receives message from client in the format addFriend,user,friend
+                            // receives message from client in the format acceptFriendRequest,user,friend
                             if (line.startsWith("acceptFriendRequest")) {
                                 String[] parts = line.split(DELIMITER);
                                 User user = database.findUserByName(parts[1]);
                                 User friend = database.findUserByName(parts[2]);
-                                if (server.addFriend(user, friend)) {
+                                if (server.acceptFriendRequest(user, friend)) {
                                     System.out.println(user.getFriendList());
                                     for (User friend1 : user.getFriendList()) {
                                         System.out.println(friend1.getName());

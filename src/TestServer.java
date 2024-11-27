@@ -121,21 +121,21 @@ public class TestServer {
         assertTrue("Empty messages should still be allowed.", server.sendMessage(user1, user2, ""));
     }
 
-    // Test addFriend functionality
+    // Test acceptFriendRequest functionality
     @Test
     public void testAddFriend_Successful() {
-        // assertTrue("Users should be added as friends.", server.addFriend(user1, user2));
+        // assertTrue("Users should be added as friends.", server.acceptFriendRequest(user1, user2));
     }
 
     @Test
     public void testAddFriend_UserNull() {
-        // assertFalse("Adding friends should fail if the user is null.", server.addFriend(null, user2));
+        // assertFalse("Adding friends should fail if the user is null.", server.acceptFriendRequest(null, user2));
     }
 
     @Test
     public void testAddFriend_AlreadyFriends() {
-        server.addFriend(user1, user2);
-        assertFalse("Adding friends should fail if already friends.", server.addFriend(user1, user2));
+        server.acceptFriendRequest(user1, user2);
+        assertFalse("Adding friends should fail if already friends.", server.acceptFriendRequest(user1, user2));
     }
 
     @Test
