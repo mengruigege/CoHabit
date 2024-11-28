@@ -48,6 +48,7 @@ public class Client implements ClientService {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new PrintWriter(socket.getOutputStream(), true);
             scanner = new Scanner(System.in);
+            isConnected = true;
             System.out.println("Connected to " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
         } catch (IOException e) {
             System.out.println("Could not connect to " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
@@ -818,7 +819,7 @@ public class Client implements ClientService {
         System.out.println("1. By Parameter");
         System.out.println("2. Exact Match");
         System.out.println("3. Partial Match");
-        String option = "";
+        String option;
 
         // Validate user input for search type
         while (true) {

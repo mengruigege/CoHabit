@@ -15,15 +15,13 @@ public class Relationships implements FriendManageable, Blockable {
     private ArrayList<User> incomingRequests;
     private ArrayList<User> outgoingRequests;
     private User user;
-    private Database database;
 
     //Constructs a newly allocated Relationships object with the specified field values.
     public Relationships(User user, Database database) {
         this.user = user;
-        this.database = database;
 
-        this.friends = new ArrayList<>(database.loadFriendsFromFile());
-        this.blocked = new ArrayList<>(database.loadBlockedFromFile());
+        this.friends = new ArrayList<>();
+        this.blocked = new ArrayList<>();
 
         this.incomingRequests = new ArrayList<>();
         this.outgoingRequests = new ArrayList<>();
@@ -31,7 +29,6 @@ public class Relationships implements FriendManageable, Blockable {
 
     //Helps deal with null values in UserSearch.java and Relationships.java
     public Relationships() {
-        this.database = new Database();
         this.friends = new ArrayList<>();
         this.blocked = new ArrayList<>();
         this.incomingRequests = new ArrayList<>();
