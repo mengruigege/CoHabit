@@ -9,25 +9,74 @@ import java.util.*;
  * @version November 3rd, 2024
  */
 
+import java.io.IOException;
+
 public interface ClientService {
-    boolean connect(String serverAddress, int port);          // Connect to server
+    // Connection management
+    void start();
+    void close();
+    void disconnect();
+    boolean isConnected();
 
-    void disconnect();                                        // Disconnect
+    // User authentication and profile management
+    boolean login();
+    boolean register();
+    void updateProfile();
+    void viewProfile();
+    void viewProfile(String usernameInput);
 
-    boolean login(String username, String password);          // User login
+    // Messaging
+    boolean sendMessage();
+    boolean sendMessage(String receiver, String message);
+    void viewMessage();
+    void viewMessage(String receiverUsername);
 
-    boolean register() throws UsernameTakenException;                              // Register a new user
+    // Friend management
+    void viewFriendRequests();
+    void sendFriendRequest();
+    boolean sendFriendRequest(String user, String potentialFriend);
+    boolean acceptFriendRequest(String friend);
+    boolean declineFriendRequest(String usernameInput);
+    boolean addFriend(String user, String friend);
+    void removeFriend();
+    boolean removeFriend(String user, String friend);
 
-    boolean sendMessage(String receiver, String message);     // Send a message
+    // Blocking management
+    void blockUser();
+    boolean blockUser(String user, String blockedUser);
+    void unblockUser();
+    boolean unblockUser(String user, String blockedUser);
+    void viewBlockedUsers(String usernameInput);
 
-    String fetchMessages(String user, String receiver);             // Fetch message history
+    // Search functionality
+    void searchRoommates();
+    void searchByParameter(String parameter, String value);
+    void exactMatch(User user);
+    void partialMatch(User user);
 
-    boolean addFriend(String user, String friend);                       // Add friend directly
-//    boolean sendFriendRequest(String username);               // Send friend request
-//    boolean respondToFriendRequest(String sender, boolean accept); // Respond to friend request
-//    ArrayList<String> getFriendRequests();                    // Retrieve pending friend requests
+    // Preferences and settings
+    void setPreferences(String bedTimeInput, boolean alcoholInput, boolean smokeInput,
+                        boolean guestsInput, int tidyInput, int roomHoursInput);
 
-    void viewProfile(String username);                        // View user profile
+    // File and profile picture management
+    boolean setProfilePicture(String filePath);
 
-    boolean updateProfile(String oldUsername);               // Update profile
+    // User-specific operations
+    String getUsername();
+    void setUsername(String usernameInput);
+    String getPassword();
+    void setPassword(String passwordInput);
+    String getEmail();
+    void setEmail(String emailInput);
+    String getPhone();
+    void setPhone(String phoneNumberInput);
+    String getUniversity();
+    void setUniversity(String universityInput);
+    String getUserDescription();
+    void setUserDescription(String userDescriptionInput);
+    void setUserInformation() throws IOException;
+    void setUserRegisterInformation(String usernameInput, String passwordInput,
+                                    String emailInput, String phoneNumberInput,
+                                    String userDescriptionInput, String universityInput);
 }
+
