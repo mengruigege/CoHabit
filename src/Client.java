@@ -1,6 +1,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.Base64;
 import java.util.Scanner;
 
 /**
@@ -20,6 +21,7 @@ public class Client implements ClientService {
     private String phoneNumber;
     private String userDescription;
     private String university;
+    private byte[] profilePicture;
 
     private String bedTime;
     private boolean alcohol;
@@ -182,7 +184,7 @@ public class Client implements ClientService {
 
             // Parse user information on success
             String[] userInfo = response.split(DELIMITER);
-            if (userInfo.length != 6) {
+            if (userInfo.length != 12) {
                 System.out.println("Error: Invalid response from server.");
                 return false;
             }
@@ -194,14 +196,31 @@ public class Client implements ClientService {
             phoneNumber = userInfo[3];
             userDescription = userInfo[4];
             university = userInfo[5];
+            bedTime = userInfo[6];
+            alcohol = Boolean.parseBoolean(userInfo[7]);
+            smoke = Boolean.parseBoolean(userInfo[8]);
+            guests = Boolean.parseBoolean(userInfo[9]);
+            tidy = Integer.parseInt(userInfo[10]);
+            roomHours = Integer.parseInt(userInfo[11]);
 
             System.out.println("Login successful. Welcome, " + username + "!");
+
+            // Check for profile picture
+            String pictureData = reader.readLine();
+            if (!pictureData.equals("NO_PICTURE")) {
+                profilePicture = Base64.getDecoder().decode(pictureData);
+                System.out.println("Profile picture received (Size: " + profilePicture.length + " bytes).");
+            } else {
+                System.out.println("No profile picture available.");
+            }
+
             return true;
         } catch (IOException e) {
             System.out.println("Error during login: " + e.getMessage());
             return false;
         }
     }
+
 
     public boolean register() {
         if (!isConnected) {
@@ -211,7 +230,7 @@ public class Client implements ClientService {
 
         // Username
         while (true) {
-            System.out.print("Create a username: ");
+            System.out.print("Create a username  : ");
             username = scanner.nextLine();
             if (username != null && !username.contains(DELIMITER) && !username.trim().isEmpty()) {
                 break;
@@ -476,13 +495,13 @@ public class Client implements ClientService {
                 System.out.println("Do you want to (1) Accept or (2) Decline?");
                 String choice = scanner.nextLine();
 
-                if ("1".equals(choice)) {
+                if (choice.equals("1")) {
                     if (acceptFriendRequest(requester)) {
                         System.out.println("Accepted friend request from " + requester);
                     } else {
                         System.out.println("Failed to accept friend request from " + requester);
                     }
-                } else if ("2".equals(choice)) {
+                } else if (choice.equals("2")) {
                     if (declineFriendRequest(requester)) {
                         System.out.println("Declined friend request from " + requester);
                     } else {
@@ -1196,7 +1215,7 @@ public class Client implements ClientService {
 
         try {
             String response = reader.readLine(); //To read response from server
-            if ("Successfully added friend".equals(response)) {
+            if (response.equals(SUCCESS)) {
                 System.out.println(friend + " is now your friend.");
                 return true;
             } else {

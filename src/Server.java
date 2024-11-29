@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Base64;
 
 /** 
  * This document was created for CS 180 PJ 5 Phase 2
@@ -29,18 +31,31 @@ public class Server implements ServerService, Runnable {
                 if (line == null) break;
 
                 //receives message from client in the format "login, username, password"
+                // Receives message from client in the format "login<<END>>username<<END>>password"
                 if (line.startsWith("login")) {
                     String[] parts = line.split(DELIMITER);
-
                     String username = parts[1];
                     String password = parts[2];
 
                     String userInformation = login(username, password);
-                    if (userInformation != null && !userInformation.isEmpty()) { // not sure about this
-                        writer.println(userInformation);
-                    } else writer.println(FAILURE);
+                    if (userInformation != null && !userInformation.isEmpty()) {
+                        writer.println(userInformation); // Send user info
 
+                        // Load and send profile picture
+                        User user = database.findUserByName(username);
+                        byte[] profilePicture = database.loadProfilePicture(user);
+
+                        if (profilePicture != null) {
+                            String encodedPicture = Base64.getEncoder().encodeToString(profilePicture);
+                            writer.println(encodedPicture); // Send Base64-encoded picture
+                        } else {
+                            writer.println("NO_PICTURE"); // No picture found
+                        }
+                    } else {
+                        writer.println(FAILURE); // Login failed
+                    }
                 }
+
 
                 // receives message from client in the format
                 if (line.startsWith("register")) {
@@ -123,7 +138,8 @@ public class Server implements ServerService, Runnable {
 
                     User user = database.findUserByName(parts[1]);
 
-                    if (viewFriendRequests(user) == null) {
+                    ArrayList<String> friendRequests = viewFriendRequests(user);
+                    if (friendRequests == null || friendRequests.isEmpty()) {
                         writer.println(FAILURE);
                     } else {
                         writer.println(String.join(DELIMITER, viewFriendRequests(user)));

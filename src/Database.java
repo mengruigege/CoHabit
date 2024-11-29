@@ -25,6 +25,8 @@ public class Database implements DatabaseFramework {
     private static final String FRIEND_REQUESTS_FILE = "friend_requests.txt";
     private static final String PROFILE_PICTURE_FOLDER = "profile_pictures";
 
+    private static final String DELIMITER = "<<END>>";
+
     private static final Object LOCK = new Object();
 
     // Constructor to initialize the Database object
@@ -74,7 +76,7 @@ public class Database implements DatabaseFramework {
         ArrayList<String> lines = readFile(USERS_FILE);
 
         for (String line : lines) {
-            String[] tokens = line.split(",");
+            String[] tokens = line.split(DELIMITER);
             if (tokens.length != 12) continue; // Ensure correct number of fields
 
             String name = tokens[0];
@@ -310,6 +312,13 @@ public class Database implements DatabaseFramework {
             return false;
         }
 
+        // Check if the users are already friends
+        ArrayList<User> senderFriends = allFriends.getOrDefault(sender, new ArrayList<>());
+        if (senderFriends.contains(receiver)) {
+            System.out.println(sender.getName() + " and " + receiver.getName() + " are already friends.");
+            return false; // Return false because they are already friends
+        }
+
         // Check if a friend request already exists
         ArrayList<User> requests = allFriendRequests.getOrDefault(receiver, new ArrayList<>());
         if (requests.contains(sender)) {
@@ -334,8 +343,8 @@ public class Database implements DatabaseFramework {
 
         String formattedMessage = sender.getName() + " -> " + receiver.getName() + ": " + message;
 
+        // Store the message only under the sender's entry
         allMessages.computeIfAbsent(sender, k -> new ArrayList<>()).add(formattedMessage);
-        allMessages.computeIfAbsent(receiver, k -> new ArrayList<>()).add(formattedMessage);
 
         saveMessages(); // Save immediately to file
         System.out.println("Message sent: " + formattedMessage);
@@ -508,18 +517,27 @@ public class Database implements DatabaseFramework {
             return new ArrayList<>();
         }
 
-        ArrayList<String> userMessages = allMessages.getOrDefault(user1, new ArrayList<>());
-        ArrayList<String> result = new ArrayList<>();
+        Set<String> uniqueMessages = new LinkedHashSet<>();
 
-        // Filter messages that involve both user1 and user2
-        for (String message : userMessages) {
+        // Collect messages involving both users, ensuring no duplicates
+        ArrayList<String> user1Messages = allMessages.getOrDefault(user1, new ArrayList<>());
+        ArrayList<String> user2Messages = allMessages.getOrDefault(user2, new ArrayList<>());
+
+        for (String message : user1Messages) {
             if (message.contains(user1.getName() + " -> " + user2.getName()) ||
                     message.contains(user2.getName() + " -> " + user1.getName())) {
-                result.add(message);
+                uniqueMessages.add(message);
             }
         }
 
-        return result;
+        for (String message : user2Messages) {
+            if (message.contains(user1.getName() + " -> " + user2.getName()) ||
+                    message.contains(user2.getName() + " -> " + user1.getName())) {
+                uniqueMessages.add(message);
+            }
+        }
+
+        return new ArrayList<>(uniqueMessages);
     }
 
     public synchronized ArrayList<String> getFriendRequests(User user) {
