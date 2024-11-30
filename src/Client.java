@@ -71,12 +71,12 @@ public class Client implements ClientService {
             switch (choice) {
                 case "1":
                     if (login()) {
-                        mainScreen();
+                        exit = mainScreen();
                     }
                     break;
                 case "2":
                     if (register()) {
-                        mainScreen();
+                        exit = mainScreen();
                     }
                     break;
                 case "3":
@@ -84,6 +84,7 @@ public class Client implements ClientService {
                     break;
                 default:
                     System.out.println("Invalid option, please try again");
+                    break;
             }
         }
         close();
@@ -100,7 +101,7 @@ public class Client implements ClientService {
         }
     }
 
-    public void mainScreen() {
+    public boolean mainScreen() {
         boolean exit = false;
         String choice;
 
@@ -159,6 +160,7 @@ public class Client implements ClientService {
                     break;
             }
         }
+        return exit;
     }
 
     public boolean login() {
@@ -402,7 +404,7 @@ public class Client implements ClientService {
 
                 // Wait for server confirmation
                 String pictureResponse = reader.readLine();
-                if (SUCCESS.equals(pictureResponse)) {
+                if (pictureResponse.equals(SUCCESS)) {
                     System.out.println("Profile picture uploaded successfully.");
                     break;
                 } else {
@@ -850,54 +852,39 @@ public class Client implements ClientService {
             System.out.println("Invalid input. Please enter 1, 2, or 3.");
         }
 
-        try {
-            switch (option) {
-                case "1": // Search by Parameter
-                    String parameter = "";
-                    String value = "";
+        switch (option) {
+            case "1": // Search by Parameter
+                String parameter = "";
+                String value = "";
 
-                    while (true) {
-                        System.out.print("Enter search parameter (e.g., university, email, phone, username): ");
-                        parameter = scanner.nextLine().trim().toLowerCase();
-                        if (parameter.matches("username|email|phone|university")) {
-                            break;
-                        }
-                        System.out.println("Invalid parameter. Please choose from: username, email, phone, university.");
+                while (true) {
+                    System.out.print("Enter search parameter (e.g., university, email, phone, name): ");
+                    parameter = scanner.nextLine().trim().toLowerCase();
+                    if (parameter.matches("name|email|phone|university|description|bedTime|alcohol|smoke|guests|tidy")) {
+                        break;
                     }
-
-                    while (true) {
-                        System.out.print("Enter value for parameter: ");
-                        value = scanner.nextLine().trim();
-                        if (!value.isEmpty()) {
-                            break;
-                        }
-                        System.out.println("Value cannot be empty. Please try again.");
-                    }
-
-                    writer.println("searchByParameter" + DELIMITER + parameter + DELIMITER + value);
-                    break;
-
-                case "2": // Exact Match
-                    writer.println("exactMatch" + DELIMITER + username);
-                    break;
-
-                case "3": // Partial Match
-                    writer.println("partialMatch" + DELIMITER + username);
-                    break;
-            }
-
-            // Handle server response
-            String response = reader.readLine();
-            if (response == null || response.equals(FAILURE)) {
-                System.out.println("No matches found.");
-            } else {
-                System.out.println("Matches found:");
-                for (String match : response.split(DELIMITER)) {
-                    System.out.println(match);
+                    System.out.println("Invalid parameter. Please choose from: name, email, phone, university, description, bedTime, alcohol, smoke, guests, tidy.");
                 }
-            }
-        } catch (IOException e) {
-            System.out.println("Error searching roommates: " + e.getMessage());
+
+                while (true) {
+                    System.out.print("Enter value for parameter: ");
+                    value = scanner.nextLine().trim();
+                    if (!value.isEmpty()) {
+                        break;
+                    }
+                    System.out.println("Value cannot be empty. Please try again.");
+                }
+
+                searchByParameter(parameter, value);
+                break;
+
+            case "2": // Exact Match
+                exactMatch();
+                break;
+
+            case "3": // Partial Match
+                partialMatch();
+                break;
         }
     }
 
@@ -1435,11 +1422,11 @@ public class Client implements ClientService {
 
         try {
             String response = reader.readLine(); //To read response from server
-            if (response.equals("No matches found")) {
+            if (response.equals(FAILURE)) {
                 System.out.println("No users found with " + parameter + ": " + value);
             } else {
                 System.out.println("Users matching " + parameter + " = " + value + ":\n");
-                for (String token : response.split("###")) {
+                for (String token : response.split(DELIMITER)) {
                     System.out.println(token);
                 }
             }
@@ -1450,7 +1437,7 @@ public class Client implements ClientService {
 
     //To search for roommate based on exact match of preferences
     
-    public void exactMatch(User user) {
+    public void exactMatch() {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return;
@@ -1460,10 +1447,10 @@ public class Client implements ClientService {
 
         try {
             String response = reader.readLine(); //To read response from server
-            if (response.equals("No exact matches found")) {
+            if (response.equals(FAILURE)) {
                 System.out.println("No exact matches found for your preferences.");
             } else {
-                String[] tokens = response.split("###");
+                String[] tokens = response.split(DELIMITER);
                 System.out.println("Exact Matches:\n");
                 for (String token : tokens) {
                     System.out.println(token);
@@ -1476,7 +1463,7 @@ public class Client implements ClientService {
 
     //To search for roommate based on exact match of preferences
     
-    public void partialMatch(User user) {
+    public void partialMatch() {
         if (!isConnected) {
             System.out.println("Not connected to server.");
             return;
@@ -1486,11 +1473,11 @@ public class Client implements ClientService {
 
         try {
             String response = reader.readLine(); //To read response from server
-            if (response.equals("No partial matches found")) {
+            if (response.equals(FAILURE)) {
                 System.out.println("No partial matches found for your preferences.");
             } else {
                 System.out.println("Partial Matches:\n");
-                for (String token : response.split("###")) {
+                for (String token : response.split(DELIMITER)) {
                     System.out.println(token);
                 }
             }
@@ -1521,7 +1508,7 @@ public class Client implements ClientService {
             socket.getOutputStream().flush();
 
             String response = reader.readLine();
-            if ("SUCCESS".equals(response)) {
+            if (response.equals(SUCCESS)) {
                 System.out.println("Profile picture updated successfully.");
                 return true;
             } else {

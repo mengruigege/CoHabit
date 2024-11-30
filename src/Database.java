@@ -39,6 +39,20 @@ public class Database implements DatabaseFramework {
     // Centralized method to read data from a file
     private synchronized ArrayList<String> readFile(String file) {
         ArrayList<String> lines = new ArrayList<>();
+        File targetFile = new File(file);
+
+        // Check if the file exists; create it if not
+        if (!targetFile.exists()) {
+            try {
+                if (targetFile.createNewFile()) {
+                    System.out.println("File created: " + file);
+                }
+            } catch (IOException e) {
+                System.out.println("Error creating file: " + file + " - " + e.getMessage());
+            }
+        }
+
+        // Read the file contents
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -50,8 +64,22 @@ public class Database implements DatabaseFramework {
         return lines;
     }
 
+
     // Centralized method to write data to a file
     private synchronized void writeFile(String file, ArrayList<String> data) {
+        File targetFile = new File(file);
+
+        // Ensure the file exists before writing
+        try {
+            if (!targetFile.exists() && targetFile.createNewFile()) {
+                System.out.println("File created: " + file);
+            }
+        } catch (IOException e) {
+            System.out.println("Error creating file: " + file + " - " + e.getMessage());
+            return; // Exit the method if the file could not be created
+        }
+
+        // Write the data to the file
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(file))) {
             for (String line : data) {
                 writer.println(line);
@@ -60,6 +88,7 @@ public class Database implements DatabaseFramework {
             System.out.println("Error writing to file: " + file + " - " + e.getMessage());
         }
     }
+
 
     // Initialization
     public void initializeDatabase() throws UsernameTakenException, InvalidInput {
@@ -556,7 +585,25 @@ public class Database implements DatabaseFramework {
         return friendRequestNames;
     }
 
+    public synchronized boolean updateUserInFile(User updatedUser, String oldUsername) {
+        if (updatedUser == null || oldUsername == null || oldUsername.isEmpty()) {
+            System.out.println("Invalid user or username for update.");
+            return false;
+        }
 
+        // Replace the old user entry with the updated one
+        for (int i = 0; i < allUsers.size(); i++) {
+            if (allUsers.get(i).getName().equals(oldUsername)) {
+                allUsers.set(i, updatedUser); // Update the in-memory user
+                saveUsers(); // Persist changes to the file
+                System.out.println("User profile updated and saved: " + updatedUser.getName());
+                return true;
+            }
+        }
+
+        System.out.println("User with username " + oldUsername + " not found.");
+        return false;
+    }
 
     // Checks if a username already exists in the database
     public synchronized boolean usernameExists(String username) {
@@ -656,7 +703,7 @@ public class Database implements DatabaseFramework {
     public synchronized String searchByParameter(String parameter, String value, String delimiter) {
         if (parameter == null || value == null || value.isEmpty()) {
             System.out.println("Invalid parameter or value for search.");
-            return ""; // Return an empty string
+            return null; // Return an empty string
         }
 
         String result = "";
@@ -701,7 +748,7 @@ public class Database implements DatabaseFramework {
     public synchronized String exactMatch(User user, String delimiter) {
         if (user == null) {
             System.err.println("Main user cannot be null.");
-            return ""; // Return an empty string
+            return null; // Return an empty string
         }
 
         String result = "";

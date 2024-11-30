@@ -51,8 +51,8 @@ public interface ClientService {
     // Search functionality
     void searchRoommates();
     void searchByParameter(String parameter, String value);
-    void exactMatch(User user);
-    void partialMatch(User user);
+    void exactMatch();
+    void partialMatch();
 
     // Preferences and settings
     void setPreferences(String bedTimeInput, boolean alcoholInput, boolean smokeInput,

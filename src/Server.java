@@ -288,14 +288,10 @@ public class Server implements ServerService, Runnable {
                         continue;
                     }
 
-                    User user = database.findUserByName(oldUsername); // Lookup using the old username
+                    // Lookup the user by their old username
+                    User user = database.findUserByName(oldUsername);
 
                     if (user == null) {
-                        writer.println(FAILURE);
-                        continue;
-                    }
-
-                    if (!password.equals(user.getPassword())) {
                         writer.println(FAILURE);
                         continue;
                     }
@@ -308,11 +304,18 @@ public class Server implements ServerService, Runnable {
                         user.setDescription(description);
                         user.setUniversity(university);
                         user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
-                        writer.println(SUCCESS);
+
+                        // Save changes to the database
+                        if (database.updateUserInFile(user, oldUsername)) {
+                            writer.println(SUCCESS); // Successfully updated
+                        } else {
+                            writer.println(FAILURE); // Failed to save changes
+                        }
                     } catch (Exception e) {
                         writer.println(FAILURE);
                     }
                 }
+
 
                 // receives message from client in the format partialMatch,user
                 if (line.startsWith("partialMatch")) {
