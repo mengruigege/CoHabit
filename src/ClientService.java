@@ -26,7 +26,6 @@ public interface ClientService {
     void viewProfile(String usernameInput);
 
     // Messaging
-    boolean sendMessage();
     boolean sendMessage(String receiver, String message);
     void viewMessage();
     void viewMessage(String receiverUsername);

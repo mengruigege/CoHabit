@@ -1,3 +1,2 @@
-Jim:Bob
-Bob:Jim
-Alice:
+Jim:
+Bob:
