@@ -250,10 +250,20 @@ public class Server implements ServerService, Runnable {
                     String[] parts = line.split(DELIMITER);
 
                     String username = parts[1];
-                    String viewProfile = viewProfile(username);
+                    User user = database.findUserByName(username);
 
-                    if (viewProfile != null) {
-                        writer.println(viewProfile);
+                    if (user != null) {
+                        // Send user profile details
+                        writer.println(user.toString());
+
+                        // Load and send the profile picture
+                        byte[] profilePicture = database.loadProfilePicture(user);
+                        if (profilePicture != null) {
+                            String encodedPicture = Base64.getEncoder().encodeToString(profilePicture);
+                            writer.println(encodedPicture); // Send Base64-encoded picture
+                        } else {
+                            writer.println("NO_PICTURE"); // Indicate no picture available
+                        }
                     } else {
                         writer.println(FAILURE);
                     }
@@ -366,7 +376,6 @@ public class Server implements ServerService, Runnable {
                     String[] parts = line.split(DELIMITER);
 
                     String username = parts[1];
-
                     User user = database.findUserByName(username);
 
                     if (user == null) {
@@ -378,6 +387,27 @@ public class Server implements ServerService, Runnable {
                         int fileSize = Integer.parseInt(reader.readLine()); // Read the size of the file
                         byte[] fileBytes = new byte[fileSize];
                         clientSocket.getInputStream().read(fileBytes); // Read the file data
+
+                        // Validate the PNG file directly
+                        if (fileBytes.length < 8) {
+                            writer.println("INVALID_FILE"); // File too small to be a valid PNG
+                            continue;
+                        }
+
+                        // Check the PNG signature (first 8 bytes)
+                        byte[] pngSignature = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+                        boolean isValid = true;
+                        for (int i = 0; i < pngSignature.length; i++) {
+                            if (fileBytes[i] != pngSignature[i]) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+
+                        if (!isValid) {
+                            writer.println("INVALID_FILE"); // Not a valid PNG
+                            continue;
+                        }
 
                         database.saveProfilePicture(user, fileBytes); // Save the profile picture in the database
                         writer.println(SUCCESS);

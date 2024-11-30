@@ -931,20 +931,48 @@ public class Client implements ClientService {
 
             // Parse the response and display the profile
             String[] profileData = response.split(DELIMITER);
-            if (profileData.length < 6) { // Ensure response has the required fields
+            if (profileData.length < 7) { // Ensure response has the required fields
                 JOptionPane.showMessageDialog(null, "Error: Invalid profile data received.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Display profile details in a dialog box
-            JPanel profileViewPanel = new JPanel(new GridLayout(6, 1, 10, 10));
-            profileViewPanel.add(new JLabel("Username: " + targetUsername));
-            profileViewPanel.add(new JLabel("Email: " + profileData[0]));
-            profileViewPanel.add(new JLabel("Phone: " + profileData[1]));
-            profileViewPanel.add(new JLabel("University: " + profileData[2]));
-            profileViewPanel.add(new JLabel("Description: " + profileData[3]));
-            profileViewPanel.add(new JLabel("Room Preferences: " + profileData[4] + ", " + profileData[5]));
+            // Get the profile picture from the server
+            String pictureData = reader.readLine();
+            ImageIcon profilePicture = null;
 
+            if (pictureData != null && !pictureData.equals("NO_PICTURE")) {
+                byte[] imageBytes = Base64.getDecoder().decode(pictureData);
+                profilePicture = new ImageIcon(imageBytes);
+                // Resize the image for a better UI
+                Image resizedImage = profilePicture.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+                profilePicture = new ImageIcon(resizedImage);
+            }
+
+            // Profile Details Panel
+            JPanel profileViewPanel = new JPanel(new BorderLayout(10, 10));
+            profileViewPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            // Profile Picture Section
+            JLabel profilePictureLabel = new JLabel();
+            profilePictureLabel.setHorizontalAlignment(JLabel.CENTER);
+            if (profilePicture != null) {
+                profilePictureLabel.setIcon(profilePicture);
+            } else {
+                profilePictureLabel.setText("No Profile Picture Available");
+            }
+            profileViewPanel.add(profilePictureLabel, BorderLayout.NORTH);
+
+            // User Details Section
+            JPanel userDetailsPanel = new JPanel(new GridLayout(6, 1, 10, 10));
+            userDetailsPanel.add(new JLabel("Username: " + targetUsername));
+            userDetailsPanel.add(new JLabel("Email: " + profileData[0]));
+            userDetailsPanel.add(new JLabel("Phone: " + profileData[1]));
+            userDetailsPanel.add(new JLabel("University: " + profileData[2]));
+            userDetailsPanel.add(new JLabel("Description: " + profileData[3]));
+            userDetailsPanel.add(new JLabel("Room Preferences: " + profileData[4] + ", " + profileData[5]));
+            profileViewPanel.add(userDetailsPanel, BorderLayout.CENTER);
+
+            // Show profile details in a dialog
             JOptionPane.showMessageDialog(null, profileViewPanel, "Profile of " + targetUsername, JOptionPane.PLAIN_MESSAGE);
 
         } catch (IOException e) {
@@ -1804,13 +1832,13 @@ public class Client implements ClientService {
     public boolean setProfilePicture(String filePath) {
         File file = new File(filePath);
         if (!file.exists() || file.isDirectory()) {
-            System.out.println("Invalid file path. Please try again.");
+            JOptionPane.showMessageDialog(null, "Invalid file path. Please select a valid file.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         long maxFileSize = 5 * 1024 * 1024; // 5 MB limit
         if (file.length() > maxFileSize) {
-            System.out.println("File size exceeds the maximum limit of 5 MB.");
+            JOptionPane.showMessageDialog(null, "File size exceeds the maximum limit of 5 MB.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -1823,15 +1851,16 @@ public class Client implements ClientService {
 
             String response = reader.readLine();
             if (response.equals(SUCCESS)) {
-                System.out.println("Profile picture updated successfully.");
+                JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 return true;
+            } else if (response.equals("INVALID_FILE")) {
+                JOptionPane.showMessageDialog(null, "The file you uploaded is not a valid PNG file.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                System.out.println("Failed to update profile picture. Server response: " + response);
-                return false;
+                JOptionPane.showMessageDialog(null, "Failed to upload profile picture.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            System.out.println("Error uploading profile picture: " + e.getMessage());
-            return false;
+            JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return false;
     }
 }
