@@ -267,28 +267,28 @@ public class TestUser {
     @Test
     public void testToString() throws InvalidInput {
         user1.setPreferences("11 PM", false, false, true, 5, 5);
-        String expected = "Bob,password123,bob@gmail.com,1234567890,Test user Bob,University A,11 PM,false,false,true,5,5";
+        String expected = "Bob<<END>>password123<<END>>bob@gmail.com<<END>>1234567890<<END>>Test user Bob<<END>>University A<<END>>11 PM<<END>>false<<END>>false<<END>>true<<END>>5<<END>>5";
         assertEquals(expected, user1.toString());
     }
 
     @Test
     public void testToString2() throws InvalidInput {
         user2.setPreferences("12 AM", false, false, true, 3, 5);
-        String expected2 = "Jim,password234,jim@gmail.com,2345678901,Test user Jim,University B,12 AM,false,false,true,3,5";
+        String expected2 = "Jim<<END>>password234<<END>>jim@gmail.com<<END>>2345678901<<END>>Test user Jim<<END>>University B<<END>>12 AM<<END>>false<<END>>false<<END>>true<<END>>3<<END>>5";
         assertEquals(expected2, user2.toString());
     }
 
     @Test
     public void testToString3() throws InvalidInput {
         user3.setPreferences("10 PM", true, true, false, 4, 0);
-        String expected3 = "null,password345,alice@gmail.com,3456789012,Test User 3,University C,10 PM,true,true,false,4,0";
+        String expected3 = "null<<END>>password345<<END>>alice@gmail.com<<END>>3456789012<<END>>Test User 3<<END>>University C<<END>>10 PM<<END>>true<<END>>true<<END>>false<<END>>4<<END>>0";
         assertEquals(expected3, user3.toString());
     }
 
     @Test
     public void testToString4() throws InvalidInput {
         user4.setPreferences("11 PM", true, false, true, 2, 3);
-        String expected4 = "David,null,david@gmail.com,4567890123,Test User 4,Univercity D,11 PM,true,false,true,2,3";
+        String expected4 = "David<<END>>null<<END>>david@gmail.com<<END>>4567890123<<END>>Test User 4<<END>>Univercity D<<END>>11 PM<<END>>true<<END>>false<<END>>true<<END>>2<<END>>3";
         assertEquals(expected4, user4.toString());
     }
 }
