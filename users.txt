@@ -1,4 +1,2 @@
-Bob<<END>>password123<<END>>Bob@purdue.edu<<END>>1234567890<<END>>Test user<<END>>University A<<END>>11:00<<END>>false<<END>>false<<END>>false<<END>>1<<END>>24
-Jim<<END>>password234<<END>>jim@gmail.com<<END>>2345678901<<END>>Test user Jim<<END>>University B<<END>>null<<END>>false<<END>>false<<END>>false<<END>>0<<END>>0
-Alice<<END>>password345<<END>>alice@purdue.edu<<END>>1234567890<<END>>My name is Alice<<END>>Purdue<<END>>10:00<<END>>false<<END>>false<<END>>true<<END>>10<<END>>12
-Alex<<END>>Wangzhe#12th<<END>>purdue@purdue.edu<<END>>4259430879<<END>>Hi my name is Alex<<END>>Purdue<<END>>10:00<<END>>false<<END>>false<<END>>false<<END>>10<<END>>24
+Bob<<END>>password123<<END>>bob@example.com<<END>>123-456-7890<<END>>Description<<END>>UniversityA<<END>>10:00 PM<<END>>true<<END>>false<<END>>true<<END>>5<<END>>10
+Jim<<END>>password234<<END>>jim@example.com<<END>>234-567-8901<<END>>Description<<END>>UniversityB<<END>>11:00 PM<<END>>false<<END>>true<<END>>false<<END>>4<<END>>15
