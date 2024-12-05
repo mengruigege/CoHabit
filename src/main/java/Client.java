@@ -634,7 +634,7 @@ public class Client implements ClientService {
             } else {
                 messageNum = history.split(DELIMITER).length + 1; //Ordering messages
             }
-            String message = messageArea.getText().trim() + String.format("   ##%d##", messageNum);
+            String message = messageArea.getText().trim() + String.format("##%d##", messageNum);
 
             // Validate message input
             if (message.isEmpty()) {
@@ -702,7 +702,7 @@ public class Client implements ClientService {
                 String[] orderedMessages = new String[response.length()];
                 for (String message : response.split(DELIMITER)) {
                     int order = Integer.parseInt(message.split("##")[1]);
-                    orderedMessages[order-1] = message;
+                    orderedMessages[order-1] = message.replace(String.format("##%d##", order), "");
                 }
                 for (String message : orderedMessages) {
                     if (message != null) {
