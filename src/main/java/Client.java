@@ -1,5 +1,5 @@
-
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
 import java.util.*;
 import javax.swing.*;
@@ -623,8 +623,18 @@ public class Client implements ClientService {
                 return false; // User canceled the operation
             }
 
+
             String recipient = (String) friendDropdown.getSelectedItem();
-            String message = messageArea.getText().trim();
+            writer.println("getMessageHistory" + DELIMITER + username + DELIMITER + recipient.trim());
+            int messageNum;
+            String history = reader.readLine();
+
+            if (history.equals("FAILURE")) {
+                messageNum = history.split(DELIMITER).length; //Ordering messages
+            } else {
+                messageNum = history.split(DELIMITER).length + 1; //Ordering messages
+            }
+            String message = messageArea.getText().trim() + String.format("   ##%d##", messageNum);
 
             // Validate message input
             if (message.isEmpty()) {
@@ -682,14 +692,22 @@ public class Client implements ClientService {
             writer.println("getMessageHistory" + DELIMITER + username + DELIMITER + recipient.trim());
 
             response = reader.readLine();
+            System.out.println(response);
 
             if (response == null || response.equals(FAILURE)) {
                 JOptionPane.showMessageDialog(null, "No messages found with " + recipient, "Info", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 // Parse and format the messages
                 StringBuilder messages = new StringBuilder("Messages with " + recipient + ":\n\n");
+                String[] orderedMessages = new String[response.length()];
                 for (String message : response.split(DELIMITER)) {
-                    messages.append(message).append("\n");
+                    int order = Integer.parseInt(message.split("##")[1]);
+                    orderedMessages[order-1] = message;
+                }
+                for (String message : orderedMessages) {
+                    if (message != null) {
+                        messages.append(message).append("\n");
+                    }
                 }
 
                 // Display messages in a scrollable dialog
