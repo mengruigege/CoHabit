@@ -15,9 +15,12 @@ public class TestDatabase {
         database = new Database();
 
         // Initialize test users
-        bob = new User("Bob", "password123", "bob@example.com", "123-456-7890", "Description", "UniversityA");
-        jim = new User("Jim", "password234", "jim@example.com", "234-567-8901", "Description", "UniversityB");
-        alice = new User("Alice", "password345", "alice@example.com", "345-678-9012", "Description", "UniversityC");
+        bob = new User("Bob", "password123", "bob@example.com", 
+                       "123-456-7890", "Description", "UniversityA");
+        jim = new User("Jim", "password234", "jim@example.com", 
+                       "234-567-8901", "Description", "UniversityB");
+        alice = new User("Alice", "password345", "alice@example.com", 
+                         "345-678-9012", "Description", "UniversityC");
 
         // Set preferences (optional, assuming User class has the method)
         bob.setPreferences("10:00 PM", true, false, true, 5, 10);
