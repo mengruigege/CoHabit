@@ -31,7 +31,8 @@ public class User implements Profile, FriendManageable, Blockable {
     private Relationships relationships = new Relationships();
 
     //Constructs a newly allocated User object with the specified field values.
-    public User(String name, String password, String email, String phoneNumber, String userDescription, String university) throws UsernameTakenException {
+    public User(String name, String password, String email, String phoneNumber, 
+                String userDescription, String university) throws UsernameTakenException {
         this.name = name;
         this.password = password;
         this.email = email;
@@ -145,7 +146,8 @@ public class User implements Profile, FriendManageable, Blockable {
     }
 
     public String getPreferences() {
-        return String.format("%s, %b, %b, %b, %d, %d", this.bedTime, this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
+        return String.format("%s, %b, %b, %b, %d, %d", this.bedTime, 
+                             this.alcohol, this.smoke, this.guests, this.tidy, this.roomHours);
     }
 
     public boolean isAlcohol() {
@@ -193,7 +195,8 @@ public class User implements Profile, FriendManageable, Blockable {
         this.profilePicture = pictureData;
     }
 
-    public void setPreferences(String bedTime, boolean alcohol, boolean smoke, boolean guests, int tidy, int roomHours) throws InvalidInput {
+    public void setPreferences(String bedTime, boolean alcohol, boolean smoke, 
+                               boolean guests, int tidy, int roomHours) throws InvalidInput {
         this.bedTime = bedTime;
         this.alcohol = alcohol;
         this.smoke = smoke;
@@ -244,7 +247,9 @@ public class User implements Profile, FriendManageable, Blockable {
         if (user == null || bedTime == null) {
             return false;
         }
-        return this.bedTime.equals(user.bedTime) && this.alcohol == user.alcohol && this.smoke == user.smoke && this.guests == user.guests && this.tidy == user.tidy && this.roomHours == user.roomHours;
+        return this.bedTime.equals(user.bedTime) && this.alcohol == user.alcohol 
+            && this.smoke == user.smoke && this.guests == user.guests 
+            && this.tidy == user.tidy && this.roomHours == user.roomHours;
     }
 
     // Method that determines if 2 users have some matched preferences and checks the count of matched preferences
@@ -297,6 +302,9 @@ public class User implements Profile, FriendManageable, Blockable {
 
     //Returns a string representation of the user object
     public String toString() {
-        return String.join(DELIMITER, this.name, this.password, this.email, this.phoneNumber, this.description, this.university, bedTime, String.valueOf(alcohol), String.valueOf(smoke), String.valueOf(guests), String.valueOf(tidy), String.valueOf(roomHours));
+        return String.join(DELIMITER, this.name, this.password, this.email, 
+                           this.phoneNumber, this.description, this.university, bedTime, 
+                           String.valueOf(alcohol), String.valueOf(smoke), String.valueOf(guests), 
+                           String.valueOf(tidy), String.valueOf(roomHours));
     }
 }
