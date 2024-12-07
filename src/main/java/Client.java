@@ -479,56 +479,69 @@ public class Client implements ClientService {
             return false; // User canceled registration
         }
 
+        // Validate inputs and collect errors
+        StringBuilder errors = new StringBuilder();
         try {
-            // Collect and validate inputs
             username = usernameField.getText().trim();
             if (username.isEmpty() || username.contains(DELIMITER)) {
-                throw new IllegalArgumentException("Invalid username.");
+                errors.append("Invalid username.\n");
             }
 
             password = new String(passwordField.getPassword()).trim();
             if (password.isEmpty() || password.length() < 6) {
-                throw new IllegalArgumentException("Password must be at least 6 characters.");
+                errors.append("Password must be at least 6 characters.\n");
             }
 
             email = emailField.getText().trim();
             if (!email.matches("[^@]+@[^@]+\\.[^@]+")) {
-                throw new IllegalArgumentException("Invalid email format.");
+                errors.append("Invalid email format.\n");
             }
 
             phoneNumber = phoneField.getText().trim();
             if (!phoneNumber.matches("\\d{10}")) {
-                throw new IllegalArgumentException("Phone number must be 10 digits.");
+                errors.append("Phone number must be 10 digits.\n");
             }
 
             userDescription = descriptionField.getText().trim();
             if (userDescription.isEmpty() || userDescription.contains(DELIMITER)) {
-                throw new IllegalArgumentException("Invalid description.");
+                errors.append("Invalid description.\n");
             }
 
             university = universityField.getText().trim();
             if (university.isEmpty() || university.contains(DELIMITER)) {
-                throw new IllegalArgumentException("Invalid university.");
+                errors.append("Invalid university.\n");
             }
 
             bedTime = bedTimeField.getText().trim();
             if (!bedTime.matches("\\d{2}:\\d{2}")) {
-                throw new IllegalArgumentException("Invalid bed time format (HH:MM).");
+                errors.append("Invalid bed time format (HH:MM).\n");
             }
 
-            tidy = Integer.parseInt(tidyField.getText().trim());
-            if (tidy < 1 || tidy > 10) {
-                throw new IllegalArgumentException("Tidy level must be between 1 and 10.");
+            try {
+                tidy = Integer.parseInt(tidyField.getText().trim());
+                if (tidy < 1 || tidy > 10) {
+                    errors.append("Tidy level must be between 1 and 10.\n");
+                }
+            } catch (NumberFormatException e) {
+                errors.append("Tidy level must be a number between 1 and 10.\n");
             }
 
-            roomHours = Integer.parseInt(roomHoursField.getText().trim());
-            if (roomHours < 1 || roomHours > 24) {
-                throw new IllegalArgumentException("Room hours must be between 1 and 24.");
+            try {
+                roomHours = Integer.parseInt(roomHoursField.getText().trim());
+                if (roomHours < 1 || roomHours > 24) {
+                    errors.append("Room hours must be between 1 and 24.\n");
+                }
+            } catch (NumberFormatException e) {
+                errors.append("Room hours must be a number between 1 and 24.\n");
             }
 
             alcohol = alcoholCheckBox.isSelected();
             smoke = smokeCheckBox.isSelected();
             guests = guestsCheckBox.isSelected();
+
+            if (errors.length() > 0) {
+                throw new IllegalArgumentException(errors.toString());
+            }
 
             // Send registration request
             writer.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
@@ -570,7 +583,10 @@ public class Client implements ClientService {
             }
 
             return true;
-        } catch (IllegalArgumentException | IOException e) {
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, "Please address the following errors:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error during registration: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
