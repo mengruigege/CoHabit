@@ -3,11 +3,11 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Base64;
 
-/** 
+/**
  * This document was created for CS 180 PJ 5 Phase 2
  *
- * @version 1.0
  * @author Andrew tang, Aidan Lefort, Keya Jadhav, Rithvik Siddenki, Rui Meng
+ * @version 1.0
  */
 
 public class Server implements ServerService, Runnable {
@@ -23,8 +23,7 @@ public class Server implements ServerService, Runnable {
 
     @Override
     public void run() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)) {
             while (true) {
                 String line;
                 try {
@@ -520,19 +519,19 @@ public class Server implements ServerService, Runnable {
     public boolean declineFriendRequest(User receiver, User sender) {
         return database.rejectFriendRequest(receiver, sender);
     }
-    
+
     //method to accept a friend request
     public boolean acceptFriendRequest(User receiver, User sender) {
         return database.acceptFriendRequest(receiver, sender);
     }
 
     //method to remove a friend from friend list
-    public  boolean removeFriend(User remover, User removed) {
+    public boolean removeFriend(User remover, User removed) {
         return database.removeFriend(remover, removed);
     }
 
     //method to block a user
-    public  boolean blockUser(User blocker, User blocked) {
+    public boolean blockUser(User blocker, User blocked) {
         return database.blockUser(blocker, blocked);
     }
 
@@ -552,7 +551,7 @@ public class Server implements ServerService, Runnable {
     }
 
     //method to view a user's profile
-    public  String viewProfile(String username) {
+    public String viewProfile(String username) {
         User user = database.findUserByName(username);
         if (user != null) {
             return user.toString();
@@ -562,7 +561,7 @@ public class Server implements ServerService, Runnable {
     }
 
     //method to check how many preferences of two users match, and return users in a descending order of matches
-    public  String partialMatch(User user) {
+    public String partialMatch(User user) {
         return database.partialMatch(user, DELIMITER);
     }
 
@@ -572,7 +571,7 @@ public class Server implements ServerService, Runnable {
     }
 
     //Method to search roommates by a specific preference
-    public  String searchByParameter(String parameter, String value) {
+    public String searchByParameter(String parameter, String value) {
         return database.searchByParameter(parameter, value, DELIMITER);
     }
 }
