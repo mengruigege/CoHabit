@@ -544,10 +544,7 @@ public class Client implements ClientService {
             }
 
             // Send registration request
-            writer.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER
-                    + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER +
-                    bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER +
-                    tidy + DELIMITER + roomHours);
+            writer.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER + bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER + tidy + DELIMITER + roomHours);
 
             String response = reader.readLine();
             if (!response.equals(SUCCESS)) {
@@ -627,13 +624,7 @@ public class Client implements ClientService {
             messagePanel.add(new JScrollPane(messageArea));
 
             // Show dialog box
-            int option = JOptionPane.showConfirmDialog(
-                    null,
-                    messagePanel,
-                    "Send Message",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-            );
+            int option = JOptionPane.showConfirmDialog(null, messagePanel, "Send Message", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (option != JOptionPane.OK_OPTION) {
                 return false; // User canceled the operation
@@ -696,8 +687,7 @@ public class Client implements ClientService {
             String[] friends = response.split(DELIMITER);
 
             // Create a dropdown dialog to select a friend
-            String recipient = (String) JOptionPane.showInputDialog(null,"Select a friend to view messages with:",
-                    "View Messages", JOptionPane.PLAIN_MESSAGE,null, friends, friends.length > 0 ? friends[0] : null);
+            String recipient = (String) JOptionPane.showInputDialog(null, "Select a friend to view messages with:", "View Messages", JOptionPane.PLAIN_MESSAGE, null, friends, friends.length > 0 ? friends[0] : null);
 
             if (recipient == null || recipient.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "No recipient selected.", "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -718,7 +708,7 @@ public class Client implements ClientService {
                 String[] orderedMessages = new String[response.length()];
                 for (String message : response.split(DELIMITER)) {
                     int order = Integer.parseInt(message.split("##")[1]);
-                    orderedMessages[order-1] = message.replace(String.format("##%d##", order), "");
+                    orderedMessages[order - 1] = message.replace(String.format("##%d##", order), "");
                 }
                 for (String message : orderedMessages) {
                     if (message != null) {
@@ -735,8 +725,7 @@ public class Client implements ClientService {
                 JScrollPane scrollPane = new JScrollPane(messageArea);
                 scrollPane.setPreferredSize(new Dimension(400, 300));
 
-                JOptionPane.showMessageDialog(null, scrollPane,"Messages with " + recipient,
-                        JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(null, scrollPane, "Messages with " + recipient, JOptionPane.PLAIN_MESSAGE);
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error retrieving messages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -1094,12 +1083,7 @@ public class Client implements ClientService {
         }
 
         // Input dialog to get the target username
-        String targetUsername = JOptionPane.showInputDialog(
-                null,
-                "Enter the username to view their profile:",
-                "View Profile",
-                JOptionPane.PLAIN_MESSAGE
-        );
+        String targetUsername = JOptionPane.showInputDialog(null, "Enter the username to view their profile:", "View Profile", JOptionPane.PLAIN_MESSAGE);
 
         if (targetUsername == null || targetUsername.trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Username cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1197,19 +1181,8 @@ public class Client implements ClientService {
         }
 
         // Options for the profile update
-        String[] options = {
-                "Username", "Password", "Email", "Phone Number", "Description",
-                "University", "Preferences", "Profile Picture"
-        };
-        String selection = (String) JOptionPane.showInputDialog(
-                null,
-                "Choose a parameter to update:",
-                "Update Profile",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
+        String[] options = {"Username", "Password", "Email", "Phone Number", "Description", "University", "Preferences", "Profile Picture"};
+        String selection = (String) JOptionPane.showInputDialog(null, "Choose a parameter to update:", "Update Profile", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
         if (selection == null) return; // User cancelled
 
@@ -1306,10 +1279,7 @@ public class Client implements ClientService {
             }
 
             // Send update request to the server
-            writer.println("updateProfile" + DELIMITER + oldUsername + DELIMITER + username + DELIMITER +
-                    password + DELIMITER + email + DELIMITER + phoneNumber + DELIMITER + userDescription +
-                    DELIMITER + university + DELIMITER + bedTime + DELIMITER + alcohol + DELIMITER +
-                    smoke + DELIMITER + guests + DELIMITER + tidy + DELIMITER + roomHours);
+            writer.println("updateProfile" + DELIMITER + oldUsername + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER + bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER + tidy + DELIMITER + roomHours);
 
             // Read response
             String response = reader.readLine();
@@ -1332,15 +1302,7 @@ public class Client implements ClientService {
 
         // Dropdown for search options
         String[] options = {"Search by Parameter", "Exact Match", "Partial Match"};
-        String selection = (String) JOptionPane.showInputDialog(
-                null,
-                "Select a search type:",
-                "Search Roommates",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
+        String selection = (String) JOptionPane.showInputDialog(null, "Select a search type:", "Search Roommates", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
         if (selection == null) return; // User canceled
 
@@ -1364,8 +1326,7 @@ public class Client implements ClientService {
         JTextField valueField = new JTextField();
         parameterPanel.add(valueField);
 
-        int result = JOptionPane.showConfirmDialog(null, parameterPanel, "Search by Parameter",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(null, parameterPanel, "Search by Parameter", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result != JOptionPane.OK_OPTION) return; // User canceled
 
