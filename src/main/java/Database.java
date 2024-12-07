@@ -634,7 +634,7 @@ public class Database implements DatabaseFramework, Searchable {
 
         // Replace the old user entry with the updated one
         for (int i = 0; i < allUsers.size(); i++) {
-            if (allUsers.get(i).getName().equals(oldUsername)) {
+            if (allUsers.get(i).getName().equals(updatedUser.getName())) {
                 allUsers.set(i, updatedUser); // Update the in-memory user
                 saveUsers(); // Persist changes to the file
                 return true;
