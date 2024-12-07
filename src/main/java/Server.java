@@ -76,10 +76,10 @@ public class Server implements ServerService, Runnable {
                             if (register(user)) {
                                 writer.println(SUCCESS);
                             } else {
-                                writer.println("Registration failed");
+                                writer.println("Username is taken or credentials are null");
                             }
-                        } catch (UsernameTakenException e) {
-                            writer.println("Username is taken");
+                        } catch (Exception e) {
+                            writer.println("Invalid registration data");
                         }
 
                     }
