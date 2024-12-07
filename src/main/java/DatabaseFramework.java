@@ -10,23 +10,30 @@ import java.util.ArrayList;
  */
 
 public interface DatabaseFramework {
-   // User Management
+    // User Management
     boolean addUser(User user);  // Adds a new user to the database
+
     boolean removeUser(User user);  // Removes a user from the database
+
     boolean usernameExists(String username);  // Checks if a username already exists
+
     User findUserByName(String name);  // Finds a user by their name
 
     // Friendship Management
     boolean addFriend(User user1, User user2);  // Adds a friend relationship between two users
+
     boolean removeFriend(User user1, User user2);  // Removes the friendship between two users
 
     // Block Management
     boolean blockUser(User blocker, User blocked);  // Blocks a user
+
     boolean unblockUser(User blocker, User unblocked);  // Unblocks a user
 
     // Friend Request Management
     boolean sendFriendRequest(User sender, User receiver);  // Sends a friend request from one user to another
+
     boolean acceptFriendRequest(User receiver, User sender);  // Rejects a pending friend request
+
     boolean rejectFriendRequest(User receiver, User sender);  // Rejects a pending friend request
 
     // Messaging Management
@@ -34,11 +41,15 @@ public interface DatabaseFramework {
 
     // Profile Picture Management
     void saveProfilePicture(User user, byte[] profilePicture);  // Saves a user's profile picture
+
     byte[] loadProfilePicture(User user);  // Loads a user's profile picture
+
     void deleteProfilePicture(User user);  // Deletes a user's profile picture
 
     // Search and Matching
     String searchByParameter(String parameter, String value, String delimiter) throws UsernameTakenException, InvalidInput;  // Searches for users based on a parameter and value
+
     String exactMatch(User user, String delimiter);  // Finds users who exactly match a given user's attributes
+
     String partialMatch(User user, String delimiter);  // Finds users who partially match a given user's attributes
 }
