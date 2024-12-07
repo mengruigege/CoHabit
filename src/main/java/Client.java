@@ -54,7 +54,8 @@ public class Client implements ClientService {
             isConnected = true;
         } catch (UnknownHostException e) {
             JOptionPane.showMessageDialog(null, "Unknown Host: " + serverAddress + 
-                                          ". Please check the server address and port", "Error", JOptionPane.ERROR_MESSAGE);
+                                          ". Please check the server address and port", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         } catch (SocketException e) {
             JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", 
                                           JOptionPane.ERROR_MESSAGE);
@@ -139,7 +140,8 @@ public class Client implements ClientService {
                     close(); // Close resources and exit
                     return;
                 default:
-                    JOptionPane.showMessageDialog(null, "No valid option selected. Exiting.", "Exit", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "No valid option selected. Exiting.", 
+                                                  "Exit", JOptionPane.INFORMATION_MESSAGE);
                     close(); // Close resources and exit
                     return;
             }
@@ -648,8 +650,8 @@ public class Client implements ClientService {
             messagePanel.add(new JScrollPane(messageArea));
 
             // Show dialog box
-            int option = JOptionPane.showConfirmDialog(null, messagePanel, "Send Message", JOptionPane.OK_CANCEL_OPTION, 
-                                                       JOptionPane.PLAIN_MESSAGE);
+            int option = JOptionPane.showConfirmDialog(null, messagePanel, "Send Message", 
+                                                       JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (option != JOptionPane.OK_OPTION) {
                 return false; // User canceled the operation
@@ -675,7 +677,8 @@ public class Client implements ClientService {
             }
 
             // Send message to server
-            writer.println("sendMessage" + DELIMITER + username + DELIMITER + recipient + DELIMITER + message);
+            writer.println("sendMessage" + DELIMITER + username + DELIMITER + 
+                           recipient + DELIMITER + message);
 
             String sendResponse = reader.readLine();
             if (sendResponse.equals(SUCCESS)) {
@@ -696,7 +699,8 @@ public class Client implements ClientService {
 
     public void viewMessage() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -732,7 +736,8 @@ public class Client implements ClientService {
             System.out.println(response);
 
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "No messages found with " + recipient, "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No messages found with " + recipient, 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 // Parse and format the messages
                 StringBuilder messages = new StringBuilder("Messages with " + recipient + ":\n\n");
@@ -756,7 +761,8 @@ public class Client implements ClientService {
                 JScrollPane scrollPane = new JScrollPane(messageArea);
                 scrollPane.setPreferredSize(new Dimension(400, 300));
 
-                JOptionPane.showMessageDialog(null, scrollPane, "Messages with " + recipient, JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(null, scrollPane, "Messages with " + 
+                                              recipient, JOptionPane.PLAIN_MESSAGE);
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error retrieving messages: " + e.getMessage(), "Error", 
@@ -766,7 +772,8 @@ public class Client implements ClientService {
 
     public void viewFriendList() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -880,7 +887,8 @@ public class Client implements ClientService {
             JScrollPane scrollPane = new JScrollPane(requestsPanel);
             scrollPane.setPreferredSize(new Dimension(400, 300));
 
-            JOptionPane.showMessageDialog(null, scrollPane, "Friend Requests", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, scrollPane, "Friend Requests", 
+                                          JOptionPane.PLAIN_MESSAGE);
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error retrieving friend requests: " + e.getMessage(), 
@@ -890,7 +898,8 @@ public class Client implements ClientService {
 
     public void sendFriendRequest() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -909,7 +918,8 @@ public class Client implements ClientService {
 
         String friendUsername = usernameField.getText().trim();
         if (friendUsername.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Username cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Username cannot be empty.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -933,7 +943,8 @@ public class Client implements ClientService {
 
     public void removeFriend() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -995,7 +1006,8 @@ public class Client implements ClientService {
 
     public void viewBlockList() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1013,7 +1025,8 @@ public class Client implements ClientService {
             String[] blockedUsers = response.split(DELIMITER);
 
             if (blockedUsers.length == 0) {
-                JOptionPane.showMessageDialog(null, "Your block list is empty.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Your block list is empty.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -1082,7 +1095,8 @@ public class Client implements ClientService {
 
     public void unblockUser() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1121,7 +1135,8 @@ public class Client implements ClientService {
 
             String selectedBlockedUser = (String) blockedUserDropdown.getSelectedItem();
             if (selectedBlockedUser == null || selectedBlockedUser.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "No user selected.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No user selected.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -1249,7 +1264,8 @@ public class Client implements ClientService {
 
     public void updateProfile() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
