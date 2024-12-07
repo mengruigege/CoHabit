@@ -302,8 +302,7 @@ public class Database implements DatabaseFramework, Searchable {
                         // Collect all messages for this pair
                         ArrayList<String> pairMessages = new ArrayList<>();
                         for (String msg : messages) {
-                            if (msg.contains(sender.getName() + " -> " + receiver.getName()) ||
-                                    msg.contains(receiver.getName() + " -> " + sender.getName())) {
+                            if (msg.contains(sender.getName() + " -> " + receiver.getName()) || msg.contains(receiver.getName() + " -> " + sender.getName())) {
                                 pairMessages.add(msg.split(":")[1].trim());
                             }
                         }
@@ -320,9 +319,7 @@ public class Database implements DatabaseFramework, Searchable {
     // Adds a user to the database if the username is not already taken
     // Returns true if successful, false otherwise
     public synchronized boolean addUser(User user) {
-        if (user == null || user.getName() == null || user.getEmail() == null || user.getPhoneNumber() == null
-                || user.getPassword() == null || user.getUniversity() == null || user.getBedTime() == null ||
-                user.getDescription() == null || usernameExists(user.getName())) {
+        if (user == null || user.getName() == null || user.getEmail() == null || user.getPhoneNumber() == null || user.getPassword() == null || user.getUniversity() == null || user.getBedTime() == null || user.getDescription() == null || usernameExists(user.getName())) {
             return false;
         }
 
@@ -596,15 +593,13 @@ public class Database implements DatabaseFramework, Searchable {
         ArrayList<String> user2Messages = allMessages.getOrDefault(user2, new ArrayList<>());
 
         for (String message : user1Messages) {
-            if (message.contains(user1.getName() + " -> " + user2.getName()) ||
-                    message.contains(user2.getName() + " -> " + user1.getName())) {
+            if (message.contains(user1.getName() + " -> " + user2.getName()) || message.contains(user2.getName() + " -> " + user1.getName())) {
                 uniqueMessages.add(message);
             }
         }
 
         for (String message : user2Messages) {
-            if (message.contains(user1.getName() + " -> " + user2.getName()) ||
-                    message.contains(user2.getName() + " -> " + user1.getName())) {
+            if (message.contains(user1.getName() + " -> " + user2.getName()) || message.contains(user2.getName() + " -> " + user1.getName())) {
                 uniqueMessages.add(message);
             }
         }
