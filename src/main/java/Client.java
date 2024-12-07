@@ -1404,6 +1404,7 @@ public class Client implements ClientService {
 
     public void partialMatch() {
         if (writer == null) return;
+
         writer.println("partialMatch" + DELIMITER + username);
 
         try {
@@ -1411,7 +1412,7 @@ public class Client implements ClientService {
             if (response == null || response.equals(FAILURE)) {
                 JOptionPane.showMessageDialog(null, "No partial matches found.", "Info", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JTextArea textArea = new JTextArea(response.replace(DELIMITER, "\n"));
+                JTextArea textArea = new JTextArea(response.replace(DELIMITER, "\n")); // Each match in a new line
                 textArea.setEditable(false);
                 JScrollPane scrollPane = new JScrollPane(textArea);
                 scrollPane.setPreferredSize(new Dimension(400, 300));

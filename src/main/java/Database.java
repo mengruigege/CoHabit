@@ -838,8 +838,9 @@ public class Database implements DatabaseFramework, Searchable {
 
         // Build the result string
         String result = "";
-        for (User match : matchedUsers) {
-            result += match.getName() + delimiter;
+        for (int i = 0; i < matchedUsers.size(); i++) {
+            double percentage = (matchScores.get(i) * 100.0) / 6;
+            result += matchedUsers.get(i).getName() + " (" + String.format("%.2f", percentage) + "% match)" + delimiter;
         }
 
         // Remove trailing delimiter

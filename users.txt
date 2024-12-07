@@ -1,2 +1,3 @@
 Bob<<END>>password123<<END>>bob@example.com<<END>>123-456-7890<<END>>Description<<END>>UniversityA<<END>>10:00 PM<<END>>true<<END>>false<<END>>true<<END>>5<<END>>10
 Jim<<END>>password234<<END>>jim@example.com<<END>>234-567-8901<<END>>Description<<END>>UniversityB<<END>>11:00 PM<<END>>false<<END>>true<<END>>false<<END>>4<<END>>15
+Alice<<END>>password345<<END>>alice@purdue.edu<<END>>1234567890<<END>>My name is Alice<<END>>University C<<END>>10:00<<END>>false<<END>>false<<END>>true<<END>>10<<END>>10
