@@ -19,9 +19,12 @@ public class TestServer {
         server.database = mockDatabase; // Injecting mock database
 
         // Adding test users to the database
-        bob = new User("Bob", "password123", "bob@example.com", "123-456-7890", "Student", "SomeUniversity");
-        jim = new User("Jim", "password234", "jim@example.com", "098-765-4321", "Worker", "AnotherUniversity");
-        alice = new User("Alice", "password345", "alice@example.com", "555-555-5555", "Teacher", "YetAnotherUniversity");
+        bob = new User("Bob", "password123", "bob@example.com", 
+                       "123-456-7890", "Student", "SomeUniversity");
+        jim = new User("Jim", "password234", "jim@example.com", 
+                       "098-765-4321", "Worker", "AnotherUniversity");
+        alice = new User("Alice", "password345", "alice@example.com", 
+                         "555-555-5555", "Teacher", "YetAnotherUniversity");
 
         mockDatabase.addUser(bob);
         mockDatabase.addUser(jim);
@@ -59,7 +62,8 @@ public class TestServer {
 
     @Test
     public void testRegisterInvalidUser() throws UsernameTakenException {
-        User invalidUser = new User(null, "password", "invalid@example.com", "000-000-0000", "None", "InvalidUniversity");
+        User invalidUser = new User(null, "password", "invalid@example.com", 
+                                    "000-000-0000", "None", "InvalidUniversity");
         assertFalse(server.register(invalidUser));
     }
 
@@ -303,7 +307,8 @@ public class TestServer {
 
     @Test
     public void testExactMatchNoMatches() throws UsernameTakenException {
-        User noMatchUser = new User("NoMatch", "password", "no@match.com", "111-111-1111", "None", "None");
+        User noMatchUser = new User("NoMatch", "password", 
+                                    "no@match.com", "111-111-1111", "None", "None");
         mockDatabase.addUser(noMatchUser);
         String result = server.exactMatch(noMatchUser);
         assertEquals("", result);
