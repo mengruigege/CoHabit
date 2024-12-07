@@ -23,7 +23,8 @@ public class Server implements ServerService, Runnable {
 
     @Override
     public void run() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); 
+             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true)) {
             while (true) {
                 String line;
                 try {
@@ -126,7 +127,8 @@ public class Server implements ServerService, Runnable {
                             continue;
                         }
 
-                        if (database.getBlockedUsers(receiver).contains(sender.getName()) || database.getBlockedUsers(sender).contains(receiver.getName())) {
+                        if (database.getBlockedUsers(receiver).contains(sender.getName()) 
+                            || database.getBlockedUsers(sender).contains(receiver.getName())) {
                             writer.println("Friend request cannot be sent due to a blocking relationship");
                             continue;
                         }
@@ -134,7 +136,8 @@ public class Server implements ServerService, Runnable {
                         if (sendFriendRequest(sender, receiver)) {
                             writer.println(SUCCESS);
                         } else {
-                            writer.println("Friend request cannot be sent. You might have already sent a friend request to this person");
+                            writer.println("Friend request cannot be sent. " + 
+                                           "You might have already sent a friend request to this person");
                         }
                     }
 
@@ -252,7 +255,8 @@ public class Server implements ServerService, Runnable {
                         if (blockUser(user, blockedUser)) {
                             writer.println(SUCCESS);
                         } else {
-                            writer.println(blockedUser.getName() + "could not be blocked. They might be already blocked");
+                            writer.println(blockedUser.getName() + "could not be blocked. " + 
+                                           "They might be already blocked");
                         }
                     }
 
@@ -469,7 +473,8 @@ public class Server implements ServerService, Runnable {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket.getRemoteSocketAddress());
+                System.out.println("Client connected: " + 
+                                   clientSocket.getRemoteSocketAddress());
                 new Thread(new Server(clientSocket)).start();
             }
         } catch (IOException e) {
