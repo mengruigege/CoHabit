@@ -53,12 +53,15 @@ public class Client implements ClientService {
             scanner = new Scanner(System.in);
             isConnected = true;
         } catch (UnknownHostException e) {
-            JOptionPane.showMessageDialog(null, "Unknown Host: " + serverAddress + ". Please check the server address and port", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Unknown Host: " + serverAddress + 
+                                          ". Please check the server address and port", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (SocketException e) {
-            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             isConnected = false;
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "An IO error occurred while trying to connect to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "An IO error occurred while trying to connect to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -156,7 +159,8 @@ public class Client implements ClientService {
 
     public boolean mainScreen() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -315,7 +319,8 @@ public class Client implements ClientService {
 
     public boolean login() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -356,7 +361,8 @@ public class Client implements ClientService {
         loginPanel.add(passwordField, gbc);
 
         // Show Login Dialog
-        int option = JOptionPane.showConfirmDialog(null, loginPanel, "Login", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int option = JOptionPane.showConfirmDialog(null, loginPanel, "Login", 
+                                                   JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (option != JOptionPane.OK_OPTION) {
             return false; // User canceled login
         }
@@ -366,7 +372,8 @@ public class Client implements ClientService {
 
         // Validate Input
         if (usernameInput.isEmpty() || passwordInput.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Username and password cannot be empty.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Username and password cannot be empty.", 
+                                          "Validation Error", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
@@ -376,14 +383,16 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "Login failed. Incorrect username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Login failed. Incorrect username or password.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
 
             // Parse user information on success
             String[] userInfo = response.split(DELIMITER);
             if (userInfo.length != 12) {
-                JOptionPane.showMessageDialog(null, "Error: Invalid response from server.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error: Invalid response from server.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
 
@@ -408,7 +417,8 @@ public class Client implements ClientService {
             }
             return true;
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error during login: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error during login: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -416,7 +426,8 @@ public class Client implements ClientService {
 
     public boolean register() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -474,7 +485,8 @@ public class Client implements ClientService {
         registerPanel.add(formPanel, BorderLayout.CENTER);
 
         // Show the dialog
-        int option = JOptionPane.showConfirmDialog(null, registerPanel, "Register", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int option = JOptionPane.showConfirmDialog(null, registerPanel, "Register", 
+                                                   JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (option != JOptionPane.OK_OPTION) {
             return false; // User canceled registration
         }
@@ -544,7 +556,10 @@ public class Client implements ClientService {
             }
 
             // Send registration request
-            writer.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER + bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER + tidy + DELIMITER + roomHours);
+            writer.println("register" + DELIMITER + username + DELIMITER + password + DELIMITER + 
+                           email + DELIMITER + phoneNumber + DELIMITER + userDescription + DELIMITER + university + 
+                           DELIMITER + bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + 
+                           DELIMITER + tidy + DELIMITER + roomHours);
 
             String response = reader.readLine();
             if (!response.equals(SUCCESS)) {
@@ -552,7 +567,8 @@ public class Client implements ClientService {
                 return false;
             }
 
-            JOptionPane.showMessageDialog(null, "Registration successful! Now, upload your profile picture.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Registration successful! Now, upload your profile picture.", "Success", 
+                                          JOptionPane.INFORMATION_MESSAGE);
 
             // Profile Picture Upload
             JFileChooser fileChooser = new JFileChooser();
@@ -570,28 +586,34 @@ public class Client implements ClientService {
 
                     String pictureResponse = reader.readLine();
                     if (!pictureResponse.equals(SUCCESS)) {
-                        JOptionPane.showMessageDialog(null, "Profile picture upload failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Profile picture upload failed.", "Error", 
+                                                      JOptionPane.ERROR_MESSAGE);
                     } else {
-                        JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", "Success", 
+                                                      JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + ex.getMessage(), "Error", 
+                                                  JOptionPane.ERROR_MESSAGE);
                 }
             }
 
             return true;
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(null, "Please address the following errors:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Please address the following errors:\n" + e.getMessage(), "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return false;
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error during registration: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error during registration: " + e.getMessage(), "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
 
     public boolean sendMessage() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to server.", "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -602,14 +624,16 @@ public class Client implements ClientService {
             String response = reader.readLine();
 
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "You have no friends to message.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no friends to message.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
                 return false;
             }
 
             // Parse the list of friends
             String[] friends = response.split(DELIMITER);
             if (friends.length == 0) {
-                JOptionPane.showMessageDialog(null, "You have no friends to message.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no friends to message.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
                 return false;
             }
 
@@ -624,7 +648,8 @@ public class Client implements ClientService {
             messagePanel.add(new JScrollPane(messageArea));
 
             // Show dialog box
-            int option = JOptionPane.showConfirmDialog(null, messagePanel, "Send Message", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int option = JOptionPane.showConfirmDialog(null, messagePanel, "Send Message", JOptionPane.OK_CANCEL_OPTION, 
+                                                       JOptionPane.PLAIN_MESSAGE);
 
             if (option != JOptionPane.OK_OPTION) {
                 return false; // User canceled the operation
@@ -654,14 +679,17 @@ public class Client implements ClientService {
 
             String sendResponse = reader.readLine();
             if (sendResponse.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, "Message sent successfully to " + recipient + "!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Message sent successfully to " + recipient + "!", "Success", 
+                                              JOptionPane.INFORMATION_MESSAGE);
                 return true;
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to send message: " + sendResponse, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to send message: " + sendResponse, "Error", 
+                                              JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving friends list: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error retrieving friends list: " + e.getMessage(), "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -679,7 +707,8 @@ public class Client implements ClientService {
             String response = reader.readLine();
 
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "You have no friends to view messages with.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no friends to view messages with.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -687,7 +716,9 @@ public class Client implements ClientService {
             String[] friends = response.split(DELIMITER);
 
             // Create a dropdown dialog to select a friend
-            String recipient = (String) JOptionPane.showInputDialog(null, "Select a friend to view messages with:", "View Messages", JOptionPane.PLAIN_MESSAGE, null, friends, friends.length > 0 ? friends[0] : null);
+            String recipient = (String) JOptionPane.showInputDialog(null, "Select a friend to view messages with:", 
+                                                                    "View Messages", JOptionPane.PLAIN_MESSAGE, null, friends, 
+                                                                    friends.length > 0 ? friends[0] : null);
 
             if (recipient == null || recipient.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "No recipient selected.", "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -728,7 +759,8 @@ public class Client implements ClientService {
                 JOptionPane.showMessageDialog(null, scrollPane, "Messages with " + recipient, JOptionPane.PLAIN_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving messages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error retrieving messages: " + e.getMessage(), "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -743,7 +775,8 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "Failed to retrieve the friend list or you have no friends.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to retrieve the friend list or you have no friends.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -751,7 +784,8 @@ public class Client implements ClientService {
             String[] friends = response.split(DELIMITER);
 
             if (friends.length == 0) {
-                JOptionPane.showMessageDialog(null, "You have no friends in your friend list.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no friends in your friend list.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -768,13 +802,15 @@ public class Client implements ClientService {
             JOptionPane.showMessageDialog(null, scrollPane, "Friend List", JOptionPane.PLAIN_MESSAGE);
 
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving friend list: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error retrieving friend list: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void viewFriendRequests() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -783,7 +819,8 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "No pending friend requests.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No pending friend requests.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -791,7 +828,8 @@ public class Client implements ClientService {
             String[] requests = response.split(DELIMITER);
 
             if (requests.length == 0) {
-                JOptionPane.showMessageDialog(null, "No pending friend requests.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No pending friend requests.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -809,19 +847,23 @@ public class Client implements ClientService {
                 // Add action listeners for the buttons
                 acceptButton.addActionListener(e -> {
                     if (acceptFriendRequest(requester)) {
-                        JOptionPane.showMessageDialog(null, "Accepted friend request from " + requester, "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Accepted friend request from " + requester, 
+                                                      "Success", JOptionPane.INFORMATION_MESSAGE);
                         requestPanel.setVisible(false); // Hide the panel after action
                     } else {
-                        JOptionPane.showMessageDialog(null, "Failed to accept friend request from " + requester, "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Failed to accept friend request from " + requester, 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
                 declineButton.addActionListener(e -> {
                     if (declineFriendRequest(requester)) {
-                        JOptionPane.showMessageDialog(null, "Declined friend request from " + requester, "Info", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Declined friend request from " + requester, "Info", 
+                                                      JOptionPane.INFORMATION_MESSAGE);
                         requestPanel.setVisible(false); // Hide the panel after action
                     } else {
-                        JOptionPane.showMessageDialog(null, "Failed to decline friend request from " + requester, "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Failed to decline friend request from " + requester, 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
@@ -841,7 +883,8 @@ public class Client implements ClientService {
             JOptionPane.showMessageDialog(null, scrollPane, "Friend Requests", JOptionPane.PLAIN_MESSAGE);
 
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving friend requests: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error retrieving friend requests: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -858,7 +901,8 @@ public class Client implements ClientService {
         inputPanel.add(usernameField);
 
         // Show dialog to enter the username
-        int option = JOptionPane.showConfirmDialog(null, inputPanel, "Send Friend Request", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int option = JOptionPane.showConfirmDialog(null, inputPanel, "Send Friend Request", 
+                                                   JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (option != JOptionPane.OK_OPTION) {
             return; // User canceled the action
         }
@@ -875,12 +919,15 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, "Friend request sent to " + friendUsername, "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Friend request sent to " + friendUsername, 
+                                              "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to send friend request: " + response, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to send friend request: " + response, 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error sending friend request: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error sending friend request: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -897,13 +944,15 @@ public class Client implements ClientService {
             String response = reader.readLine();
 
             if (response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "You have no friends to remove.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no friends to remove.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
             String[] friends = response.split(DELIMITER);
             if (friends.length == 0) {
-                JOptionPane.showMessageDialog(null, "You have no friends to remove.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no friends to remove.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -914,7 +963,8 @@ public class Client implements ClientService {
             removePanel.add(new JLabel("Select a friend to remove:"));
             removePanel.add(friendDropdown);
 
-            int option = JOptionPane.showConfirmDialog(null, removePanel, "Remove Friend", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int option = JOptionPane.showConfirmDialog(null, removePanel, "Remove Friend", JOptionPane.OK_CANCEL_OPTION, 
+                                                       JOptionPane.PLAIN_MESSAGE);
 
             if (option != JOptionPane.OK_OPTION) {
                 return; // User canceled the action
@@ -931,12 +981,15 @@ public class Client implements ClientService {
 
             response = reader.readLine();
             if (response.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, selectedFriend + " has been removed from your friend list.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, selectedFriend + " has been removed from your friend list.", 
+                                              "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to remove friend: " + response, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to remove friend: " + response, 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error removing friend: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error removing friend: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -951,7 +1004,8 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "Failed to retrieve the block list or you haven't blocked anyone.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to retrieve the block list or you haven't blocked anyone.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -976,13 +1030,15 @@ public class Client implements ClientService {
             JOptionPane.showMessageDialog(null, scrollPane, "Blocked Users", JOptionPane.PLAIN_MESSAGE);
 
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving block list: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error retrieving block list: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void blockUser() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -993,7 +1049,8 @@ public class Client implements ClientService {
         blockPanel.add(new JLabel("Enter the username to block:"));
         blockPanel.add(usernameField);
 
-        int option = JOptionPane.showConfirmDialog(null, blockPanel, "Block User", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int option = JOptionPane.showConfirmDialog(null, blockPanel, "Block User", 
+                                                   JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (option != JOptionPane.OK_OPTION) {
             return; // User canceled the action
@@ -1011,12 +1068,15 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, blockedUsername + " has been blocked successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, blockedUsername + " has been blocked successfully.", 
+                                              "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to block user: " + response, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to block user: " + response, 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error blocking user: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error blocking user: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1033,13 +1093,15 @@ public class Client implements ClientService {
             String response = reader.readLine();
 
             if (response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "You have no blocked users to unblock.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no blocked users to unblock.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
             String[] blockedUsers = response.split(DELIMITER);
             if (blockedUsers.length == 0) {
-                JOptionPane.showMessageDialog(null, "You have no blocked users to unblock.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You have no blocked users to unblock.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 
@@ -1050,7 +1112,8 @@ public class Client implements ClientService {
             unblockPanel.add(new JLabel("Select a user to unblock:"));
             unblockPanel.add(blockedUserDropdown);
 
-            int option = JOptionPane.showConfirmDialog(null, unblockPanel, "Unblock User", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int option = JOptionPane.showConfirmDialog(null, unblockPanel, "Unblock User", 
+                                                       JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (option != JOptionPane.OK_OPTION) {
                 return; // User canceled the action
@@ -1067,26 +1130,32 @@ public class Client implements ClientService {
 
             response = reader.readLine();
             if (response.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, selectedBlockedUser + " has been unblocked.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, selectedBlockedUser + " has been unblocked.", 
+                                              "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to unblock user: " + response, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to unblock user: " + response, 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error unblocking user: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error unblocking user: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void viewProfile() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // Input dialog to get the target username
-        String targetUsername = JOptionPane.showInputDialog(null, "Enter the username to view their profile:", "View Profile", JOptionPane.PLAIN_MESSAGE);
+        String targetUsername = JOptionPane.showInputDialog(null, "Enter the username to view their profile:", 
+                                                            "View Profile", JOptionPane.PLAIN_MESSAGE);
 
         if (targetUsername == null || targetUsername.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Username cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Username cannot be empty.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1098,14 +1167,16 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "Profile not found for " + targetUsername, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Profile not found for " + targetUsername, 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Parse profile data
             String[] profileData = response.split(DELIMITER);
             if (profileData.length < 12) { // Ensure response has the required fields
-                JOptionPane.showMessageDialog(null, "Error: Invalid profile data received.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error: Invalid profile data received.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -1167,10 +1238,12 @@ public class Client implements ClientService {
             profileViewPanel.add(detailsPanel, BorderLayout.CENTER);
 
             // Show profile details in a dialog
-            JOptionPane.showMessageDialog(null, profileViewPanel, "Profile of " + targetUsername, JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, profileViewPanel, "Profile of " + targetUsername, 
+                                          JOptionPane.PLAIN_MESSAGE);
 
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving profile: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error retrieving profile: " + e.getMessage(), "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1181,8 +1254,10 @@ public class Client implements ClientService {
         }
 
         // Options for the profile update
-        String[] options = {"Username", "Password", "Email", "Phone Number", "Description", "University", "Preferences", "Profile Picture"};
-        String selection = (String) JOptionPane.showInputDialog(null, "Choose a parameter to update:", "Update Profile", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        String[] options = {"Username", "Password", "Email", "Phone Number", "Description", "University", 
+                            "Preferences", "Profile Picture"};
+        String selection = (String) JOptionPane.showInputDialog(null, "Choose a parameter to update:", "Update Profile", 
+                                                                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
         if (selection == null) return; // User cancelled
 
@@ -1193,15 +1268,18 @@ public class Client implements ClientService {
                 case "Username":
                     username = JOptionPane.showInputDialog("Enter new username:", username);
                     if (username == null || username.trim().isEmpty() || username.contains(DELIMITER)) {
-                        JOptionPane.showMessageDialog(null, "Invalid username. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Invalid username. Please try again.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     break;
 
                 case "Password":
                     password = JOptionPane.showInputDialog("Enter new password:");
-                    if (password == null || password.trim().isEmpty() || password.length() < 6 || password.contains(DELIMITER)) {
-                        JOptionPane.showMessageDialog(null, "Invalid password. Must be at least 6 characters.", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (password == null || password.trim().isEmpty() 
+                        || password.length() < 6 || password.contains(DELIMITER)) {
+                        JOptionPane.showMessageDialog(null, "Invalid password. Must be at least 6 characters.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     break;
@@ -1209,7 +1287,8 @@ public class Client implements ClientService {
                 case "Email":
                     email = JOptionPane.showInputDialog("Enter new email:", email);
                     if (email == null || !email.matches("[^@]+@[^@]+\\.[^@]+")) {
-                        JOptionPane.showMessageDialog(null, "Invalid email format. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Invalid email format. Please try again.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     break;
@@ -1217,23 +1296,28 @@ public class Client implements ClientService {
                 case "Phone Number":
                     phoneNumber = JOptionPane.showInputDialog("Enter new phone number:", phoneNumber);
                     if (phoneNumber == null || !phoneNumber.matches("\\d{10}")) {
-                        JOptionPane.showMessageDialog(null, "Invalid phone number. Must be 10 digits.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Invalid phone number. Must be 10 digits.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     break;
 
                 case "Description":
                     userDescription = JOptionPane.showInputDialog("Enter new description:", userDescription);
-                    if (userDescription == null || userDescription.trim().isEmpty() || userDescription.contains(DELIMITER)) {
-                        JOptionPane.showMessageDialog(null, "Invalid description. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (userDescription == null || userDescription.trim().isEmpty() 
+                        || userDescription.contains(DELIMITER)) {
+                        JOptionPane.showMessageDialog(null, "Invalid description. Please try again.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     break;
 
                 case "University":
                     university = JOptionPane.showInputDialog("Enter new university:", university);
-                    if (university == null || university.trim().isEmpty() || university.contains(DELIMITER)) {
-                        JOptionPane.showMessageDialog(null, "Invalid university. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (university == null || university.trim().isEmpty() 
+                        || university.contains(DELIMITER)) {
+                        JOptionPane.showMessageDialog(null, "Invalid university. Please try again.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     break;
@@ -1241,7 +1325,8 @@ public class Client implements ClientService {
                 case "Preferences":
                     bedTime = JOptionPane.showInputDialog("Enter your average bedtime (e.g., 22:30):", bedTime);
                     if (bedTime == null || !bedTime.matches("\\d{2}:\\d{2}")) {
-                        JOptionPane.showMessageDialog(null, "Invalid bedtime format. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Invalid bedtime format. Please try again.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -1255,10 +1340,12 @@ public class Client implements ClientService {
                     guests = "yes".equalsIgnoreCase(guestsInput);
 
                     tidy = Integer.parseInt(JOptionPane.showInputDialog("How tidy are you? (1-10):", tidy));
-                    roomHours = Integer.parseInt(JOptionPane.showInputDialog("How many hours per day do you spend in your room? (1-24):", roomHours));
+                    roomHours = Integer.parseInt(JOptionPane.showInputDialog("How many hours per day do you spend in your room? (1-24):", 
+                                                                             roomHours));
 
                     if (tidy < 1 || tidy > 10 || roomHours < 1 || roomHours > 24) {
-                        JOptionPane.showMessageDialog(null, "Invalid preference values.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Invalid preference values.", 
+                                                      "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     break;
@@ -1270,39 +1357,50 @@ public class Client implements ClientService {
                     if (result == JFileChooser.APPROVE_OPTION) {
                         String filePath = fileChooser.getSelectedFile().getAbsolutePath();
                         if (setProfilePicture(filePath)) {
-                            JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", 
+                                                          "Success", JOptionPane.INFORMATION_MESSAGE);
                         } else {
-                            JOptionPane.showMessageDialog(null, "Failed to upload profile picture.", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Failed to upload profile picture.", 
+                                                          "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                     return; // No server update needed for profile picture
             }
 
             // Send update request to the server
-            writer.println("updateProfile" + DELIMITER + oldUsername + DELIMITER + username + DELIMITER + password + DELIMITER + email + DELIMITER + phoneNumber + DELIMITER + userDescription + DELIMITER + university + DELIMITER + bedTime + DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + DELIMITER + tidy + DELIMITER + roomHours);
+            writer.println("updateProfile" + DELIMITER + oldUsername + DELIMITER + username + 
+                           DELIMITER + password + DELIMITER + email + DELIMITER + phoneNumber + 
+                           DELIMITER + userDescription + DELIMITER + university + DELIMITER + bedTime + 
+                           DELIMITER + alcohol + DELIMITER + smoke + DELIMITER + guests + 
+                           DELIMITER + tidy + DELIMITER + roomHours);
 
             // Read response
             String response = reader.readLine();
             if (response.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, "Profile updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Profile updated successfully.", 
+                                              "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Profile update failed: " + response, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Profile update failed: " + response, 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (IOException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error updating profile: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error updating profile: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void searchRoommates() {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // Dropdown for search options
         String[] options = {"Search by Parameter", "Exact Match", "Partial Match"};
-        String selection = (String) JOptionPane.showInputDialog(null, "Select a search type:", "Search Roommates", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        String selection = (String) JOptionPane.showInputDialog(null, "Select a search type:", 
+                                                                "Search Roommates", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
         if (selection == null) return; // User canceled
 
@@ -1326,7 +1424,8 @@ public class Client implements ClientService {
         JTextField valueField = new JTextField();
         parameterPanel.add(valueField);
 
-        int result = JOptionPane.showConfirmDialog(null, parameterPanel, "Search by Parameter", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(null, parameterPanel, "Search by Parameter", 
+                                                   JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result != JOptionPane.OK_OPTION) return; // User canceled
 
@@ -1334,7 +1433,8 @@ public class Client implements ClientService {
         String value = valueField.getText().trim();
 
         if (value.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Value cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Value cannot be empty.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -1344,17 +1444,20 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "No results found for the given parameter.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No results found for the given parameter.", 
+                                              "Info", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JTextArea textArea = new JTextArea(response.replace(DELIMITER, "\n"));
                 textArea.setEditable(false);
                 JScrollPane scrollPane = new JScrollPane(textArea);
                 scrollPane.setPreferredSize(new Dimension(400, 300));
 
-                JOptionPane.showMessageDialog(null, scrollPane, "Search by Parameter Results", JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(null, scrollPane, "Search by Parameter Results", 
+                                              JOptionPane.PLAIN_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error searching users: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error searching users: " + e.getMessage(), "Error", 
+                                          JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1365,17 +1468,20 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "No exact matches found.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No exact matches found.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JTextArea textArea = new JTextArea(response.replace(DELIMITER, "\n"));
                 textArea.setEditable(false);
                 JScrollPane scrollPane = new JScrollPane(textArea);
                 scrollPane.setPreferredSize(new Dimension(400, 300));
 
-                JOptionPane.showMessageDialog(null, scrollPane, "Exact Match Results", JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(null, scrollPane, "Exact Match Results", 
+                                              JOptionPane.PLAIN_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error finding exact matches: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error finding exact matches: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1387,17 +1493,20 @@ public class Client implements ClientService {
         try {
             String response = reader.readLine();
             if (response == null || response.equals(FAILURE)) {
-                JOptionPane.showMessageDialog(null, "No partial matches found.", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No partial matches found.", "Info", 
+                                              JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JTextArea textArea = new JTextArea(response.replace(DELIMITER, "\n")); // Each match in a new line
                 textArea.setEditable(false);
                 JScrollPane scrollPane = new JScrollPane(textArea);
                 scrollPane.setPreferredSize(new Dimension(400, 300));
 
-                JOptionPane.showMessageDialog(null, scrollPane, "Partial Match Results", JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(null, scrollPane, "Partial Match Results", 
+                                              JOptionPane.PLAIN_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error finding partial matches: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error finding partial matches: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1422,7 +1531,8 @@ public class Client implements ClientService {
     //Helper method to accept friend request
     public boolean acceptFriendRequest(String friend) {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -1440,11 +1550,13 @@ public class Client implements ClientService {
     //Helper method to decline friend request
     public boolean declineFriendRequest(String usernameInput) {
         if (!isConnected) {
-            JOptionPane.showMessageDialog(null, "Not connected to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Not connected to the server.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        writer.println("declineFriendRequest" + DELIMITER + username + DELIMITER + usernameInput);
+        writer.println("declineFriendRequest" + DELIMITER + username + 
+                       DELIMITER + usernameInput);
 
         try {
             String response = reader.readLine(); //To read response from server
@@ -1484,13 +1596,15 @@ public class Client implements ClientService {
     public boolean setProfilePicture(String filePath) {
         File file = new File(filePath);
         if (!file.exists() || file.isDirectory()) {
-            JOptionPane.showMessageDialog(null, "Invalid file path. Please select a valid file.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Invalid file path. Please select a valid file.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         long maxFileSize = 5 * 1024 * 1024; // 5 MB limit
         if (file.length() > maxFileSize) {
-            JOptionPane.showMessageDialog(null, "File size exceeds the maximum limit of 5 MB.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "File size exceeds the maximum limit of 5 MB.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -1503,15 +1617,19 @@ public class Client implements ClientService {
 
             String response = reader.readLine();
             if (response.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", 
+                                              "Success", JOptionPane.INFORMATION_MESSAGE);
                 return true;
             } else if (response.equals("INVALID_FILE")) {
-                JOptionPane.showMessageDialog(null, "The file you uploaded is not a valid PNG file.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "The file you uploaded is not a valid PNG file.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to upload profile picture.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to upload profile picture.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + e.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
         }
         return false;
     }
