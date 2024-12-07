@@ -61,4 +61,3 @@ public interface ServerService {
     // Searches users based on a specific parameter and value
     String searchByParameter(String parameter, String value);
 }
-
