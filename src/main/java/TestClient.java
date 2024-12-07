@@ -25,16 +25,19 @@ public class TestClient {
     @Test
     public void testClose() {
         client.close(); // Verify it closes without exception.
-        assertFalse("Client should not be connected after closing.", client.isConnected);
+        assertFalse("Client should not be connected after closing.", 
+                    client.isConnected);
     }
 
     @Test
     public void testMainScreen() {
         if (client.isConnected) {
             boolean result = client.mainScreen();
-            assertFalse("Main screen should close and return false when closed.", result);
+            assertFalse("Main screen should close and return false when closed.", 
+                        result);
         } else {
-            assertFalse("Main screen should not open when disconnected.", client.mainScreen());
+            assertFalse("Main screen should not open when disconnected.", 
+                        client.mainScreen());
         }
     }
 
@@ -42,9 +45,11 @@ public class TestClient {
     public void testLogin() {
         if (client.isConnected) {
             boolean result = client.login();
-            assertFalse("Login should fail with dummy inputs in GUI.", result);
+            assertFalse("Login should fail with dummy inputs in GUI.", 
+                        result);
         } else {
-            assertFalse("Login should fail when disconnected.", client.login());
+            assertFalse("Login should fail when disconnected.", 
+                        client.login());
         }
     }
 
@@ -52,16 +57,19 @@ public class TestClient {
     public void testRegister() {
         if (client.isConnected) {
             boolean result = client.register();
-            assertFalse("Register should fail with dummy inputs in GUI.", result);
+            assertFalse("Register should fail with dummy inputs in GUI.", 
+                        result);
         } else {
-            assertFalse("Register should fail when disconnected.", client.register());
+            assertFalse("Register should fail when disconnected.", 
+                        client.register());
         }
     }
 
     @Test
     public void testSendMessage() {
         boolean result = client.sendMessage();
-        assertFalse("Sending a message should fail without a recipient and content.", result);
+        assertFalse("Sending a message should fail without a recipient and content.", 
+                    result);
     }
 
     @Test
@@ -132,12 +140,14 @@ public class TestClient {
     @Test
     public void testDisconnect() {
         client.disconnect();
-        assertFalse("Client should not be connected after disconnecting.", client.isConnected);
+        assertFalse("Client should not be connected after disconnecting.", 
+                    client.isConnected);
     }
 
     @Test
     public void testSetProfilePicture() {
         boolean result = client.setProfilePicture("invalid_path.png");
-        assertFalse("Setting profile picture should fail for an invalid file path.", result);
+        assertFalse("Setting profile picture should fail for an invalid file path.", 
+                    result);
     }
 }
