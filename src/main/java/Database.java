@@ -302,7 +302,8 @@ public class Database implements DatabaseFramework, Searchable {
                         // Collect all messages for this pair
                         ArrayList<String> pairMessages = new ArrayList<>();
                         for (String msg : messages) {
-                            if (msg.contains(sender.getName() + " -> " + receiver.getName()) || msg.contains(receiver.getName() + " -> " + sender.getName())) {
+                            if (msg.contains(sender.getName() + " -> " + receiver.getName()) 
+                                || msg.contains(receiver.getName() + " -> " + sender.getName())) {
                                 pairMessages.add(msg.split(":")[1].trim());
                             }
                         }
@@ -319,7 +320,10 @@ public class Database implements DatabaseFramework, Searchable {
     // Adds a user to the database if the username is not already taken
     // Returns true if successful, false otherwise
     public synchronized boolean addUser(User user) {
-        if (user == null || user.getName() == null || user.getEmail() == null || user.getPhoneNumber() == null || user.getPassword() == null || user.getUniversity() == null || user.getBedTime() == null || user.getDescription() == null || usernameExists(user.getName())) {
+        if (user == null || user.getName() == null || user.getEmail() == null 
+            || user.getPhoneNumber() == null || user.getPassword() == null 
+            || user.getUniversity() == null || user.getBedTime() == null 
+            || user.getDescription() == null || usernameExists(user.getName())) {
             return false;
         }
 
@@ -489,7 +493,8 @@ public class Database implements DatabaseFramework, Searchable {
 
         // Check if the unblocked user exists in the blocked list
         if (!blockedUsers.contains(unblocked)) {
-            System.out.println(unblocked.getName() + " is not in the blocked list of " + blocker.getName());
+            System.out.println(unblocked.getName() + " is not in the blocked list of " 
+                               + blocker.getName());
             return false; // Return false because the user is not blocked
         }
 
@@ -520,7 +525,8 @@ public class Database implements DatabaseFramework, Searchable {
         // Add each other as friends
         boolean addedAsFriend = addFriend(receiver, sender);
         if (!addedAsFriend) {
-            System.out.println("Failed to add " + sender.getName() + " as a friend to " + receiver.getName());
+            System.out.println("Failed to add " + sender.getName() 
+                               + " as a friend to " + receiver.getName());
             return false;
         }
 
@@ -593,13 +599,15 @@ public class Database implements DatabaseFramework, Searchable {
         ArrayList<String> user2Messages = allMessages.getOrDefault(user2, new ArrayList<>());
 
         for (String message : user1Messages) {
-            if (message.contains(user1.getName() + " -> " + user2.getName()) || message.contains(user2.getName() + " -> " + user1.getName())) {
+            if (message.contains(user1.getName() + " -> " + user2.getName()) 
+                || message.contains(user2.getName() + " -> " + user1.getName())) {
                 uniqueMessages.add(message);
             }
         }
 
         for (String message : user2Messages) {
-            if (message.contains(user1.getName() + " -> " + user2.getName()) || message.contains(user2.getName() + " -> " + user1.getName())) {
+            if (message.contains(user1.getName() + " -> " + user2.getName()) 
+                || message.contains(user2.getName() + " -> " + user1.getName())) {
                 uniqueMessages.add(message);
             }
         }
@@ -835,7 +843,8 @@ public class Database implements DatabaseFramework, Searchable {
         String result = "";
         for (int i = 0; i < matchedUsers.size(); i++) {
             double percentage = (matchScores.get(i) * 100.0) / 6;
-            result += matchedUsers.get(i).getName() + " (" + String.format("%.2f", percentage) + "% match)" + delimiter;
+            result += matchedUsers.get(i).getName() + " (" 
+                + String.format("%.2f", percentage) + "% match)" + delimiter;
         }
 
         // Remove trailing delimiter
