@@ -92,7 +92,7 @@ public class Database implements DatabaseFramework, Searchable {
 
 
     // Initialization
-    public void initializeDatabase() throws UsernameTakenException, InvalidInput {
+    public synchronized void initializeDatabase() throws UsernameTakenException, InvalidInput {
         loadUsers();
         loadFriends();
         loadBlocked();

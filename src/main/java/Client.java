@@ -575,28 +575,13 @@ public class Client implements ClientService {
             // Profile Picture Upload
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Select Profile Picture");
-            if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File profilePictureFile = fileChooser.getSelectedFile();
-                byte[] profilePictureBytes = new byte[(int) profilePictureFile.length()];
-                try (FileInputStream fis = new FileInputStream(profilePictureFile)) {
-                    fis.read(profilePictureBytes);
-
-                    writer.println("uploadProfilePicture" + DELIMITER + username);
-                    writer.println(profilePictureBytes.length);
-                    socket.getOutputStream().write(profilePictureBytes);
-                    socket.getOutputStream().flush();
-
-                    String pictureResponse = reader.readLine();
-                    if (!pictureResponse.equals(SUCCESS)) {
-                        JOptionPane.showMessageDialog(null, "Profile picture upload failed.", "Error", 
-                                                      JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", "Success", 
-                                                      JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + ex.getMessage(), "Error", 
-                                                  JOptionPane.ERROR_MESSAGE);
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!setProfilePicture(filePath)) {
+                    JOptionPane.showMessageDialog(null, "Failed to upload profile picture.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return true;
                 }
             }
 
@@ -1372,15 +1357,12 @@ public class Client implements ClientService {
                     int result = fileChooser.showOpenDialog(null);
                     if (result == JFileChooser.APPROVE_OPTION) {
                         String filePath = fileChooser.getSelectedFile().getAbsolutePath();
-                        if (setProfilePicture(filePath)) {
-                            JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", 
-                                                          "Success", JOptionPane.INFORMATION_MESSAGE);
-                        } else {
+                        if (!setProfilePicture(filePath)) {
                             JOptionPane.showMessageDialog(null, "Failed to upload profile picture.", 
                                                           "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     }
-                    return; // No server update needed for profile picture
+                    break;
             }
 
             // Send update request to the server
@@ -1611,42 +1593,61 @@ public class Client implements ClientService {
     // To upload Profile Picture for the user
     public boolean setProfilePicture(String filePath) {
         File file = new File(filePath);
+
         if (!file.exists() || file.isDirectory()) {
-            JOptionPane.showMessageDialog(null, "Invalid file path. Please select a valid file.", 
-                                          "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Invalid file path. Please select a valid file.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         long maxFileSize = 5 * 1024 * 1024; // 5 MB limit
         if (file.length() > maxFileSize) {
-            JOptionPane.showMessageDialog(null, "File size exceeds the maximum limit of 5 MB.", 
-                                          "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "File size exceeds the maximum limit of 5 MB.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             byte[] fileBytes = fileInputStream.readAllBytes();
-            writer.println("uploadProfilePicture" + DELIMITER + username);
-            writer.println(fileBytes.length);
-            socket.getOutputStream().write(fileBytes);
-            socket.getOutputStream().flush();
 
-            String response = reader.readLine();
+            // Log file size for debugging
+            System.out.println("File size to upload: " + fileBytes.length);
+
+            synchronized (writer) { // Ensure the writer sends data sequentially
+                writer.println("uploadProfilePicture" + DELIMITER + username);
+                writer.flush(); // Ensure the command is flushed
+                writer.println(fileBytes.length);
+                writer.flush(); // Ensure the file size is flushed
+            }
+
+            System.out.println("File size sent to server: " + fileBytes.length);
+
+            synchronized (socket) { // Ensure the output stream is synchronized
+                socket.getOutputStream().write(fileBytes);
+                socket.getOutputStream().flush(); // Ensure all bytes are sent
+            }
+
+            System.out.println("File bytes sent successfully.");
+
+            String response = reader.readLine(); // Wait for server response
+            System.out.println("Server response: " + response);
+
             if (response.equals(SUCCESS)) {
-                JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.", 
-                                              "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Profile picture uploaded successfully.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
                 return true;
             } else if (response.equals("INVALID_FILE")) {
-                JOptionPane.showMessageDialog(null, "The file you uploaded is not a valid PNG file.", 
-                                              "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "The file you uploaded is not a valid PNG file.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to upload profile picture.", 
-                                              "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to upload profile picture.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + e.getMessage(), 
-                                          "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error uploading profile picture: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
+
         return false;
     }
 }

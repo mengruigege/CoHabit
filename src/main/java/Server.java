@@ -11,6 +11,7 @@ import java.util.Base64;
  */
 
 public class Server implements ServerService, Runnable {
+    private static final Object lock = new Object();
     static Database database = new Database();
     private static final String DELIMITER = "<<END>>";
     private static final String SUCCESS = "SUCCESS";
@@ -31,423 +32,433 @@ public class Server implements ServerService, Runnable {
                     line = reader.readLine();
                     if (line == null) break;
 
-                    // Receives message from client in the format "login<<END>>username<<END>>password"
-                    if (line.startsWith("login")) {
-                        String[] parts = line.split(DELIMITER);
-                        String username = parts[1];
-                        String password = parts[2];
+                    synchronized (lock) {
+                        // Receives message from client in the format "login<<END>>username<<END>>password"
+                        if (line.startsWith("login")) {
+                            String[] parts = line.split(DELIMITER);
+                            String username = parts[1];
+                            String password = parts[2];
 
-                        String userInformation = login(username, password);
-                        if (userInformation != null && !userInformation.isEmpty()) {
-                            writer.println(userInformation); // Send user info
+                            String userInformation = login(username, password);
+                            if (userInformation != null && !userInformation.isEmpty()) {
+                                writer.println(userInformation); // Send user info
 
-                            // Load and send profile picture
-                            User user = database.findUserByName(username);
-                            byte[] profilePicture = database.loadProfilePicture(user);
+                                // Load and send profile picture
+                                User user = database.findUserByName(username);
+                                byte[] profilePicture = database.loadProfilePicture(user);
 
-                            if (profilePicture != null) {
-                                String encodedPicture = Base64.getEncoder().encodeToString(profilePicture);
-                                writer.println(encodedPicture); // Send Base64-encoded picture
+                                if (profilePicture != null) {
+                                    String encodedPicture = Base64.getEncoder().encodeToString(profilePicture);
+                                    writer.println(encodedPicture); // Send Base64-encoded picture
+                                } else {
+                                    writer.println("NO_PICTURE"); // No picture found
+                                }
                             } else {
-                                writer.println("NO_PICTURE"); // No picture found
+                                writer.println(FAILURE); // Login failed
                             }
-                        } else {
-                            writer.println(FAILURE); // Login failed
                         }
-                    }
 
 
-                    // receives message from client in the format
-                    if (line.startsWith("register")) {
-                        String[] parts = line.split(DELIMITER);
-                        try {
-                            User user = new User(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
-                            boolean alcohol = Boolean.parseBoolean(parts[8]);
-                            boolean smoke = Boolean.parseBoolean(parts[9]);
-                            boolean guests = Boolean.parseBoolean(parts[10]);
-                            int tidy = Integer.parseInt(parts[11]);
-                            int roomHours = Integer.parseInt(parts[12]);
+                        // receives message from client in the format
+                        if (line.startsWith("register")) {
+                            String[] parts = line.split(DELIMITER);
                             try {
-                                user.setPreferences(parts[7], alcohol, smoke, guests, tidy, roomHours);
+                                User user = new User(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
+                                boolean alcohol = Boolean.parseBoolean(parts[8]);
+                                boolean smoke = Boolean.parseBoolean(parts[9]);
+                                boolean guests = Boolean.parseBoolean(parts[10]);
+                                int tidy = Integer.parseInt(parts[11]);
+                                int roomHours = Integer.parseInt(parts[12]);
+                                try {
+                                    user.setPreferences(parts[7], alcohol, smoke, guests, tidy, roomHours);
+                                } catch (Exception e) {
+                                    writer.println("Invalid registration data");
+                                }
+
+                                if (register(user)) {
+                                    writer.println(SUCCESS);
+                                } else {
+                                    writer.println("Username is taken or credentials are null");
+                                }
                             } catch (Exception e) {
                                 writer.println("Invalid registration data");
                             }
 
-                            if (register(user)) {
+                        }
+
+                        if (line.startsWith("sendMessage")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User sender = database.findUserByName(parts[1]);
+                            User receiver = database.findUserByName(parts[2]);
+                            String message = parts[3];
+
+                            if (sendMessage(sender, receiver, message)) {
                                 writer.println(SUCCESS);
                             } else {
-                                writer.println("Username is taken or credentials are null");
+                                writer.println(FAILURE);
                             }
-                        } catch (Exception e) {
-                            writer.println("Invalid registration data");
                         }
 
-                    }
+                        if (line.startsWith("getMessageHistory")) {
+                            String[] parts = line.split(DELIMITER);
 
-                    if (line.startsWith("sendMessage")) {
-                        String[] parts = line.split(DELIMITER);
+                            String senderUsername = parts[1];
+                            String receiverUsername = parts[2];
 
-                        User sender = database.findUserByName(parts[1]);
-                        User receiver = database.findUserByName(parts[2]);
-                        String message = parts[3];
+                            User sender = database.findUserByName(senderUsername);
+                            User receiver = database.findUserByName(receiverUsername);
+                            ArrayList<String> messages = getMessageHistory(sender, receiver);
 
-                        if (sendMessage(sender, receiver, message)) {
-                            writer.println(SUCCESS);
-                        } else {
-                            writer.println(FAILURE);
-                        }
-                    }
-
-                    if (line.startsWith("getMessageHistory")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        String senderUsername = parts[1];
-                        String receiverUsername = parts[2];
-
-                        User sender = database.findUserByName(senderUsername);
-                        User receiver = database.findUserByName(receiverUsername);
-                        ArrayList<String> messages = getMessageHistory(sender, receiver);
-
-                        if (messages == null || messages.isEmpty()) {
-                            writer.println(FAILURE);
-                        } else {
-                            writer.println(String.join(DELIMITER, messages));
-                        }
-                    }
-
-                    // receives message from client in the format sendFriendRequest,user,potentialFriend
-                    if (line.startsWith("sendFriendRequest")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User sender = database.findUserByName(parts[1]);
-                        User receiver = database.findUserByName(parts[2]);
-
-                        if (sender == null || receiver == null) {
-                            writer.println("One or both users do not exist");
-                            continue;
-                        }
-
-                        if (database.getBlockedUsers(receiver).contains(sender.getName()) 
-                            || database.getBlockedUsers(sender).contains(receiver.getName())) {
-                            writer.println("Friend request cannot be sent due to a blocking relationship");
-                            continue;
-                        }
-
-                        if (sendFriendRequest(sender, receiver)) {
-                            writer.println(SUCCESS);
-                        } else {
-                            writer.println("Friend request cannot be sent. " + 
-                                           "You might have already sent a friend request to this person");
-                        }
-                    }
-
-                    if (line.startsWith("viewFriendRequests")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-
-                        ArrayList<String> friendRequests = viewFriendRequests(user);
-                        if (friendRequests == null || friendRequests.isEmpty()) {
-                            writer.println(FAILURE);
-                        } else {
-                            writer.println(String.join(DELIMITER, viewFriendRequests(user)));
-                        }
-                    }
-
-                    if (line.startsWith("declineFriendRequest")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User receiver = database.findUserByName(parts[1]);
-                        User sender = database.findUserByName(parts[2]);
-
-                        if (receiver == null || sender == null) {
-                            writer.println("One or both users do not exist");
-                        }
-
-                        if (declineFriendRequest(receiver, sender)) {
-                            writer.println(SUCCESS);
-                        } else {
-                            writer.println(FAILURE);
-                        }
-                    }
-
-                    if (line.startsWith("acceptFriendRequest")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-                        User friend = database.findUserByName(parts[2]);
-
-                        if (user == null || friend == null) {
-                            writer.println("One or both users do not exist");
-                        }
-
-                        if (acceptFriendRequest(user, friend)) {
-                            writer.println(SUCCESS);
-                        } else {
-                            writer.println(FAILURE);
-                        }
-                    }
-
-                    if (line.startsWith("removeFriend")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-                        User friend = database.findUserByName(parts[2]);
-
-                        if (user == null || friend == null) {
-                            writer.println("One or both users do not exist");
-                        }
-
-                        if (removeFriend(user, friend)) {
-                            writer.println(SUCCESS);
-                        } else {
-                            writer.println(FAILURE);
-                        }
-                    }
-
-                    if (line.startsWith("getFriendList")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-
-                        if (user == null) {
-                            writer.println(FAILURE);
-                            continue;
-                        }
-
-                        ArrayList<String> friendList = viewFriendsList(user);
-                        if (friendList == null) {
-                            writer.println(FAILURE);
-                        } else {
-                            writer.println(String.join(DELIMITER, friendList));
-                        }
-                    }
-
-                    if (line.startsWith("getBlockList")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-
-                        if (user == null) {
-                            writer.println(FAILURE);
-                            continue;
-                        }
-
-                        ArrayList<String> blockedUserList = viewBlockedUsers(user);
-                        if (blockedUserList == null) {
-                            writer.println(FAILURE);
-                        } else {
-                            writer.println(String.join(DELIMITER, blockedUserList));
-                        }
-                    }
-
-                    if (line.startsWith("blockUser")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-                        User blockedUser = database.findUserByName(parts[2]);
-
-                        if (user == null || blockedUser == null) {
-                            writer.println("One or both users do not exist");
-                            continue;
-                        }
-
-                        if (blockUser(user, blockedUser)) {
-                            writer.println(SUCCESS);
-                        } else {
-                            writer.println(blockedUser.getName() + "could not be blocked. " + 
-                                           "They might be already blocked");
-                        }
-                    }
-
-                    if (line.startsWith("removeBlockedUser")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-                        User blockedUser = database.findUserByName(parts[2]);
-
-                        if (user == null || blockedUser == null) {
-                            writer.println("One or both users do not exist");
-                            continue;
-                        }
-
-                        if (unblockUser(user, blockedUser)) {
-                            writer.println(SUCCESS);
-                        } else {
-                            writer.println(FAILURE);
-                        }
-
-                    }
-
-                    // receives message from client in the format viewProfile,username
-                    if (line.startsWith("viewProfile")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        String username = parts[1];
-                        User user = database.findUserByName(username);
-
-                        if (user != null) {
-                            // Send user profile details
-                            writer.println(user.toString());
-
-                            // Load and send the profile picture
-                            byte[] profilePicture = database.loadProfilePicture(user);
-                            if (profilePicture != null) {
-                                String encodedPicture = Base64.getEncoder().encodeToString(profilePicture);
-                                writer.println(encodedPicture); // Send Base64-encoded picture
+                            if (messages == null || messages.isEmpty()) {
+                                writer.println(FAILURE);
                             } else {
-                                writer.println("NO_PICTURE"); // Indicate no picture available
+                                writer.println(String.join(DELIMITER, messages));
                             }
-                        } else {
-                            writer.println(FAILURE);
-                        }
-                    }
-
-                    if (line.startsWith("updateProfile")) {
-                        String[] tokens = line.split(DELIMITER);
-                        if (tokens.length != 14) {
-                            writer.println(FAILURE);
-                            continue;
                         }
 
-                        String oldUsername = tokens[1]; // Old username for lookup
-                        String newUsername = tokens[2]; // New username (if updated)
-                        String password = tokens[3];
-                        String email = tokens[4];
-                        String phoneNumber = tokens[5];
-                        String description = tokens[6];
-                        String university = tokens[7];
-                        String bedTime = tokens[8];
-                        boolean alcohol = Boolean.parseBoolean(tokens[9]);
-                        boolean smoke = Boolean.parseBoolean(tokens[10]);
-                        boolean guests = Boolean.parseBoolean(tokens[11]);
-                        int tidy;
-                        int roomHours;
+                        // receives message from client in the format sendFriendRequest,user,potentialFriend
+                        if (line.startsWith("sendFriendRequest")) {
+                            String[] parts = line.split(DELIMITER);
 
-                        try {
-                            tidy = Integer.parseInt(tokens[12]);
-                            roomHours = Integer.parseInt(tokens[13]);
-                        } catch (NumberFormatException e) {
-                            writer.println(FAILURE);
-                            continue;
-                        }
+                            User sender = database.findUserByName(parts[1]);
+                            User receiver = database.findUserByName(parts[2]);
 
-                        // Lookup the user by their old username
-                        User user = database.findUserByName(oldUsername);
-
-                        if (user == null) {
-                            writer.println(FAILURE);
-                            continue;
-                        }
-
-                        // Update the user's profile
-                        try {
-                            user.setName(newUsername); // Update the username
-                            user.setPassword(password);
-                            user.setEmail(email);
-                            user.setPhoneNumber(phoneNumber);
-                            user.setDescription(description);
-                            user.setUniversity(university);
-                            user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
-
-                            // Save changes to the database
-                            if (database.updateUserInFile(user, oldUsername)) {
-                                writer.println(SUCCESS); // Successfully updated
-                            } else {
-                                writer.println(FAILURE); // Failed to save changes
-                            }
-                        } catch (Exception e) {
-                            writer.println(FAILURE);
-                        }
-                    }
-
-
-                    // receives message from client in the format partialMatch,user
-                    if (line.startsWith("partialMatch")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-                        String result = partialMatch(user);
-
-                        if (result == null) {
-                            writer.println(FAILURE);
-                        } else {
-                            writer.println(result);
-                        }
-
-                    }
-
-                    // receives message from client in the format exactMatch,user
-                    if (line.startsWith("exactMatch")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        User user = database.findUserByName(parts[1]);
-                        String result = exactMatch(user);
-
-                        if (result == null) {
-                            writer.println(FAILURE);
-                        } else {
-                            writer.println(result);
-                        }
-                    }
-
-                    // receives message from client in the format searchByParameter,parameter,value
-                    if (line.startsWith("searchByParameter")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        String parameter = parts[1];
-                        String value = parts[2];
-                        String result = searchByParameter(parameter, value);
-
-                        if (result == null) {
-                            writer.println(FAILURE);
-                        } else {
-                            writer.println(result);
-                        }
-                    }
-
-                    // Receives message from client in the format uploadProfilePicture###username
-                    if (line.startsWith("uploadProfilePicture")) {
-                        String[] parts = line.split(DELIMITER);
-
-                        String username = parts[1];
-                        User user = database.findUserByName(username);
-
-                        if (user == null) {
-                            writer.println(FAILURE);
-                            continue;
-                        }
-
-                        try {
-                            int fileSize = Integer.parseInt(reader.readLine()); // Read the size of the file
-                            byte[] fileBytes = new byte[fileSize];
-                            clientSocket.getInputStream().read(fileBytes); // Read the file data
-
-                            // Validate the PNG file directly
-                            if (fileBytes.length < 8) {
-                                writer.println("INVALID_FILE"); // File too small to be a valid PNG
+                            if (sender == null || receiver == null) {
+                                writer.println("One or both users do not exist");
                                 continue;
                             }
 
-                            // Check the PNG signature (first 8 bytes)
-                            byte[] pngSignature = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
-                            boolean isValid = true;
-                            for (int i = 0; i < pngSignature.length; i++) {
-                                if (fileBytes[i] != pngSignature[i]) {
-                                    isValid = false;
-                                    break;
+                            if (database.getBlockedUsers(receiver).contains(sender.getName())
+                                    || database.getBlockedUsers(sender).contains(receiver.getName())) {
+                                writer.println("Friend request cannot be sent due to a blocking relationship");
+                                continue;
+                            }
+
+                            if (sendFriendRequest(sender, receiver)) {
+                                writer.println(SUCCESS);
+                            } else {
+                                writer.println("Friend request cannot be sent. " +
+                                        "You might have already sent a friend request to this person");
+                            }
+                        }
+
+                        if (line.startsWith("viewFriendRequests")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+
+                            ArrayList<String> friendRequests = viewFriendRequests(user);
+                            if (friendRequests == null || friendRequests.isEmpty()) {
+                                writer.println(FAILURE);
+                            } else {
+                                writer.println(String.join(DELIMITER, viewFriendRequests(user)));
+                            }
+                        }
+
+                        if (line.startsWith("declineFriendRequest")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User receiver = database.findUserByName(parts[1]);
+                            User sender = database.findUserByName(parts[2]);
+
+                            if (receiver == null || sender == null) {
+                                writer.println("One or both users do not exist");
+                            }
+
+                            if (declineFriendRequest(receiver, sender)) {
+                                writer.println(SUCCESS);
+                            } else {
+                                writer.println(FAILURE);
+                            }
+                        }
+
+                        if (line.startsWith("acceptFriendRequest")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+                            User friend = database.findUserByName(parts[2]);
+
+                            if (user == null || friend == null) {
+                                writer.println("One or both users do not exist");
+                            }
+
+                            if (acceptFriendRequest(user, friend)) {
+                                writer.println(SUCCESS);
+                            } else {
+                                writer.println(FAILURE);
+                            }
+                        }
+
+                        if (line.startsWith("removeFriend")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+                            User friend = database.findUserByName(parts[2]);
+
+                            if (user == null || friend == null) {
+                                writer.println("One or both users do not exist");
+                            }
+
+                            if (removeFriend(user, friend)) {
+                                writer.println(SUCCESS);
+                            } else {
+                                writer.println(FAILURE);
+                            }
+                        }
+
+                        if (line.startsWith("getFriendList")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+
+                            if (user == null) {
+                                writer.println(FAILURE);
+                                continue;
+                            }
+
+                            ArrayList<String> friendList = viewFriendsList(user);
+                            if (friendList == null) {
+                                writer.println(FAILURE);
+                            } else {
+                                writer.println(String.join(DELIMITER, friendList));
+                            }
+                        }
+
+                        if (line.startsWith("getBlockList")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+
+                            if (user == null) {
+                                writer.println(FAILURE);
+                                continue;
+                            }
+
+                            ArrayList<String> blockedUserList = viewBlockedUsers(user);
+                            if (blockedUserList == null) {
+                                writer.println(FAILURE);
+                            } else {
+                                writer.println(String.join(DELIMITER, blockedUserList));
+                            }
+                        }
+
+                        if (line.startsWith("blockUser")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+                            User blockedUser = database.findUserByName(parts[2]);
+
+                            if (user == null || blockedUser == null) {
+                                writer.println("One or both users do not exist");
+                                continue;
+                            }
+
+                            if (blockUser(user, blockedUser)) {
+                                writer.println(SUCCESS);
+                            } else {
+                                writer.println(blockedUser.getName() + "could not be blocked. " +
+                                        "They might be already blocked");
+                            }
+                        }
+
+                        if (line.startsWith("removeBlockedUser")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+                            User blockedUser = database.findUserByName(parts[2]);
+
+                            if (user == null || blockedUser == null) {
+                                writer.println("One or both users do not exist");
+                                continue;
+                            }
+
+                            if (unblockUser(user, blockedUser)) {
+                                writer.println(SUCCESS);
+                            } else {
+                                writer.println(FAILURE);
+                            }
+
+                        }
+
+                        // receives message from client in the format viewProfile,username
+                        if (line.startsWith("viewProfile")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            String username = parts[1];
+                            User user = database.findUserByName(username);
+
+                            if (user != null) {
+                                // Send user profile details
+                                writer.println(user.toString());
+
+                                // Load and send the profile picture
+                                byte[] profilePicture = database.loadProfilePicture(user);
+                                if (profilePicture != null) {
+                                    String encodedPicture = Base64.getEncoder().encodeToString(profilePicture);
+                                    writer.println(encodedPicture); // Send Base64-encoded picture
+                                } else {
+                                    writer.println("NO_PICTURE"); // Indicate no picture available
                                 }
+                            } else {
+                                writer.println(FAILURE);
                             }
+                        }
 
-                            if (!isValid) {
-                                writer.println("INVALID_FILE"); // Not a valid PNG
+                        if (line.startsWith("updateProfile")) {
+                            String[] tokens = line.split(DELIMITER);
+                            if (tokens.length != 14) {
+                                writer.println(FAILURE);
                                 continue;
                             }
 
-                            database.saveProfilePicture(user, fileBytes); // Save the profile picture in the database
-                            writer.println(SUCCESS);
-                        } catch (IOException | NumberFormatException e) {
-                            writer.println(FAILURE);
+                            String oldUsername = tokens[1]; // Old username for lookup
+                            String newUsername = tokens[2]; // New username (if updated)
+                            String password = tokens[3];
+                            String email = tokens[4];
+                            String phoneNumber = tokens[5];
+                            String description = tokens[6];
+                            String university = tokens[7];
+                            String bedTime = tokens[8];
+                            boolean alcohol = Boolean.parseBoolean(tokens[9]);
+                            boolean smoke = Boolean.parseBoolean(tokens[10]);
+                            boolean guests = Boolean.parseBoolean(tokens[11]);
+                            int tidy;
+                            int roomHours;
+
+                            try {
+                                tidy = Integer.parseInt(tokens[12]);
+                                roomHours = Integer.parseInt(tokens[13]);
+                            } catch (NumberFormatException e) {
+                                writer.println(FAILURE);
+                                continue;
+                            }
+
+                            // Lookup the user by their old username
+                            User user = database.findUserByName(oldUsername);
+
+                            if (user == null) {
+                                writer.println(FAILURE);
+                                continue;
+                            }
+
+                            // Update the user's profile
+                            try {
+                                user.setName(newUsername); // Update the username
+                                user.setPassword(password);
+                                user.setEmail(email);
+                                user.setPhoneNumber(phoneNumber);
+                                user.setDescription(description);
+                                user.setUniversity(university);
+                                user.setPreferences(bedTime, alcohol, smoke, guests, tidy, roomHours);
+
+                                // Save changes to the database
+                                if (database.updateUserInFile(user, oldUsername)) {
+                                    writer.println(SUCCESS); // Successfully updated
+                                } else {
+                                    writer.println(FAILURE); // Failed to save changes
+                                }
+                            } catch (Exception e) {
+                                writer.println(FAILURE);
+                            }
+                        }
+
+
+                        // receives message from client in the format partialMatch,user
+                        if (line.startsWith("partialMatch")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+                            String result = partialMatch(user);
+
+                            if (result == null) {
+                                writer.println(FAILURE);
+                            } else {
+                                writer.println(result);
+                            }
+
+                        }
+
+                        // receives message from client in the format exactMatch,user
+                        if (line.startsWith("exactMatch")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            User user = database.findUserByName(parts[1]);
+                            String result = exactMatch(user);
+
+                            if (result == null) {
+                                writer.println(FAILURE);
+                            } else {
+                                writer.println(result);
+                            }
+                        }
+
+                        // receives message from client in the format searchByParameter,parameter,value
+                        if (line.startsWith("searchByParameter")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            String parameter = parts[1];
+                            String value = parts[2];
+                            String result = searchByParameter(parameter, value);
+
+                            if (result == null) {
+                                writer.println(FAILURE);
+                            } else {
+                                writer.println(result);
+                            }
+                        }
+
+                        // Receives message from client in the format uploadProfilePicture###username
+                        if (line.startsWith("uploadProfilePicture")) {
+                            String[] parts = line.split(DELIMITER);
+
+                            String username = parts[1];
+                            User user = database.findUserByName(username);
+
+                            if (user == null) {
+                                writer.println(FAILURE);
+                                continue;
+                            }
+
+                            try {
+                                int fileSize = Integer.parseInt(reader.readLine()); // Read the file size
+                                byte[] fileBytes = new byte[fileSize];
+
+                                // Read the file bytes in chunks
+                                int totalBytesRead = 0;
+                                while (totalBytesRead < fileSize) {
+                                    int bytesRead = clientSocket.getInputStream().read(fileBytes, totalBytesRead, fileSize - totalBytesRead);
+                                    if (bytesRead == -1) {
+                                        throw new IOException("File upload interrupted.");
+                                    }
+                                    totalBytesRead += bytesRead;
+                                }
+
+                                // Validate the PNG file format
+                                if (fileBytes.length < 8) {
+                                    writer.println("INVALID_FILE"); // File too small to be a valid PNG
+                                    continue;
+                                }
+
+                                byte[] pngSignature = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+                                boolean isValid = true;
+                                for (int i = 0; i < pngSignature.length; i++) {
+                                    if (fileBytes[i] != pngSignature[i]) {
+                                        isValid = false;
+                                        break;
+                                    }
+                                }
+
+                                if (!isValid) {
+                                    writer.println("INVALID_FILE");
+                                    continue;
+                                }
+
+                                database.saveProfilePicture(user, fileBytes); // Save the profile picture
+                                writer.println(SUCCESS);
+                            } catch (IOException | NumberFormatException e) {
+                                writer.println(FAILURE);
+                            }
                         }
                     }
                 } catch (IOException e) {
