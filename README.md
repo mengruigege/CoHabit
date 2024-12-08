@@ -9,6 +9,9 @@ Keya Jadhav**
 **Report submitted on Brightspace By
 Rithvik Siddenki**
 
+**Note:
+This project uses the Maven Build.**
+
 ## _**Introduction**_
 
 For this project, we have created our very own social media app - CoHabit. CoHabit is an app that eases the roommate search issue through matching various preferences of users. We have also implemented a direct messaging service for communication amongst app users.
