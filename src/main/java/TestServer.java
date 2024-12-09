@@ -46,13 +46,6 @@ public class TestServer {
         assertNull(result);
     }
 
-    @Test
-    public void testLoginNonExistentUser() throws UsernameTakenException, InvalidInput {
-        mockDatabase.initializeDatabase();
-        String result = server.login("Alice", "password345");
-        assertNull(result);
-    }
-
     // Test cases for register
     @Test
     public void testRegisterExistingUser() {

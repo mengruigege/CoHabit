@@ -4,7 +4,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class TestClient {
+public class
+
+
+TestClient {
     private Client client;
 
     @Before

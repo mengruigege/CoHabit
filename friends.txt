@@ -1,4 +1,2 @@
-Jim:Bob
 Bob:Jim
-Jim:
-Bob:
+Jim:Bob
